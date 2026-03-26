@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, BookOpen, Users } from "lucide-react";
+import { Home, BookOpen, Users, UserCircle, Settings as SettingsIcon } from "lucide-react";
 
 /* ── Icon nav items ──────────────────────────────────────── */
 const iconNavItems = [
@@ -26,8 +26,15 @@ const iconNavItems = [
   },
 ];
 
-/* Height of the logo/header area at top */
-const HEADER_HEIGHT = 64;
+const bottomNavItems = [
+  { icon: UserCircle, label: "Profile", id: "profile", path: "/profile" },
+  { icon: SettingsIcon, label: "Settings", id: "settings", path: "/settings" },
+];
+
+/* Larger sidebar sizes */
+const HEADER_HEIGHT = 76;
+const SIDEBAR_WIDTH = 80;
+const ACTIVE_BG = "#9b7cc5";
 
 export function Sidebar() {
   const location = useLocation();
@@ -36,20 +43,24 @@ export function Sidebar() {
   const navRef = useRef<HTMLElement>(null);
   const iconRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const hoveredItem = iconNavItems.find((i) => i.id === hoveredId);
-  const hasSubItems =
-    hoveredItem && "subItems" in hoveredItem && hoveredItem.subItems;
-
   /* Which icon section is active based on current route */
   const activeId = (() => {
     const p = location.pathname;
     if (p === "/" || p === "/practice" || p === "/analytics") return "home";
     if (p.startsWith("/resources")) return "resources";
     if (p.startsWith("/community")) return "community";
+    if (p.startsWith("/profile")) return "profile";
+    if (p.startsWith("/settings")) return "settings";
     return "home";
   })();
 
-  /* Measure icon positions after mount and on resize */
+  const hoveredItem = iconNavItems.find((i) => i.id === hoveredId);
+  const hasSubItems = hoveredItem && "subItems" in hoveredItem && hoveredItem.subItems;
+
+  const displayId = hasSubItems ? hoveredId : null;
+  const displaySubItems = hasSubItems ? hoveredItem.subItems : null;
+
+  /* Measure icon positions */
   const measureOffsets = useCallback(() => {
     if (!navRef.current) return;
     const navRect = navRef.current.getBoundingClientRect();
@@ -74,49 +85,45 @@ export function Sidebar() {
     return () => clearTimeout(timer);
   }, [measureOffsets]);
 
-  const panelTop = hoveredId ? (iconOffsets[hoveredId] ?? 0) : 0;
+  const panelTop = displayId ? (iconOffsets[displayId] ?? 0) : 0;
 
   return (
-    <div
-      className="fixed left-0 top-0 bottom-0 z-40"
-      onMouseLeave={() => setHoveredId(null)}
-    >
-      {/* ── Full-height dark background column ─────────────── */}
+    <>
       <div
-        className="absolute inset-0 w-[68px]"
-        style={{
-          background:
-            "linear-gradient(180deg, #2d1660 0%, #3b1f70 40%, #4a2d80 70%, #3b1f70 100%)",
-        }}
-      />
-
-      {/* ── Logo area (above nav, part of the dark column) ── */}
-      <Link
-        to="/"
-        className="relative z-10 flex items-center justify-center"
-        style={{ width: 68, height: HEADER_HEIGHT }}
+        className="fixed left-0 top-0 bottom-0 z-40 flex"
+        onMouseLeave={() => setHoveredId(null)}
       >
-        <img
-          src="/Assets/Pfp.png"
-          alt="Aiva"
-          className="w-11 h-11 rounded-xl object-contain"
-        />
-      </Link>
+        {/* ── Left dark column (scaled up) ─────────────────── */}
+        <div
+          className="relative z-20 h-full flex flex-col items-center shadow-lg"
+          style={{
+            width: SIDEBAR_WIDTH,
+            background:
+              "linear-gradient(180deg, #2d1660 0%, #3b1f70 40%, #4a2d80 70%, #3b1f70 100%)",
+          }}
+        >
+          {/* Logo area */}
+          <Link
+            to="/"
+            className="flex-shrink-0 flex items-center justify-center w-full"
+            style={{ height: HEADER_HEIGHT }}
+          >
+            <img
+              src="/Assets/Pfp.png"
+              alt="Aiva"
+              className="w-[52px] h-[52px] rounded-2xl object-contain bg-white/5"
+            />
+          </Link>
 
-      {/* ── Sidebar body: icon column + expand panel ───────── */}
-      <div
-        className="relative flex"
-        style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
-      >
-        {/* Left icon column */}
-        <div className="relative z-10 w-[68px] flex flex-col items-center pt-3 pb-5">
+          {/* Top navigation */}
           <nav
             ref={navRef}
-            className="flex flex-col items-center gap-4 flex-1"
+            className="flex flex-col items-center gap-5 w-full pt-4"
           >
             {iconNavItems.map((item) => {
               const isActive = activeId === item.id;
-              const isHovered = hoveredId === item.id;
+              const isDisplayed = displayId === item.id;
+              const isMerged = isDisplayed;
 
               return (
                 <div
@@ -124,63 +131,107 @@ export function Sidebar() {
                   ref={(el) => {
                     iconRefs.current[item.id] = el;
                   }}
-                  className="relative"
+                  className="relative w-full flex justify-end"
                   onMouseEnter={() => setHoveredId(item.id)}
                 >
                   <Link
                     to={item.path}
                     className={`
                       flex flex-col items-center justify-center
-                      w-[56px] py-2 rounded-xl
-                      text-[9px] font-medium tracking-wide
+                      w-[72px] py-2.5
+                      text-[11px] font-medium tracking-wide
                       transition-all duration-200
+                      ${isMerged ? "rounded-l-2xl rounded-r-none" : "rounded-xl w-[64px] mr-2"}
                       ${
-                        isActive || isHovered
-                          ? "bg-white/15 text-white"
-                          : "text-white/45 hover:text-white/70"
+                        isMerged
+                          ? "text-white shadow-[-4px_0_10px_rgba(0,0,0,0.1)]"
+                          : isActive
+                          ? "bg-white/10 text-white"
+                          : "text-white/45 hover:text-white/70 hover:bg-white/5"
                       }
                     `}
+                    style={{
+                      backgroundColor: isMerged ? ACTIVE_BG : undefined,
+                      paddingRight: isMerged ? "8px" : "0",
+                    }}
                   >
                     <item.icon
-                      size={20}
+                      size={24}
                       strokeWidth={isActive ? 2 : 1.5}
                     />
-                    <span className="mt-1 leading-none">{item.label}</span>
+                    <span className="mt-1.5 leading-none">{item.label}</span>
                   </Link>
 
-                  {/* Active bar indicator */}
-                  {isActive && (
+                  {/* Active bar indicator (only if active AND not merged) */}
+                  {isActive && !isMerged && (
                     <motion.div
                       layoutId="sidebar-active-bar"
-                      className="absolute -left-[6px] top-1/2 -translate-y-1/2 w-[3px] h-7 rounded-r-full bg-white"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
+                      className="absolute -left-1 top-1/2 -translate-y-1/2 w-[4px] h-8 rounded-r-full bg-white"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
                     />
                   )}
                 </div>
               );
             })}
           </nav>
+
+          {/* Bottom navigation (Profile & Settings) */}
+          <div className="mt-auto flex flex-col items-center gap-4 w-full pb-6">
+            {bottomNavItems.map((item) => {
+              const isActive = activeId === item.id;
+              return (
+                <div key={item.id} className="relative w-full flex justify-end" onMouseEnter={() => setHoveredId(null)}>
+                  <Link
+                    to={item.path}
+                    className={`
+                      flex flex-col items-center justify-center
+                      rounded-xl w-[64px] mr-2 py-2.5
+                      text-[11px] font-medium tracking-wide
+                      transition-all duration-200
+                      ${
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-white/45 hover:text-white/70 hover:bg-white/5"
+                      }
+                    `}
+                  >
+                    <item.icon
+                      size={24}
+                      strokeWidth={isActive ? 2 : 1.5}
+                    />
+                    <span className="mt-1.5 leading-none">{item.label}</span>
+                  </Link>
+
+                  {/* Active bar indicator for bottom items */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-bar"
+                      className="absolute -left-1 top-1/2 -translate-y-1/2 w-[4px] h-8 rounded-r-full bg-white"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* ── Right expand panel (HOVER ONLY) ─────────────── */}
+        {/* ── Right expand panel (HOVER ONLY contiguous shape) ── */}
         <AnimatePresence>
-          {hasSubItems && hoveredId && (
+          {displaySubItems && (
             <motion.div
-              key={hoveredId}
+              key={displayId}
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 140, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-              className="absolute left-[68px] overflow-hidden"
+              className="absolute z-10 overflow-hidden rounded-r-2xl rounded-bl-2xl shadow-xl"
               style={{
-                top: `${panelTop}px`,
-                bottom: 0,
-                background:
-                  "linear-gradient(180deg, #7b5ba8 0%, #9173b8 30%, #a084c4 60%, #9173b8 100%)",
+                left: SIDEBAR_WIDTH - 1, // Prevent 1px pixel gap artifacts
+                top: HEADER_HEIGHT + 16 + panelTop,
+                height: "max-content",
+                minHeight: "160px",
+                backgroundColor: ACTIVE_BG,
               }}
             >
               <motion.nav
@@ -188,9 +239,9 @@ export function Sidebar() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -10, opacity: 0 }}
                 transition={{ duration: 0.16, delay: 0.04 }}
-                className="flex flex-col gap-0 px-2.5 pt-2.5"
+                className="flex flex-col gap-1 px-3 py-3"
               >
-                {hoveredItem!.subItems!.map((sub) => {
+                {displaySubItems.map((sub) => {
                   const isSubActive = location.pathname === sub.path;
                   return (
                     <Link
@@ -198,12 +249,12 @@ export function Sidebar() {
                       to={sub.path}
                       className={`
                         block px-3.5 py-3 rounded-lg
-                        text-[14px] font-semibold
+                        text-[15px] font-semibold tracking-wide
                         transition-all duration-150
                         ${
                           isSubActive
-                            ? "bg-white/20 text-white"
-                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                            ? "bg-white/20 text-white shadow-sm"
+                            : "text-white/75 hover:bg-white/10 hover:text-white"
                         }
                       `}
                     >
@@ -216,6 +267,6 @@ export function Sidebar() {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </>
   );
 }

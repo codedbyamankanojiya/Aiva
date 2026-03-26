@@ -17,7 +17,7 @@ export function AppLayout() {
         <Sidebar />
 
         {/* Main content area */}
-        <main className="flex-1 ml-20 flex flex-col">
+        <main className="flex-1 ml-[80px] flex flex-col w-full">
           <Navbar />
           <div className="flex-1 px-4 lg:px-8 pb-8">
             <Outlet />
