@@ -1,0 +1,796 @@
+{
+  "roles": [
+    {
+      "id": "software-engineer",
+      "title": "Software Engineer (SDE)",
+      "description": "You will solve coding problems and demonstrate strong logical thinking. This section measures your problem solving and coding efficiency.",
+      "tags": ["DSA", "Logic", "Optimization", "Complexity", "Coding", "JavaScript"],
+      "questions": [
+        {
+          "id": "se-1",
+          "level": "Beginner",
+          "question": "Can you explain the difference between an array and a linked list? When would you use one over the other?",
+          "type": "technical"
+        },
+        {
+          "id": "se-2",
+          "level": "Beginner",
+          "question": "What is the time complexity of binary search and why is it more efficient than linear search?",
+          "type": "technical"
+        },
+        {
+          "id": "se-3",
+          "level": "Intermediate",
+          "question": "How would you implement a LRU cache? Describe the data structures you would use and the time complexity of operations.",
+          "type": "coding"
+        },
+        {
+          "id": "se-4",
+          "level": "Intermediate",
+          "question": "Explain the concept of recursion and provide an example where it's more suitable than iteration.",
+          "type": "technical"
+        },
+        {
+          "id": "se-5",
+          "level": "Advanced",
+          "question": "Design a system for a URL shortener service like bit.ly. Discuss the architecture, database schema, and how you would handle scalability.",
+          "type": "system-design"
+        },
+        {
+          "id": "se-6",
+          "level": "Advanced",
+          "question": "How would you optimize a slow database query? Walk through your troubleshooting process and various optimization techniques.",
+          "type": "performance"
+        }
+      ]
+    },
+    {
+      "id": "web-developer",
+      "title": "Web Developer",
+      "description": "Frontend/backend development, frameworks, APIs, and web technologies. Focuses on UI/UX, responsiveness, and performance.",
+      "tags": ["HTML/CSS", "JavaScript", "React", "Node.js"],
+      "questions": [
+        {
+          "id": "wd-1",
+          "level": "Beginner",
+          "question": "What is the difference between let, const, and var in JavaScript? When would you use each?",
+          "type": "technical"
+        },
+        {
+          "id": "wd-2",
+          "level": "Beginner",
+          "question": "Explain the CSS box model and how margins, padding, and borders work together.",
+          "type": "technical"
+        },
+        {
+          "id": "wd-3",
+          "level": "Intermediate",
+          "question": "What is the Virtual DOM in React and how does it improve performance? Compare it with real DOM manipulation.",
+          "type": "technical"
+        },
+        {
+          "id": "wd-4",
+          "level": "Intermediate",
+          "question": "How would you implement authentication in a web application? Discuss JWT vs session-based authentication.",
+          "type": "technical"
+        },
+        {
+          "id": "wd-5",
+          "level": "Advanced",
+          "question": "Design a responsive e-commerce website architecture. Discuss the frontend framework choice, state management, and performance optimization strategies.",
+          "type": "system-design"
+        },
+        {
+          "id": "wd-6",
+          "level": "Advanced",
+          "question": "How would you implement real-time features like chat or notifications in a web application? Discuss WebSockets vs Server-Sent Events.",
+          "type": "technical"
+        }
+      ]
+    },
+    {
+      "id": "backend-developer",
+      "title": "Backend Developer",
+      "description": "You will work on server logic, APIs, and database handling in real scenarios. This section evaluates your ability to build secure and scalable systems.",
+      "tags": ["APIs", "Databases", "Security", "Performance", "Logic"],
+      "questions": [
+        {
+          "id": "bd-1",
+          "level": "Beginner",
+          "question": "What is REST and how does it differ from SOAP? When would you choose one over the other?",
+          "type": "technical"
+        },
+        {
+          "id": "bd-2",
+          "level": "Beginner",
+          "question": "Explain the difference between SQL and NoSQL databases. Give examples of when to use each.",
+          "type": "technical"
+        },
+        {
+          "id": "bd-3",
+          "level": "Intermediate",
+          "question": "How would you design a database schema for a social media platform? Discuss normalization, indexing, and relationships.",
+          "type": "database-design"
+        },
+        {
+          "id": "bd-4",
+          "level": "Intermediate",
+          "question": "What are microservices and how do they differ from monolithic architecture? Discuss the pros and cons.",
+          "type": "architecture"
+        },
+        {
+          "id": "bd-5",
+          "level": "Advanced",
+          "question": "Design a scalable payment processing system. Discuss security considerations, transaction handling, and compliance requirements.",
+          "type": "system-design"
+        },
+        {
+          "id": "bd-6",
+          "level": "Advanced",
+          "question": "How would you implement rate limiting and caching strategies for a high-traffic API? Discuss different approaches and trade-offs.",
+          "type": "performance"
+        }
+      ]
+    },
+    {
+      "id": "ui-ux-designer",
+      "title": "UI/UX Designer",
+      "description": "Design principles, portfolio review, user research, and design thinking for modern product teams.",
+      "tags": ["Design Systems", "User Research", "Prototyping", "Visual Design"],
+      "questions": [
+        {
+          "id": "ux-1",
+          "level": "Beginner",
+          "question": "What is the difference between UI and UX design? How do they work together in product development?",
+          "type": "conceptual"
+        },
+        {
+          "id": "ux-2",
+          "level": "Beginner",
+          "question": "Explain the importance of user research in the design process. What methods would you use?",
+          "type": "research"
+        },
+        {
+          "id": "ux-3",
+          "level": "Intermediate",
+          "question": "How would you conduct a usability test for a mobile app? Describe the process from planning to analysis.",
+          "type": "research"
+        },
+        {
+          "id": "ux-4",
+          "level": "Intermediate",
+          "question": "What is a design system and why is it important for large products? How would you create one?",
+          "type": "design-systems"
+        },
+        {
+          "id": "ux-5",
+          "level": "Advanced",
+          "question": "Design a complete user flow for a food delivery app from onboarding to order completion. Justify your design decisions.",
+          "type": "design-challenge"
+        },
+        {
+          "id": "ux-6",
+          "level": "Advanced",
+          "question": "How would you approach redesigning an existing product with poor user experience? What metrics would you track to measure improvement?",
+          "type": "strategy"
+        }
+      ]
+    },
+    {
+      "id": "app-developer",
+      "title": "App Developer",
+      "description": "Mobile development, platform-specific features, and app deployment across iOS and Android platforms.",
+      "tags": ["React Native", "Flutter", "iOS", "Android"],
+      "questions": [
+        {
+          "id": "ad-1",
+          "level": "Beginner",
+          "question": "What is the difference between native and cross-platform mobile development? When would you choose each?",
+          "type": "technical"
+        },
+        {
+          "id": "ad-2",
+          "level": "Beginner",
+          "question": "Explain the mobile app lifecycle. What are the different states an app can be in?",
+          "type": "technical"
+        },
+        {
+          "id": "ad-3",
+          "level": "Intermediate",
+          "question": "How would you handle offline functionality in a mobile app? Discuss data synchronization strategies.",
+          "type": "technical"
+        },
+        {
+          "id": "ad-4",
+          "level": "Intermediate",
+          "question": "What are the key considerations for mobile app performance optimization? Discuss memory management and battery usage.",
+          "type": "performance"
+        },
+        {
+          "id": "ad-5",
+          "level": "Advanced",
+          "question": "Design a mobile architecture for a social media app with real-time messaging, stories, and live streaming capabilities.",
+          "type": "system-design"
+        },
+        {
+          "id": "ad-6",
+          "level": "Advanced",
+          "question": "How would you implement secure mobile app authentication and data storage? Discuss platform-specific security features.",
+          "type": "security"
+        }
+      ]
+    },
+    {
+      "id": "devops-engineer",
+      "title": "DevOps Engineer",
+      "description": "CI/CD pipelines, cloud infrastructure, monitoring, and automation for scalable production systems.",
+      "tags": ["Docker", "Kubernetes", "AWS", "CI/CD"],
+      "questions": [
+        {
+          "id": "de-1",
+          "level": "Beginner",
+          "question": "What is DevOps and how does it differ from traditional software development? Explain the DevOps lifecycle.",
+          "type": "conceptual"
+        },
+        {
+          "id": "de-2",
+          "level": "Beginner",
+          "question": "What is Docker and why is it useful? How does it differ from virtual machines?",
+          "type": "technical"
+        },
+        {
+          "id": "de-3",
+          "level": "Intermediate",
+          "question": "Design a CI/CD pipeline for a web application. Discuss the stages, tools, and best practices.",
+          "type": "pipeline-design"
+        },
+        {
+          "id": "de-4",
+          "level": "Intermediate",
+          "question": "What is Infrastructure as Code (IaC)? How would you use tools like Terraform or CloudFormation?",
+          "type": "technical"
+        },
+        {
+          "id": "de-5",
+          "level": "Advanced",
+          "question": "Design a highly available microservices architecture using Kubernetes. Discuss service mesh, load balancing, and fault tolerance.",
+          "type": "system-design"
+        },
+        {
+          "id": "de-6",
+          "level": "Advanced",
+          "question": "How would you implement comprehensive monitoring and alerting for a distributed system? Discuss observability pillars.",
+          "type": "monitoring"
+        }
+      ]
+    },
+    {
+      "id": "data-scientist",
+      "title": "Data Scientist",
+      "description": "Machine learning, statistical analysis, data visualization, and modeling for data-driven decisions.",
+      "tags": ["Python", "Machine Learning", "Statistics", "Data Visualization"],
+      "questions": [
+        {
+          "id": "ds-1",
+          "level": "Beginner",
+          "question": "What is the difference between supervised and unsupervised learning? Give examples of each.",
+          "type": "technical"
+        },
+        {
+          "id": "ds-2",
+          "level": "Beginner",
+          "question": "Explain the bias-variance tradeoff in machine learning. How do you find the right balance?",
+          "type": "technical"
+        },
+        {
+          "id": "ds-3",
+          "level": "Intermediate",
+          "question": "How would you handle missing data in a dataset? Discuss different strategies and their implications.",
+          "type": "data-processing"
+        },
+        {
+          "id": "ds-4",
+          "level": "Intermediate",
+          "question": "What is feature engineering and why is it important? Give examples of feature engineering techniques.",
+          "type": "technical"
+        },
+        {
+          "id": "ds-5",
+          "level": "Advanced",
+          "question": "Design a machine learning pipeline for a recommendation system. Discuss data collection, model selection, and evaluation metrics.",
+          "type": "ml-design"
+        },
+        {
+          "id": "ds-6",
+          "level": "Advanced",
+          "question": "How would you deploy a machine learning model to production? Discuss model serving, monitoring, and retraining strategies.",
+          "type": "mlops"
+        }
+      ]
+    },
+    {
+      "id": "product-manager",
+      "title": "Product Manager",
+      "description": "Product strategy, user stories, roadmap planning, and stakeholder management for tech products.",
+      "tags": ["Strategy", "Analytics", "Communication", "Leadership"],
+      "questions": [
+        {
+          "id": "pm-1",
+          "level": "Beginner",
+          "question": "What is the role of a Product Manager? How do you prioritize features in a product roadmap?",
+          "type": "conceptual"
+        },
+        {
+          "id": "pm-2",
+          "level": "Beginner",
+          "question": "How do you write effective user stories? What are the key components of a good user story?",
+          "type": "technical"
+        },
+        {
+          "id": "pm-3",
+          "level": "Intermediate",
+          "question": "How would you conduct market research for a new product? Discuss different research methods and tools.",
+          "type": "research"
+        },
+        {
+          "id": "pm-4",
+          "level": "Intermediate",
+          "question": "Describe a time when you had to make a difficult product decision with limited data. How did you approach it?",
+          "type": "behavioral"
+        },
+        {
+          "id": "pm-5",
+          "level": "Advanced",
+          "question": "Design a product strategy for launching a new fintech app. Discuss market analysis, competitive landscape, and go-to-market plan.",
+          "type": "strategy"
+        },
+        {
+          "id": "pm-6",
+          "level": "Advanced",
+          "question": "How would you manage conflicting priorities between engineering, sales, and marketing teams? Provide specific examples.",
+          "type": "leadership"
+        }
+      ]
+    },
+    {
+      "id": "hr-recruiter",
+      "title": "HR / Recruiter",
+      "description": "Screening interviews, candidate evaluation, and behavioral probing with structured notes.",
+      "tags": ["Behavioral Questions", "Evaluation", "Communication", "Decision Making"],
+      "questions": [
+        {
+          "id": "hr-1",
+          "level": "Beginner",
+          "question": "What are the key qualities you look for when screening technical candidates? How do you evaluate technical skills?",
+          "type": "technical"
+        },
+        {
+          "id": "hr-2",
+          "level": "Beginner",
+          "question": "How do you structure an effective technical interview? What are the different stages and their purposes?",
+          "type": "process"
+        },
+        {
+          "id": "hr-3",
+          "level": "Intermediate",
+          "question": "Describe your approach to evaluating cultural fit during interviews. What questions do you ask and what do you look for?",
+          "type": "behavioral"
+        },
+        {
+          "id": "hr-4",
+          "level": "Intermediate",
+          "question": "How do you handle situations where multiple stakeholders have different opinions about a candidate? How do you facilitate decision making?",
+          "type": "conflict-resolution"
+        },
+        {
+          "id": "hr-5",
+          "level": "Advanced",
+          "question": "Design a comprehensive hiring process for scaling a tech startup from 50 to 500 employees. Discuss interview stages, evaluation criteria, and metrics.",
+          "type": "process-design"
+        },
+        {
+          "id": "hr-6",
+          "level": "Advanced",
+          "question": "How would you improve diversity and inclusion in your hiring process? Discuss specific strategies and measurable outcomes.",
+          "type": "strategy"
+        }
+      ]
+    },
+    {
+      "id": "behavioral-upskilling",
+      "title": "Behavioral Upskilling",
+      "description": "Improve workplace behavior, professional conduct, and interpersonal skills for better team dynamics.",
+      "tags": ["Team Collaboration", "Professional Etiquette", "Conflict Resolution"],
+      "questions": [
+        {
+          "id": "bu-1",
+          "level": "Beginner",
+          "question": "Describe a situation where you had to work with a difficult team member. How did you handle it?",
+          "type": "behavioral"
+        },
+        {
+          "id": "bu-2",
+          "level": "Beginner",
+          "question": "What does professional communication mean to you? How do you ensure effective communication in a remote team?",
+          "type": "communication"
+        },
+        {
+          "id": "bu-3",
+          "level": "Intermediate",
+          "question": "How do you give and receive constructive feedback? Provide examples from your experience.",
+          "type": "interpersonal"
+        },
+        {
+          "id": "bu-4",
+          "level": "Intermediate",
+          "question": "Describe a time when you had to adapt to a major change at work. How did you manage the transition?",
+          "type": "adaptability"
+        },
+        {
+          "id": "bu-5",
+          "level": "Advanced",
+          "question": "How would you mediate a conflict between two team members with different working styles and opinions?",
+          "type": "conflict-resolution"
+        },
+        {
+          "id": "bu-6",
+          "level": "Advanced",
+          "question": "What strategies do you use to build trust and rapport with new team members quickly?",
+          "type": "team-building"
+        }
+      ]
+    },
+    {
+      "id": "presentation-skills",
+      "title": "Presentation Skills",
+      "description": "Master public speaking, slide design, and audience engagement for impactful presentations.",
+      "tags": ["Confident Speaking", "Engaging Delivery", "Visual Storytelling"],
+      "questions": [
+        {
+          "id": "ps-1",
+          "level": "Beginner",
+          "question": "How do you structure a presentation for maximum impact? What are the key elements?",
+          "type": "technical"
+        },
+        {
+          "id": "ps-2",
+          "level": "Beginner",
+          "question": "What techniques do you use to manage presentation anxiety? How do you stay confident?",
+          "type": "confidence"
+        },
+        {
+          "id": "ps-3",
+          "level": "Intermediate",
+          "question": "How do you tailor your presentation style for different audiences (technical vs non-technical)?",
+          "type": "adaptation"
+        },
+        {
+          "id": "ps-4",
+          "level": "Intermediate",
+          "question": "What are the principles of effective slide design? How do you avoid common presentation mistakes?",
+          "type": "design"
+        },
+        {
+          "id": "ps-5",
+          "level": "Advanced",
+          "question": "How would you handle a difficult question from the audience during a presentation? What's your strategy?",
+          "type": "handling-questions"
+        },
+        {
+          "id": "ps-6",
+          "level": "Advanced",
+          "question": "Describe how you would prepare and deliver a high-stakes presentation to executive leadership.",
+          "type": "executive-presentation"
+        }
+      ]
+    },
+    {
+      "id": "communication-boost",
+      "title": "Communication Boost",
+      "description": "Enhance verbal and non-verbal communication for professional settings and interviews.",
+      "tags": ["Clear Expression", "Active Listening", "Body Language"],
+      "questions": [
+        {
+          "id": "cb-1",
+          "level": "Beginner",
+          "question": "What is active listening and why is it important in professional communication?",
+          "type": "technical"
+        },
+        {
+          "id": "cb-2",
+          "level": "Beginner",
+          "question": "How does body language impact communication? What are some positive body language cues?",
+          "type": "non-verbal"
+        },
+        {
+          "id": "cb-3",
+          "level": "Intermediate",
+          "question": "How do you tailor your communication style when explaining complex technical concepts to non-technical stakeholders?",
+          "type": "adaptation"
+        },
+        {
+          "id": "cb-4",
+          "level": "Intermediate",
+          "question": "What strategies do you use to ensure your written communication (emails, reports) is clear and effective?",
+          "type": "written-communication"
+        },
+        {
+          "id": "cb-5",
+          "level": "Advanced",
+          "question": "How do you handle communication in cross-cultural teams? What considerations are important?",
+          "type": "cultural-communication"
+        },
+        {
+          "id": "cb-6",
+          "level": "Advanced",
+          "question": "Describe your approach to communicating bad news or difficult decisions to a team.",
+          "type": "difficult-conversations"
+        }
+      ]
+    },
+    {
+      "id": "leadership-skills",
+      "title": "Leadership Skills",
+      "description": "Develop leadership qualities, team management, and decision-making abilities.",
+      "tags": ["Team Motivation", "Strategic Thinking", "Decision Making"],
+      "questions": [
+        {
+          "id": "ls-1",
+          "level": "Beginner",
+          "question": "What does leadership mean to you? How do you define a good leader?",
+          "type": "philosophy"
+        },
+        {
+          "id": "ls-2",
+          "level": "Beginner",
+          "question": "How do you motivate team members who are feeling demotivated or disengaged?",
+          "type": "motivation"
+        },
+        {
+          "id": "ls-3",
+          "level": "Intermediate",
+          "question": "Describe your decision-making process when faced with incomplete information or tight deadlines.",
+          "type": "decision-making"
+        },
+        {
+          "id": "ls-4",
+          "level": "Intermediate",
+          "question": "How do you delegate tasks effectively? What factors do you consider when assigning responsibilities?",
+          "type": "delegation"
+        },
+        {
+          "id": "ls-5",
+          "level": "Advanced",
+          "question": "How would you lead a team through a major organizational change or crisis?",
+          "type": "change-management"
+        },
+        {
+          "id": "ls-6",
+          "level": "Advanced",
+          "question": "What strategies do you use to develop leadership skills in your team members?",
+          "type": "mentorship"
+        }
+      ]
+    },
+    {
+      "id": "negotiation-skills",
+      "title": "Negotiation Skills",
+      "description": "Learn effective negotiation techniques for business and career advancement.",
+      "tags": ["Win-Win Outcomes", "Persuasion", "Conflict Management"],
+      "questions": [
+        {
+          "id": "ns-1",
+          "level": "Beginner",
+          "question": "What are the key principles of effective negotiation? How do you prepare for a negotiation?",
+          "type": "technical"
+        },
+        {
+          "id": "ns-2",
+          "level": "Beginner",
+          "question": "How do you identify your BATNA (Best Alternative to a Negotiated Agreement) and why is it important?",
+          "type": "strategy"
+        },
+        {
+          "id": "ns-3",
+          "level": "Intermediate",
+          "question": "Describe a time when you successfully negotiated a win-win outcome. What was your approach?",
+          "type": "experience"
+        },
+        {
+          "id": "ns-4",
+          "level": "Intermediate",
+          "question": "How do you handle negotiations when you have less power or leverage than the other party?",
+          "type": "tactics"
+        },
+        {
+          "id": "ns-5",
+          "level": "Advanced",
+          "question": "How would you negotiate a salary increase or promotion? What research and preparation would you do?",
+          "type": "career-negotiation"
+        },
+        {
+          "id": "ns-6",
+          "level": "Advanced",
+          "question": "What techniques do you use to overcome common negotiation tactics like anchoring or good cop/bad cop?",
+          "type": "advanced-tactics"
+        }
+      ]
+    },
+    {
+      "id": "time-management",
+      "title": "Time Management",
+      "description": "Master productivity techniques and efficient work habits for peak performance.",
+      "tags": ["Prioritization", "Focus Techniques", "Work-Life Balance"],
+      "questions": [
+        {
+          "id": "tm-1",
+          "level": "Beginner",
+          "question": "How do you prioritize your tasks when everything seems urgent? What methods do you use?",
+          "type": "prioritization"
+        },
+        {
+          "id": "tm-2",
+          "level": "Beginner",
+          "question": "What time management techniques have you found most effective? (Pomodoro, time blocking, etc.)",
+          "type": "techniques"
+        },
+        {
+          "id": "tm-3",
+          "level": "Intermediate",
+          "question": "How do you handle interruptions and maintain focus during deep work sessions?",
+          "type": "focus"
+        },
+        {
+          "id": "tm-4",
+          "level": "Intermediate",
+          "question": "Describe your approach to managing multiple projects with competing deadlines.",
+          "type": "project-management"
+        },
+        {
+          "id": "tm-5",
+          "level": "Advanced",
+          "question": "How do you maintain work-life balance while working on demanding projects or during crunch times?",
+          "type": "balance"
+        },
+        {
+          "id": "tm-6",
+          "level": "Advanced",
+          "question": "What strategies do you use to avoid procrastination and maintain consistent productivity?",
+          "type": "productivity"
+        }
+      ]
+    },
+    {
+      "id": "stress-management",
+      "title": "Stress Management",
+      "description": "Develop coping strategies and maintain mental well-being under pressure.",
+      "tags": ["Resilience", "Mindfulness", "Work-Life Balance"],
+      "questions": [
+        {
+          "id": "sm-1",
+          "level": "Beginner",
+          "question": "How do you recognize when you're experiencing stress? What are your early warning signs?",
+          "type": "self-awareness"
+        },
+        {
+          "id": "sm-2",
+          "level": "Beginner",
+          "question": "What techniques do you use to manage stress in the moment? How effective are they?",
+          "type": "coping-strategies"
+        },
+        {
+          "id": "sm-3",
+          "level": "Intermediate",
+          "question": "How do you maintain performance and decision-making quality under high-pressure situations?",
+          "type": "performance"
+        },
+        {
+          "id": "sm-4",
+          "level": "Intermediate",
+          "question": "What boundaries do you set to prevent burnout? How do you enforce them?",
+          "type": "boundaries"
+        },
+        {
+          "id": "sm-5",
+          "level": "Advanced",
+          "question": "How do you help team members who are showing signs of stress or burnout?",
+          "type": "team-support"
+        },
+        {
+          "id": "sm-6",
+          "level": "Advanced",
+          "question": "Describe your long-term strategy for maintaining mental health and resilience in a demanding career.",
+          "type": "long-term-wellness"
+        }
+      ]
+    },
+    {
+      "id": "networking-skills",
+      "title": "Networking Skills",
+      "description": "Build professional relationships and expand your network for career growth.",
+      "tags": ["Relationship Building", "Professional Connections", "Opportunity Creation"],
+      "questions": [
+        {
+          "id": "ns-1",
+          "level": "Beginner",
+          "question": "How do you approach networking events or conferences? What's your strategy for making meaningful connections?",
+          "type": "approach"
+        },
+        {
+          "id": "ns-2",
+          "level": "Beginner",
+          "question": "What's the best way to follow up after meeting someone new? How do you maintain professional relationships?",
+          "type": "follow-up"
+        },
+        {
+          "id": "ns-3",
+          "level": "Intermediate",
+          "question": "How do you network effectively in virtual or remote environments? What tools and platforms work best?",
+          "type": "digital-networking"
+        },
+        {
+          "id": "ns-4",
+          "level": "Intermediate",
+          "question": "How do you provide value to your professional network rather than just asking for favors?",
+          "type": "value-proposition"
+        },
+        {
+          "id": "ns-5",
+          "level": "Advanced",
+          "question": "How would you build a professional network from scratch in a new industry or city?",
+          "type": "network-building"
+        },
+        {
+          "id": "ns-6",
+          "level": "Advanced",
+          "question": "What strategies do you use to leverage your network for career opportunities without seeming transactional?",
+          "type": "career-advancement"
+        }
+      ]
+    },
+    {
+      "id": "critical-thinking",
+      "title": "Critical Thinking",
+      "description": "Sharpen reasoning, assumptions checking, and decision clarity under pressure.",
+      "tags": ["Clear Reasoning", "Better Decisions", "Stronger Arguments"],
+      "questions": [
+        {
+          "id": "ct-1",
+          "level": "Beginner",
+          "question": "How do you identify and challenge your own assumptions when analyzing a problem?",
+          "type": "assumptions"
+        },
+        {
+          "id": "ct-2",
+          "level": "Beginner",
+          "question": "What questions do you ask to evaluate the credibility of information or sources?",
+          "type": "evaluation"
+        },
+        {
+          "id": "ct-3",
+          "level": "Intermediate",
+          "question": "Describe your process for breaking down complex problems into manageable components.",
+          "type": "problem-solving"
+        },
+        {
+          "id": "ct-4",
+          "level": "Intermediate",
+          "question": "How do you recognize and avoid cognitive biases in your decision-making?",
+          "type": "biases"
+        },
+        {
+          "id": "ct-5",
+          "level": "Advanced",
+          "question": "How would you analyze a business proposal that looks good on the surface but might have hidden flaws?",
+          "type": "critical-analysis"
+        },
+        {
+          "id": "ct-6",
+          "level": "Advanced",
+          "question": "What frameworks or mental models do you use to improve your critical thinking and decision quality?",
+          "type": "frameworks"
+        }
+      ]
+    }
+  ]
+}

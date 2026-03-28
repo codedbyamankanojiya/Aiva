@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { GlassCard } from "@/components/common/GlassCard";
@@ -14,138 +14,6 @@ interface Role {
   description: string;
   tags: string[];
 }
-
-const jobInterviewRoles: Role[] = [
-  {
-    id: "software-engineer",
-    title: "Software Engineer (SDE)",
-    description:
-      "You will solve coding problems and demonstrate strong logical thinking. This section measures your problem solving and coding efficiency.",
-    tags: ["DSA", "Logic", "Optimization", "Complexity", "Coding", "JavaScript"],
-  },
-  {
-    id: "web-developer",
-    title: "Web Developer",
-    description:
-      "Frontend/backend development, frameworks, APIs, and web technologies. Focuses on UI/UX, responsiveness, and performance.",
-    tags: ["HTML/CSS", "JavaScript", "React", "Node.js"],
-  },
-  {
-    id: "backend-developer",
-    title: "Backend Developer",
-    description:
-      "You will work on server logic, APIs, and database handling in real scenarios. This section evaluates your ability to build secure and scalable systems.",
-    tags: ["APIs", "Databases", "Security", "Performance", "Logic"],
-  },
-  {
-    id: "ui-ux-designer",
-    title: "UI/UX Designer",
-    description:
-      "Design principles, portfolio review, user research, and design thinking for modern product teams.",
-    tags: ["Design Systems", "User Research", "Prototyping", "Visual Design"],
-  },
-  {
-    id: "app-developer",
-    title: "App Developer",
-    description:
-      "Mobile development, platform-specific features, and app deployment across iOS and Android platforms.",
-    tags: ["React Native", "Flutter", "iOS", "Android"],
-  },
-  {
-    id: "devops-engineer",
-    title: "DevOps Engineer",
-    description:
-      "CI/CD pipelines, cloud infrastructure, monitoring, and automation for scalable production systems.",
-    tags: ["Docker", "Kubernetes", "AWS", "CI/CD"],
-  },
-  {
-    id: "data-scientist",
-    title: "Data Scientist",
-    description:
-      "Machine learning, statistical analysis, data visualization, and modeling for data-driven decisions.",
-    tags: ["Python", "Machine Learning", "Statistics", "Data Visualization"],
-  },
-  {
-    id: "product-manager",
-    title: "Product Manager",
-    description:
-      "Product strategy, user stories, roadmap planning, and stakeholder management for tech products.",
-    tags: ["Strategy", "Analytics", "Communication", "Leadership"],
-  },
-  {
-    id: "hr-recruiter",
-    title: "HR / Recruiter",
-    description:
-      "Screening interviews, candidate evaluation, and behavioral probing with structured notes.",
-    tags: ["Behavioral Questions", "Evaluation", "Communication", "Decision Making"],
-  },
-];
-
-const vivaSkillTopics: Role[] = [
-  {
-    id: "behavioral-upskilling",
-    title: "Behavioral Upskilling",
-    description:
-      "Improve workplace behavior, professional conduct, and interpersonal skills for better team dynamics.",
-    tags: ["Team Collaboration", "Professional Etiquette", "Conflict Resolution"],
-  },
-  {
-    id: "presentation-skills",
-    title: "Presentation Skills",
-    description:
-      "Master public speaking, slide design, and audience engagement for impactful presentations.",
-    tags: ["Confident Speaking", "Engaging Delivery", "Visual Storytelling"],
-  },
-  {
-    id: "communication-boost",
-    title: "Communication Boost",
-    description:
-      "Enhance verbal and non-verbal communication for professional settings and interviews.",
-    tags: ["Clear Expression", "Active Listening", "Body Language"],
-  },
-  {
-    id: "leadership-skills",
-    title: "Leadership Skills",
-    description:
-      "Develop leadership qualities, team management, and decision-making abilities.",
-    tags: ["Team Motivation", "Strategic Thinking", "Decision Making"],
-  },
-  {
-    id: "negotiation-skills",
-    title: "Negotiation Skills",
-    description:
-      "Learn effective negotiation techniques for business and career advancement.",
-    tags: ["Win-Win Outcomes", "Persuasion", "Conflict Management"],
-  },
-  {
-    id: "time-management",
-    title: "Time Management",
-    description:
-      "Master productivity techniques and efficient work habits for peak performance.",
-    tags: ["Prioritization", "Focus Techniques", "Work-Life Balance"],
-  },
-  {
-    id: "stress-management",
-    title: "Stress Management",
-    description:
-      "Develop coping strategies and maintain mental well-being under pressure.",
-    tags: ["Resilience", "Mindfulness", "Work-Life Balance"],
-  },
-  {
-    id: "networking-skills",
-    title: "Networking Skills",
-    description:
-      "Build professional relationships and expand your network for career growth.",
-    tags: ["Relationship Building", "Professional Connections", "Opportunity Creation"],
-  },
-  {
-    id: "critical-thinking",
-    title: "Critical Thinking",
-    description:
-      "Sharpen reasoning, assumptions checking, and decision clarity under pressure.",
-    tags: ["Clear Reasoning", "Better Decisions", "Stronger Arguments"],
-  },
-];
 
 const categories = [
   {
@@ -163,10 +31,11 @@ const categories = [
 /* ── Role card component ─────────────────────────────────── */
 function RoleCard({ role }: { role: Role }) {
   const navigate = useNavigate();
-  const { setRole } = useInterview();
+  const { setRole, setRoleId } = useInterview();
 
   const handleStart = () => {
     setRole(role.title);
+    setRoleId(role.id);
     navigate("/interview");
   };
 
@@ -205,15 +74,59 @@ const fadeUp = {
 export function Practice() {
   const [activeTab, setActiveTab] = useState("interview");
   const [search, setSearch] = useState("");
+  const [allRoles, setAllRoles] = useState<Role[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const currentTopics =
-    activeTab === "interview" ? jobInterviewRoles : vivaSkillTopics;
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/roles");
+        const data = await response.json();
+        if (data.roles) {
+          setAllRoles(data.roles);
+        }
+      } catch (error) {
+        console.error('Failed to fetch roles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Filter roles based on active tab
+  const currentTopics = allRoles.filter((role: Role) => {
+    if (activeTab === "interview") {
+      // Technical roles (first 9 roles)
+      const interviewRoleIds = [
+        "software-engineer", "web-developer", "backend-developer", "ui-ux-designer",
+        "app-developer", "devops-engineer", "data-scientist", "product-manager", "hr-recruiter"
+      ];
+      return interviewRoleIds.includes(role.id);
+    } else {
+      // Skill development roles (remaining roles)
+      const vivaRoleIds = [
+        "behavioral-upskilling", "presentation-skills", "communication-boost", "leadership-skills",
+        "negotiation-skills", "time-management", "stress-management", "networking-skills", "critical-thinking"
+      ];
+      return vivaRoleIds.includes(role.id);
+    }
+  });
 
   const filtered = currentTopics.filter(
-    (r) =>
+    (r: Role) =>
       r.title.toLowerCase().includes(search.toLowerCase()) ||
-      r.tags.some((t) => t.toLowerCase().includes(search.toLowerCase())),
+      r.tags.some((t: string) => t.toLowerCase().includes(search.toLowerCase())),
   );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Loading roles...</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -266,7 +179,7 @@ export function Practice() {
           exit="hidden"
           className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
         >
-          {filtered.map((role) => (
+          {filtered.map((role: Role) => (
             <motion.div key={role.id} variants={fadeUp}>
               <RoleCard role={role} />
             </motion.div>
