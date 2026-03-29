@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type SessionStatus = "idle" | "setup" | "active" | "completed";
 
@@ -35,7 +30,6 @@ interface InterviewContextValue {
   setElapsed: (seconds: number) => void;
   setQuestions: (questions: Question[]) => void;
   nextQuestion: () => void;
-  previousQuestion: () => void;
   reset: () => void;
 }
 
@@ -69,10 +63,6 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
       ...s, 
       currentQuestionIndex: Math.min(s.currentQuestionIndex + 1, s.questions.length - 1)
     })),
-    previousQuestion: () => setState((s) => ({ 
-      ...s, 
-      currentQuestionIndex: Math.max(s.currentQuestionIndex - 1, 0)
-    })),
     reset: () => setState(defaults),
   };
 
@@ -88,3 +78,4 @@ export function useInterview() {
   if (!ctx) throw new Error("useInterview must be used within InterviewProvider");
   return ctx;
 }
+
