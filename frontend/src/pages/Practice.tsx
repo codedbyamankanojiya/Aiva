@@ -6,6 +6,7 @@ import { Button } from "@/components/common/Button";
 import { TagBadge } from "@/components/common/TagBadge";
 import { Input } from "@/components/common/Input";
 import { useInterview } from "@/context/InterviewContext";
+import { Search, Briefcase, Users, TrendingUp, Star, Clock, ArrowRight } from "lucide-react";
 
 /* ── Data ────────────────────────────────────────────────── */
 interface Role {
@@ -20,11 +21,15 @@ const categories = [
     id: "interview",
     label: "Job Interview Preparation",
     sub: "Role-based mock interviews and domain-specific drills",
+    icon: Briefcase,
+    color: "from-blue-500 to-indigo-600"
   },
   {
     id: "viva",
-    label: "Viva / communication",
+    label: "Viva & Communication",
     sub: "Behavioral, communication, leadership, and productivity coaching",
+    icon: Users,
+    color: "from-purple-500 to-pink-600"
   },
 ];
 
@@ -36,29 +41,71 @@ function RoleCard({ role }: { role: Role }) {
   const handleStart = () => {
     setRole(role.title);
     setRoleId(role.id);
-    navigate("/interview");
+    
+    // Generate random section code
+    const sectionCode = generateSectionCode();
+    
+    // Navigate with random section code
+    navigate(`/interview?section=${sectionCode}`);
   };
 
   return (
-    <GlassCard variant="blue" className="flex flex-col justify-between h-full">
-      <div>
-        <h3 className="text-base font-bold text-gray-800 mb-2">{role.title}</h3>
-        <p className="text-xs text-gray-500 leading-relaxed mb-4">
-          {role.description}
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {role.tags.map((tag) => (
-            <TagBadge key={tag} label={tag} variant="purple" />
-          ))}
+    <motion.div
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
+      <GlassCard variant="blue" className="flex flex-col justify-between h-full group hover:shadow-xl transition-all duration-300">
+        <div>
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="text-lg font-bold text-gray-800 group-hover:text-aiva-purple transition-colors">
+              {role.title}
+            </h3>
+            <div className="w-10 h-10 rounded-lg bg-aiva-purple/10 flex items-center justify-center group-hover:bg-aiva-purple/20 transition-colors">
+              <Briefcase size={18} className="text-aiva-purple" />
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">
+            {role.description}
+          </p>
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {role.tags.slice(0, 3).map((tag) => (
+              <TagBadge key={tag} label={tag} variant="purple" />
+            ))}
+            {role.tags.length > 3 && (
+              <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded-full">
+                +{role.tags.length - 3} more
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="mt-4 flex justify-end">
-        <Button size="sm" onClick={handleStart}>
-          Start
-        </Button>
-      </div>
-    </GlassCard>
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Clock size={12} />
+            <span>15-30 min</span>
+          </div>
+          <Button 
+            size="sm" 
+            onClick={handleStart}
+            className="group-hover:bg-aiva-purple transition-colors flex items-center gap-2"
+          >
+            Start
+            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </Button>
+        </div>
+      </GlassCard>
+    </motion.div>
   );
+}
+
+/* ── Random Section Code Generator ────────────────────────── */
+function generateSectionCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
 
 /* ── Page ─────────────────────────────────────────────────── */
@@ -80,13 +127,18 @@ export function Practice() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
+        // Fetch from FastAPI backend
         const response = await fetch("http://localhost:8000/api/roles");
         const data = await response.json();
+        
         if (data.roles) {
           setAllRoles(data.roles);
+        } else {
+          setAllRoles([]);
         }
       } catch (error) {
         console.error('Failed to fetch roles:', error);
+        setAllRoles([]);
       } finally {
         setLoading(false);
       }
@@ -122,8 +174,11 @@ export function Practice() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading roles...</div>
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="w-12 h-12 rounded-full bg-aiva-purple/20 flex items-center justify-center">
+          <div className="w-6 h-6 bg-aiva-purple rounded-full animate-pulse" />
+        </div>
+        <div className="text-gray-500">Loading amazing roles...</div>
       </div>
     );
   }
@@ -133,41 +188,57 @@ export function Practice() {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-8"
     >
+
       {/* Search */}
-      <motion.div variants={fadeUp} className="max-w-md">
-        <Input
-          icon
-          placeholder="Search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <motion.div variants={fadeUp} className="max-w-md mx-auto">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Input
+            placeholder="Search roles, skills, or keywords..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
       </motion.div>
 
       {/* Category tabs */}
-      <motion.div variants={fadeUp} className="flex gap-3 overflow-x-auto">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveTab(cat.id)}
-            className={`flex-shrink-0 px-5 py-3 rounded-xl text-sm font-medium transition-all ${
-              activeTab === cat.id
-                ? "bg-gradient-to-r from-aiva-purple to-aiva-indigo text-white shadow-glass"
-                : "glass-card text-gray-600 hover:bg-white/30 cursor-pointer"
-            }`}
-          >
-            <span className="font-semibold">{cat.label}</span>
-            <br />
-            <span className="text-[11px] opacity-80">{cat.sub}</span>
-          </button>
-        ))}
+      <motion.div variants={fadeUp} className="flex gap-4 overflow-x-auto justify-center">
+        {categories.map((cat) => {
+          const Icon = cat.icon;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setActiveTab(cat.id)}
+              className={`flex-shrink-0 px-6 py-4 rounded-2xl text-sm font-medium transition-all duration-300 ${
+                activeTab === cat.id
+                  ? `bg-gradient-to-r ${cat.color} text-white shadow-lg transform scale-105`
+                  : "glass-card text-gray-600 hover:bg-white/40 cursor-pointer border border-white/20"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Icon size={20} />
+                <div className="text-left">
+                  <div className="font-semibold">{cat.label}</div>
+                  <div className="text-xs opacity-80 mt-0.5">{cat.sub}</div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </motion.div>
 
-      {/* Section label */}
-      <motion.h2 variants={fadeUp} className="text-xl font-bold text-gray-800">
-        {activeTab === "interview" ? "Tech Roles" : "Skill Development"}
-      </motion.h2>
+      {/* Results count and filter */}
+      <motion.div variants={fadeUp} className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">
+          {activeTab === "interview" ? "Tech Roles" : "Skill Development"}
+        </h2>
+        <div className="text-sm text-gray-500">
+          {filtered.length} {filtered.length === 1 ? 'role' : 'roles'} found
+        </div>
+      </motion.div>
 
       {/* Role cards grid */}
       <AnimatePresence mode="wait">
@@ -177,7 +248,7 @@ export function Practice() {
           initial="hidden"
           animate="show"
           exit="hidden"
-          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {filtered.map((role: Role) => (
             <motion.div key={role.id} variants={fadeUp}>
@@ -186,6 +257,20 @@ export function Practice() {
           ))}
         </motion.div>
       </AnimatePresence>
+
+      {/* Empty state */}
+      {filtered.length === 0 && (
+        <motion.div 
+          variants={fadeUp}
+          className="text-center py-12"
+        >
+          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">No roles found</h3>
+          <p className="text-gray-500">Try adjusting your search or browse different categories</p>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

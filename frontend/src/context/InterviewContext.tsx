@@ -16,7 +16,6 @@ interface InterviewState {
   status: SessionStatus;
   elapsedSeconds: number;
   questions: Question[];
-  currentQuestionIndex: number;
   roleId: string;
 }
 
@@ -29,8 +28,8 @@ interface InterviewContextValue {
   setStatus: (status: SessionStatus) => void;
   setElapsed: (seconds: number) => void;
   setQuestions: (questions: Question[]) => void;
-  nextQuestion: () => void;
   reset: () => void;
+  resetForNewSession: () => void;
 }
 
 const defaults: InterviewState = {
@@ -40,7 +39,6 @@ const defaults: InterviewState = {
   status: "idle",
   elapsedSeconds: 0,
   questions: [],
-  currentQuestionIndex: 0,
   roleId: "",
 };
 
@@ -59,11 +57,14 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
     setElapsed: (elapsedSeconds) =>
       setState((s) => ({ ...s, elapsedSeconds })),
     setQuestions: (questions) => setState((s) => ({ ...s, questions })),
-    nextQuestion: () => setState((s) => ({ 
-      ...s, 
-      currentQuestionIndex: Math.min(s.currentQuestionIndex + 1, s.questions.length - 1)
-    })),
     reset: () => setState(defaults),
+    resetForNewSession: () => setState((s) => ({
+      ...defaults,
+      role: s.role,
+      roleId: s.roleId,
+      level: s.level,
+      language: s.language
+    })),
   };
 
   return (
