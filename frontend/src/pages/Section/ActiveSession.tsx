@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
@@ -21,6 +21,8 @@ export function Session() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [hasPlayedFirstQuestion, setHasPlayedFirstQuestion] = useState(false);
+  const hasInitialized = useRef(false);
   
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
@@ -72,6 +74,14 @@ export function Session() {
 
   // Always fetch fresh questions when component mounts
   useEffect(() => {
+    // Prevent multiple initializations using ref
+    if (hasInitialized.current) {
+      console.log('Already initialized, skipping...');
+      return;
+    }
+
+    console.log('Initializing questions fetch...');
+
     const fetchQuestions = async () => {
       if (state.roleId) {
         setLoading(true);
@@ -83,9 +93,11 @@ export function Session() {
           if (data.questions) {
             setQuestions(data.questions);
             
-            // Trigger TTS for the first question
-            if (data.questions.length > 0) {
+            // Play TTS for first question only once
+            if (data.questions.length > 0 && !hasPlayedFirstQuestion) {
+              console.log('Playing first question TTS...');
               await playQuestionAudio(data.questions[0].question);
+              setHasPlayedFirstQuestion(true);
             }
           } else {
             setQuestions([]);
@@ -100,7 +112,8 @@ export function Session() {
     };
 
     fetchQuestions();
-  }, [state.roleId, state.level]);
+    hasInitialized.current = true;
+  }, [state.roleId, state.level]); 
 
   // Function to play question audio using TTS
   const playQuestionAudio = async (questionText: string) => {
@@ -112,44 +125,9 @@ export function Session() {
 
     setIsSpeaking(true);
     
-    try {
-      // First try ElevenLabs TTS
-      const response = await fetch('http://localhost:8000/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: questionText,
-        }),
-      });
-
-      if (response.ok) {
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-          setIsSpeaking(false);
-        };
-        
-        audio.onerror = () => {
-          URL.revokeObjectURL(audioUrl);
-          setIsSpeaking(false);
-        };
-        
-        await audio.play();
-      } else {
-        // If ElevenLabs fails, fall back to browser's built-in speech synthesis
-        console.warn('ElevenLabs TTS failed, falling back to browser speech synthesis');
-        await playBrowserTTS(questionText);
-      }
-    } catch (error) {
-      console.error('Error playing question audio:', error);
-      // Fallback to browser's built-in speech synthesis
-      await playBrowserTTS(questionText);
-    }
+    // Use browser's built-in speech synthesis directly
+    console.log('Using browser TTS for question:', questionText);
+    await playBrowserTTS(questionText);
   };
 
   // Fallback function using browser's built-in speech synthesis
