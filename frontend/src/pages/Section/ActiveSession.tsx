@@ -23,7 +23,7 @@ export function Session() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [hasPlayedFirstQuestion, setHasPlayedFirstQuestion] = useState(false);
   const hasInitialized = useRef(false);
-  
+
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
 
@@ -60,7 +60,7 @@ export function Session() {
 
   // Navigate to next question
   const handleNextQuestion = async () => {
-    if (!isLastQuestion) {
+    if (!isLastQuestion && !isSpeaking) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       
@@ -72,42 +72,25 @@ export function Session() {
     }
   };
 
-  // Always fetch fresh questions when component mounts
+  // Fetch questions once when component mounts
   useEffect(() => {
-    // Prevent multiple initializations using ref
-    if (hasInitialized.current) {
-      console.log('Already initialized, skipping...');
-      return;
-    }
-
-    console.log('Initializing questions fetch...');
-
+    if (hasInitialized.current || !state.roleId) return;
+    
     const fetchQuestions = async () => {
-      if (state.roleId) {
-        setLoading(true);
-        try {
-          // Fetch from FastAPI backend
-          const response = await fetch(`http://localhost:8000/api/questions/${state.roleId}?level=${state.level}`);
-          const data = await response.json();
-          
-          if (data.questions) {
-            setQuestions(data.questions);
-            
-            // Play TTS for first question only once
-            if (data.questions.length > 0 && !hasPlayedFirstQuestion) {
-              console.log('Playing first question TTS...');
-              await playQuestionAudio(data.questions[0].question);
-              setHasPlayedFirstQuestion(true);
-            }
-          } else {
-            setQuestions([]);
-          }
-        } catch (error) {
-          console.error('Failed to fetch questions:', error);
-          setQuestions([]);
-        } finally {
-          setLoading(false);
+      setLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8000/api/questions/${state.roleId}?level=${state.level}`);
+        const data = await response.json();
+        
+        if (data.questions?.length > 0 && !hasPlayedFirstQuestion) {
+          setQuestions(data.questions);
+          await playQuestionAudio(data.questions[0].question);
+          setHasPlayedFirstQuestion(true);
         }
+      } catch (error) {
+        console.error('Failed to fetch questions:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -115,53 +98,41 @@ export function Session() {
     hasInitialized.current = true;
   }, [state.roleId, state.level]); 
 
-  // Function to play question audio using TTS
+  // Simplified TTS function
   const playQuestionAudio = async (questionText: string) => {
-    // Prevent multiple simultaneous TTS calls
-    if (isSpeaking) {
-      console.log('TTS already in progress, skipping...');
-      return;
-    }
-
-    setIsSpeaking(true);
+    if (isSpeaking) return;
     
-    // Use browser's built-in speech synthesis directly
-    console.log('Using browser TTS for question:', questionText);
+    setIsSpeaking(true);
     await playBrowserTTS(questionText);
   };
 
-  // Fallback function using browser's built-in speech synthesis
+  // Simplified browser TTS
   const playBrowserTTS = (text: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      if ('speechSynthesis' in window) {
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
-        
-        // Small delay to ensure cancellation completes
-        setTimeout(() => {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 0.9; // Slightly slower for better comprehension
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-          
-          utterance.onend = () => {
-            setIsSpeaking(false);
-            resolve();
-          };
-          
-          utterance.onerror = (event) => {
-            console.error('Browser TTS error:', event);
-            setIsSpeaking(false);
-            reject(event);
-          };
-          
-          window.speechSynthesis.speak(utterance);
-        }, 100);
-      } else {
-        console.warn('Speech synthesis not supported in this browser');
+    return new Promise((resolve) => {
+      if (!('speechSynthesis' in window)) {
         setIsSpeaking(false);
-        resolve(); // Resolve silently if TTS is not supported
+        return resolve();
       }
+
+      window.speechSynthesis.cancel();
+      
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.volume = 1.0;
+        
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          resolve();
+        };
+        
+        utterance.onerror = () => {
+          setIsSpeaking(false);
+          resolve();
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }, 100);
     });
   };
 
@@ -324,7 +295,7 @@ export function Session() {
                           <Button
                             size="sm"
                             onClick={handleNextQuestion}
-                            disabled={isLastQuestion}
+                            disabled={isLastQuestion || isSpeaking}
                             className="flex items-center gap-2 bg-aiva-purple hover:bg-aiva-purple/90 text-white rounded-full px-4 shadow-sm transition-all"
                           >
                             Next Question
@@ -396,7 +367,7 @@ export function Session() {
                       <Button
                         size="sm"
                         onClick={handleNextQuestion}
-                        disabled={isLastQuestion}
+                        disabled={isLastQuestion || isSpeaking}
                         className="flex items-center gap-1 bg-aiva-purple hover:bg-aiva-purple/90 text-white shadow-sm"
                       >
                         Next
@@ -510,7 +481,7 @@ export function Session() {
                   <Phone size={20} />
                 </button>
 
-                {currentQuestion && !isLastQuestion && (
+                {currentQuestion && !isLastQuestion && !isSpeaking && (
                   <Button
                     size="sm"
                     onClick={handleNextQuestion}
