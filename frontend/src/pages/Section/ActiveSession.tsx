@@ -20,6 +20,7 @@ export function Session() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isSpeaking, setIsSpeaking] = useState(false);
   
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
@@ -56,9 +57,16 @@ export function Session() {
   const isLastQuestion = currentQuestionIndex === state.questions.length - 1;
 
   // Navigate to next question
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (!isLastQuestion) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      
+      // Play TTS for the next question
+      const nextQuestion = state.questions[nextIndex];
+      if (nextQuestion) {
+        await playQuestionAudio(nextQuestion.question);
+      }
     }
   };
 
@@ -74,6 +82,11 @@ export function Session() {
           
           if (data.questions) {
             setQuestions(data.questions);
+            
+            // Trigger TTS for the first question
+            if (data.questions.length > 0) {
+              await playQuestionAudio(data.questions[0].question);
+            }
           } else {
             setQuestions([]);
           }
@@ -88,6 +101,91 @@ export function Session() {
 
     fetchQuestions();
   }, [state.roleId, state.level]);
+
+  // Function to play question audio using TTS
+  const playQuestionAudio = async (questionText: string) => {
+    // Prevent multiple simultaneous TTS calls
+    if (isSpeaking) {
+      console.log('TTS already in progress, skipping...');
+      return;
+    }
+
+    setIsSpeaking(true);
+    
+    try {
+      // First try ElevenLabs TTS
+      const response = await fetch('http://localhost:8000/api/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: questionText,
+        }),
+      });
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsSpeaking(false);
+        };
+        
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsSpeaking(false);
+        };
+        
+        await audio.play();
+      } else {
+        // If ElevenLabs fails, fall back to browser's built-in speech synthesis
+        console.warn('ElevenLabs TTS failed, falling back to browser speech synthesis');
+        await playBrowserTTS(questionText);
+      }
+    } catch (error) {
+      console.error('Error playing question audio:', error);
+      // Fallback to browser's built-in speech synthesis
+      await playBrowserTTS(questionText);
+    }
+  };
+
+  // Fallback function using browser's built-in speech synthesis
+  const playBrowserTTS = (text: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if ('speechSynthesis' in window) {
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
+        // Small delay to ensure cancellation completes
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.9; // Slightly slower for better comprehension
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+          
+          utterance.onend = () => {
+            setIsSpeaking(false);
+            resolve();
+          };
+          
+          utterance.onerror = (event) => {
+            console.error('Browser TTS error:', event);
+            setIsSpeaking(false);
+            reject(event);
+          };
+          
+          window.speechSynthesis.speak(utterance);
+        }, 100);
+      } else {
+        console.warn('Speech synthesis not supported in this browser');
+        setIsSpeaking(false);
+        resolve(); // Resolve silently if TTS is not supported
+      }
+    });
+  };
 
   // Handle responsive behavior
   useEffect(() => {

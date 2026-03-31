@@ -1,11 +1,26 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import json
 import os
+import io
+from dotenv import load_dotenv
+from elevenlabs import ElevenLabs, Voice, VoiceSettings
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(title="Aiva Interview API", version="1.0.0")
+
+# Initialize ElevenLabs client
+elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
+if elevenlabs_api_key:
+    eleven_client = ElevenLabs(api_key=elevenlabs_api_key)
+else:
+    eleven_client = None
+    print("Warning: ElevenLabs API key not found in environment variables")
 
 # Enable CORS
 app.add_middleware(
@@ -36,6 +51,10 @@ class QuestionsResponse(BaseModel):
 
 class RolesResponse(BaseModel):
     roles: List[Role]
+
+class TTSRequest(BaseModel):
+    text: str
+    voice_id: Optional[str] = None
 
 # Load data from JSON files
 def load_questions():
@@ -139,6 +158,60 @@ async def get_section_info(section_code: str):
         "status": "active",
         "message": "Section is valid"
     }
+
+@app.post("/api/tts")
+async def text_to_speech(request: TTSRequest):
+    """
+    Convert text to speech using ElevenLabs API
+    
+    Args:
+        request: TTSRequest containing text and optional voice_id
+    """
+    if not eleven_client:
+        raise HTTPException(status_code=500, detail="ElevenLabs client not initialized")
+    
+    try:
+        # Use default voice if none provided
+        voice_id = request.voice_id or os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+        
+        # Generate audio using the newer ElevenLabs API with a supported model
+        audio = eleven_client.text_to_speech.convert(
+            text=request.text,
+            voice_id=voice_id,
+            model_id="eleven_flash_v2",  # Use flash model that's available on free tier
+            voice_settings=VoiceSettings(
+                stability=0.75,
+                similarity_boost=0.75,
+                style=0.0,
+                use_speaker_boost=True
+            )
+        )
+        
+        # Convert audio to bytes
+        audio_bytes = b''.join(chunk for chunk in audio)
+        
+        # Return as streaming response
+        return StreamingResponse(
+            io.BytesIO(audio_bytes),
+            media_type="audio/mpeg",
+            headers={"Content-Disposition": "inline; filename=speech.mp3"}
+        )
+        
+    except Exception as e:
+        # Provide detailed error message for debugging
+        error_message = str(e)
+        if "unusual activity" in error_message.lower():
+            raise HTTPException(
+                status_code=429, 
+                detail="ElevenLabs API key flagged for unusual activity. Please get a new API key from https://elevenlabs.io/ or upgrade to a paid plan."
+            )
+        elif "subscription_required" in error_message.lower():
+            raise HTTPException(
+                status_code=402,
+                detail="This model requires a paid subscription. Please upgrade your ElevenLabs plan or use a different model."
+            )
+        else:
+            raise HTTPException(status_code=500, detail=f"TTS generation failed: {error_message}")
 
 @app.get("/health")
 async def health_check():
