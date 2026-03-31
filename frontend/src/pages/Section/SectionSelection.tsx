@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
 import { useInterview } from "@/context/InterviewContext";
@@ -11,9 +11,95 @@ function InterviewSetup() {
   const { state, setLanguage, setLevel, setStatus, setRole, setRoleId } = useInterview();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isJoining, setIsJoining] = useState(false);
   
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
+
+  const stopTracks = (stream: MediaStream | null) => {
+    if (!stream) return;
+    stream.getTracks().forEach((t) => t.stop());
+  };
+
+  const startMicrophone = async () => {
+    try {
+      if (audioStream) {
+        stopTracks(audioStream);
+      }
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }, 
+        video: false 
+      });
+      setAudioStream(stream);
+      setIsMuted(false);
+    } catch (e) {
+      console.error("Failed to access microphone", e);
+      setIsMuted(true);
+      alert("Unable to access microphone. Please check your microphone permissions.");
+    }
+  };
+
+  const stopMicrophone = () => {
+    stopTracks(audioStream);
+    setAudioStream(null);
+    setIsMuted(true);
+  };
+
+  const toggleMicrophone = async () => {
+    if (!isMuted) {
+      stopMicrophone();
+      return;
+    }
+    await startMicrophone();
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }, 
+        audio: false 
+      });
+      setMediaStream(stream);
+      setIsCameraOn(true);
+    } catch (e) {
+      console.error("Failed to access camera", e);
+      setIsCameraOn(false);
+      alert("Unable to access camera. Please check your camera permissions.");
+    }
+  };
+
+  const stopCamera = () => {
+    stopTracks(mediaStream);
+    setMediaStream(null);
+    setIsCameraOn(false);
+  };
+
+  const toggleCamera = async () => {
+    if (isCameraOn) {
+      stopCamera();
+      return;
+    }
+    await startCamera();
+  };
+
+  useEffect(() => {
+    return () => {
+      stopTracks(mediaStream);
+      stopTracks(audioStream);
+    };
+  }, [mediaStream, audioStream]);
 
   // Handle refresh recovery
   useEffect(() => {
@@ -39,10 +125,24 @@ function InterviewSetup() {
     }
   }, [setRole, setRoleId, setLevel]);
 
-  const handleJoin = () => {
-    setStatus("active");
-    // Navigate with section code
-    navigate(`/active-section/session?section=${sectionCode}`);
+  const handleJoin = async () => {
+    setIsJoining(true);
+    
+    try {
+      // Start camera before joining interview
+      await startCamera();
+      
+      setStatus("active");
+      // Navigate with section code
+      navigate(`/active-section/session?section=${sectionCode}`);
+    } catch (error) {
+      console.error("Failed to start camera:", error);
+      // Still allow joining even if camera fails
+      setStatus("active");
+      navigate(`/active-section/session?section=${sectionCode}`);
+    } finally {
+      setIsJoining(false);
+    }
   };
 
   return (
@@ -74,8 +174,21 @@ function InterviewSetup() {
         >
           {/* Camera preview */}
           <div className="space-y-4">
-            <div className="aspect-video bg-gray-800/80 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
-              <Video size={48} className="text-gray-500" />
+            <div className="aspect-video bg-gray-800/80 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden relative">
+              {isCameraOn && mediaStream ? (
+                <video
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  playsInline
+                  muted
+                  ref={(el) => {
+                    if (!el) return;
+                    if (el.srcObject !== mediaStream) el.srcObject = mediaStream;
+                  }}
+                />
+              ) : (
+                <Video size={48} className="text-gray-500" />
+              )}
             </div>
 
             {/* Controls bar */}
@@ -88,16 +201,22 @@ function InterviewSetup() {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 rounded-full bg-aiva-indigo flex items-center justify-center text-white shadow-glass cursor-pointer"
+                onClick={toggleMicrophone}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-glass cursor-pointer transition-colors ${
+                  isMuted ? 'bg-red-500' : 'bg-aiva-indigo'
+                }`}
               >
-                <Mic size={18} />
+                {isMuted ? <VideoOff size={18} /> : <Mic size={18} />}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white shadow-glass cursor-pointer"
+                onClick={toggleCamera}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-glass cursor-pointer transition-colors ${
+                  isCameraOn ? 'bg-aiva-indigo' : 'bg-red-500'
+                }`}
               >
-                <VideoOff size={18} />
+                {isCameraOn ? <Video size={18} /> : <VideoOff size={18} />}
               </motion.button>
             </div>
           </div>
@@ -155,8 +274,8 @@ function InterviewSetup() {
               </div>
             </div>
 
-            <Button size="lg" fullWidth onClick={handleJoin}>
-              Join Interview
+            <Button size="lg" fullWidth onClick={handleJoin} disabled={isJoining}>
+              {isJoining ? 'Starting Camera...' : 'Join Interview'}
             </Button>
           </div>
         </motion.div>
