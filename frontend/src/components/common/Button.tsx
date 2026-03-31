@@ -17,7 +17,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center font-semibold rounded-full transition-all cursor-pointer select-none";
+    "inline-flex items-center justify-center font-semibold rounded-full transition-all cursor-none select-none";
 
   const variants: Record<string, string> = {
     primary:
@@ -36,11 +36,13 @@ export function Button({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 500, damping: 15 }}
       className={`${base} ${variants[variant]} ${sizes[size]} ${
         fullWidth ? "w-full" : ""
       } ${className}`}
+      data-cursor="interactive"
       {...(props as any)}
     >
       {children}

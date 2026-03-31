@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { motion } from "framer-motion";
 
 interface GlassCardProps {
@@ -6,6 +6,8 @@ interface GlassCardProps {
   className?: string;
   variant?: "default" | "strong" | "purple" | "blue";
   onClick?: () => void;
+  /** When true, adds a pulsing glow + micro-shake for AI processing states */
+  thinking?: boolean;
 }
 
 const variantClass: Record<string, string> = {
@@ -20,15 +22,21 @@ export function GlassCard({
   className = "",
   variant = "default",
   onClick,
+  thinking = false,
 }: GlassCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
   return (
     <motion.div
-      className={`${variantClass[variant]} p-5 ${className}`}
+      ref={cardRef}
+      className={`${variantClass[variant]} glass-card-v2 p-5 ${thinking ? "thinking-pulse" : ""} ${className}`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       onClick={onClick}
     >
+      {/* Shimmer border overlay — pointer-events: none so it never blocks clicks */}
+      <div className="shimmer-border" aria-hidden="true" style={{ pointerEvents: "none" }} />
       {children}
     </motion.div>
   );
