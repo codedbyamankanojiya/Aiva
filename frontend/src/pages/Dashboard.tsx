@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
+import { GlitchReveal } from "@/components/animations/GlitchReveal";
 
 /* ── Custom SVG for the Analytics mini-card to match screenshot ────── */
 function MiniChart() {
@@ -56,54 +57,56 @@ export function Dashboard() {
     >
       {/* ── Left column: Unified Tall Card ────────────────────────────────────── */}
       <motion.div variants={fadeUp} className="flex flex-col h-full">
-        <GlassCard variant="blue" className="flex flex-col h-full relative overflow-hidden p-0 pt-6">
-          
-          {/* Top Analytics Section */}
-          <div className="flex justify-between items-start px-6">
-            <h3 className="text-lg font-semibold text-gray-800">Analytics</h3>
-            <div className="text-right">
-              <span className="text-sm font-semibold text-gray-800 block">Mar 16</span>
-              <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-[#a28dc7] to-[#bdaadf]">
-                100
+        <GlitchReveal delay={0.1} variant="both">
+          <GlassCard variant="blue" className="flex flex-col h-full relative overflow-hidden p-0 pt-6">
+            
+            {/* Top Analytics Section */}
+            <div className="flex justify-between items-start px-6">
+              <h3 className="text-lg font-semibold text-gray-800">Analytics</h3>
+              <div className="text-right">
+                <span className="text-sm font-semibold text-gray-800 block">Mar 16</span>
+                <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-[#a28dc7] to-[#bdaadf]">
+                  100
+                </span>
+              </div>
+            </div>
+
+            <div className="relative mt-2">
+              <span className="absolute left-6 top-8 text-sm font-semibold text-gray-800 z-20">
+                Mar 12
               </span>
+              {/* Extended right edge slightly to bleed like screenshot */}
+              <div className="-mx-2"> 
+                <MiniChart />
+              </div>
             </div>
-          </div>
 
-          <div className="relative mt-2">
-            <span className="absolute left-6 top-8 text-sm font-semibold text-gray-800 z-20">
-              Mar 12
-            </span>
-            {/* Extended right edge slightly to bleed like screenshot */}
-            <div className="-mx-2"> 
-              <MiniChart />
-            </div>
-          </div>
+            {/* Bottom Tasks Section */}
+            <div className="px-6 flex-1 flex flex-col justify-end pb-8 pt-8">
+              <h3 className="text-[17px] font-bold text-gray-800 mb-5">Daily tasks</h3>
 
-          {/* Bottom Tasks Section */}
-          <div className="px-6 flex-1 flex flex-col justify-end pb-8 pt-8">
-            <h3 className="text-[17px] font-bold text-gray-800 mb-5">Daily tasks</h3>
-
-            <div className="space-y-6 w-full pr-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-base font-semibold text-gray-800 leading-tight">
-                    Communication
-                  </p>
-                  <p className="text-[15px] font-medium text-gray-700 mt-0.5">
-                    in any language
-                  </p>
+              <div className="space-y-6 w-full pr-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-base font-semibold text-gray-800 leading-tight">
+                      Communication
+                    </p>
+                    <p className="text-[15px] font-medium text-gray-700 mt-0.5">
+                      in any language
+                    </p>
+                  </div>
+                  <span className="text-base font-bold text-gray-800">10/25</span>
                 </div>
-                <span className="text-base font-bold text-gray-800">10/25</span>
-              </div>
 
-              <div className="flex items-center justify-between">
-                <p className="text-base font-semibold text-gray-800">Mock test</p>
-                <span className="text-base font-bold text-gray-800">10/25</span>
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-gray-800">Mock test</p>
+                  <span className="text-base font-bold text-gray-800">10/25</span>
+                </div>
               </div>
             </div>
-          </div>
 
-        </GlassCard>
+          </GlassCard>
+        </GlitchReveal>
       </motion.div>
 
       {/* ── Right column: Stacked Cards ───────────────────────────────────── */}
@@ -112,72 +115,78 @@ export function Dashboard() {
         className="flex flex-col gap-6"
       >
         {/* Hello Aiva Card 1 */}
-        <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden min-h-[300px]">
-          {/* Text Content */}
-          <div className="flex-1 space-y-4 pr-4 sm:pr-[250px] lg:pr-[300px] z-10 w-full">
-            <h2 className="text-[28px] font-bold text-gray-800 flex items-center gap-2">
-              Hello! im{" "}
-              <span className="text-[#967abc] text-4xl">
-                Aiva
-              </span>
-            </h2>
-            <p className="text-[15px] font-medium text-gray-800 leading-snug max-w-[340px]">
-              Your intelligent AI mentor for interview and viva preparation. <br className="hidden sm:block" />
-              Enhance your responses and speak with confidence.
-            </p>
-            <div className="pt-2">
-              <Button 
-                variant="primary"
-                className="rounded-full px-8 py-3 w-48 font-semibold bg-[#674bb1] hover:bg-[#7a5bc9]" 
-                onClick={() => navigate("/practice")}
-              >
-                Start Section
-              </Button>
+        <GlitchReveal delay={0.2} variant="chromatic">
+          <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden min-h-[300px]">
+            {/* Text Content */}
+            <div className="flex-1 space-y-4 pr-4 sm:pr-[250px] lg:pr-[300px] z-10 w-full">
+              <h2 className="text-[28px] font-bold text-gray-800 flex items-center gap-2">
+                Hello! im{" "}
+                <span className="text-[#967abc] text-4xl">
+                  Aiva
+                </span>
+              </h2>
+              <p className="text-[15px] font-medium text-gray-800 leading-snug max-w-[340px]">
+                Your intelligent AI mentor for interview and viva preparation. <br className="hidden sm:block" />
+                Enhance your responses and speak with confidence.
+              </p>
+              <div className="pt-2">
+                <Button 
+                  variant="primary"
+                  className="rounded-full px-8 py-3 w-48 font-semibold bg-[#674bb1] hover:bg-[#7a5bc9]" 
+                  onClick={() => navigate("/practice")}
+                  data-cursor="interactive"
+                >
+                  Start Section
+                </Button>
+              </div>
             </div>
-          </div>
-          
-          {/* Jumbo Image Right */}
-          <div className="absolute right-0 bottom-0 sm:right-0 h-full w-full sm:w-[50%] lg:w-[50%] flex items-end justify-end pointer-events-none z-0 pr-2 pb-2">
-            <img
-              src="/Assets/Interview-amico.png"
-              alt="Aiva introduction"
-              className="max-h-[90%] w-auto object-contain object-right-bottom drop-shadow-sm"
-            />
-          </div>
-        </GlassCard>
+            
+            {/* Jumbo Image Right */}
+            <div className="absolute right-0 bottom-0 sm:right-0 h-full w-full sm:w-[50%] lg:w-[50%] flex items-end justify-end pointer-events-none z-0 pr-2 pb-2">
+              <img
+                src="/Assets/Interview-amico.png"
+                alt="Aiva introduction"
+                className="max-h-[90%] w-auto object-contain object-right-bottom drop-shadow-sm"
+              />
+            </div>
+          </GlassCard>
+        </GlitchReveal>
 
         {/* Hello Aiva Card 2 */}
-        <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden min-h-[300px]">
-          {/* Text Content */}
-          <div className="flex-1 space-y-4 pr-4 sm:pr-[250px] lg:pr-[300px] z-10 w-full">
-            <h2 className="text-[28px] font-bold text-gray-800 flex items-center gap-2">
-              Hello! im{" "}
-              <span className="text-[#967abc] text-4xl">
-                Aiva
-              </span>
-            </h2>
-            <p className="text-[15px] font-medium text-gray-800 leading-snug max-w-[340px]">
-              Get all the right resources of your learning need with AIVA
-            </p>
-            <div className="pt-2">
-              <Button 
-                variant="primary" 
-                className="rounded-full px-8 py-3 w-48 font-semibold bg-[#674bb1] hover:bg-[#7a5bc9]"
-              >
-                Chat with Aiva
-              </Button>
+        <GlitchReveal delay={0.35} variant="chromatic">
+          <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden min-h-[300px]" data-cursor="ai">
+            {/* Text Content */}
+            <div className="flex-1 space-y-4 pr-4 sm:pr-[250px] lg:pr-[300px] z-10 w-full">
+              <h2 className="text-[28px] font-bold text-gray-800 flex items-center gap-2">
+                Hello! im{" "}
+                <span className="text-[#967abc] text-4xl">
+                  Aiva
+                </span>
+              </h2>
+              <p className="text-[15px] font-medium text-gray-800 leading-snug max-w-[340px]">
+                Get all the right resources of your learning need with AIVA
+              </p>
+              <div className="pt-2">
+                <Button 
+                  variant="primary" 
+                  className="rounded-full px-8 py-3 w-48 font-semibold bg-[#674bb1] hover:bg-[#7a5bc9]"
+                  data-cursor="ai"
+                >
+                  Chat with Aiva
+                </Button>
+              </div>
             </div>
-          </div>
-          
-          {/* Jumbo Image Right */}
-          <div className="absolute right-0 bottom-0 h-full w-full sm:w-[45%] lg:w-[45%] flex items-end justify-end pointer-events-none z-0">
-            <img
-              src="/Assets/DashChat.png"
-              alt="Chat with Aiva"
-              className="max-h-[95%] w-auto object-contain object-right-bottom drop-shadow-sm"
-            />
-          </div>
-        </GlassCard>
+            
+            {/* Jumbo Image Right */}
+            <div className="absolute right-0 bottom-0 h-full w-full sm:w-[45%] lg:w-[45%] flex items-end justify-end pointer-events-none z-0">
+              <img
+                src="/Assets/DashChat.png"
+                alt="Chat with Aiva"
+                className="max-h-[95%] w-auto object-contain object-right-bottom drop-shadow-sm"
+              />
+            </div>
+          </GlassCard>
+        </GlitchReveal>
       </motion.div>
     </motion.div>
   );

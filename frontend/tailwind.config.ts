@@ -54,6 +54,10 @@ export default {
         "blob-1": "blob1 12s ease-in-out infinite",
         "blob-2": "blob2 14s ease-in-out infinite",
         "pulse-slow": "pulse 4s ease-in-out infinite",
+        "shimmer-border": "shimmerBorderRotate 4s linear infinite",
+        "scanline-reveal": "scanlineReveal 0.8s ease-in-out forwards",
+        "glitch": "chromaticGlitch 0.15s ease-out",
+        "thinking-pulse": "thinkingGlow 2s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -73,6 +77,35 @@ export default {
           "0%, 100%": { transform: "translate(0, 0) scale(1)" },
           "33%": { transform: "translate(-25px, 15px) scale(1.05)" },
           "66%": { transform: "translate(20px, -25px) scale(1.1)" },
+        },
+        shimmerBorderRotate: {
+          "0%": { "--shimmer-angle": "0deg" },
+          "100%": { "--shimmer-angle": "360deg" },
+        },
+        scanlineReveal: {
+          "0%": { top: "0", opacity: "1" },
+          "100%": { top: "100%", opacity: "0" },
+        },
+        chromaticGlitch: {
+          "0%": { filter: "blur(4px)" },
+          "25%": {
+            filter:
+              "blur(0px) drop-shadow(2px 0 #EC4899) drop-shadow(-2px 0 #6366F1)",
+          },
+          "50%": {
+            filter:
+              "blur(0px) drop-shadow(1px 0 #EC4899) drop-shadow(-1px 0 #6366F1)",
+          },
+          "100%": { filter: "blur(0px)" },
+        },
+        thinkingGlow: {
+          "0%, 100%": {
+            boxShadow: "0 0 20px rgba(139, 92, 246, 0.15)",
+          },
+          "50%": {
+            boxShadow:
+              "0 0 40px rgba(139, 92, 246, 0.35), 0 0 60px rgba(99, 102, 241, 0.15)",
+          },
         },
       },
     },

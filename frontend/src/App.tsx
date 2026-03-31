@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { InterviewProvider } from "@/context/InterviewContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Dashboard } from "@/pages/Dashboard";
@@ -14,13 +15,17 @@ import { LoginPage } from "@/pages/auth/LoginPage";
 import { SignUpPage } from "@/pages/auth/SignUpPage";
 import { Community } from "@/pages/Community";
 import Interview from "@/pages/Section/SectionSelection";
+import { useLenis } from "@/hooks/useLenis";
 
 export default function App() {
+  useLenis();
+  
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <InterviewProvider>
-          <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <InterviewProvider>
+            <Routes>
             {/* Public auth routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
@@ -81,6 +86,7 @@ export default function App() {
           </Routes>
         </InterviewProvider>
       </AuthProvider>
+    </ThemeProvider>
     </BrowserRouter>
   );
 }
