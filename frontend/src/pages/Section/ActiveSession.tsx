@@ -23,6 +23,7 @@ export function Session() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [hasPlayedFirstQuestion, setHasPlayedFirstQuestion] = useState(false);
   const hasInitialized = useRef(false);
+  const [sessionStartTime] = useState(new Date().toISOString());
 
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
@@ -151,7 +152,25 @@ export function Session() {
   }, []);
 
   // Simplified end interview function
-  const handleEndInterview = () => {
+  const handleEndInterview = async () => {
+    const sessionEndTime = new Date().toISOString();
+    
+    // Calculate attendance time
+    const startTime = new Date(sessionStartTime);
+    const endTime = new Date(sessionEndTime);
+    const attendanceMs = endTime.getTime() - startTime.getTime();
+    const attendanceMinutes = Math.floor(attendanceMs / 60000);
+    const attendanceSeconds = Math.floor((attendanceMs % 60000) / 1000);
+    const totalAttendanceTime = `${attendanceMinutes}m ${attendanceSeconds}s`;
+    
+    // Calculate average time per question
+    const avgTimePerQuestion = currentQuestionIndex > 0 
+      ? Math.floor(attendanceMs / (currentQuestionIndex + 1) / 1000)
+      : 0;
+    const avgTimeFormatted = avgTimePerQuestion > 60 
+      ? `${Math.floor(avgTimePerQuestion / 60)}m ${avgTimePerQuestion % 60}s`
+      : `${avgTimePerQuestion}s`;
+    
     // Calculate results
     const results = {
       role: state.role,
@@ -159,15 +178,39 @@ export function Session() {
       questionsAnswered: currentQuestionIndex + 1,
       totalQuestions: state.questions.length,
       timeSpent: formatted,
-      completedAt: new Date().toISOString()
+      completedAt: sessionEndTime,
+      sectionCode: sectionCode,
+      sessionStartTime: sessionStartTime,
+      sessionEndTime: sessionEndTime,
+      totalAttendanceTime: totalAttendanceTime,
+      averageTimePerQuestion: avgTimeFormatted
     };
     
-    // Save results and mark as completed
+    // Save to localStorage for compatibility
     localStorage.setItem('interviewResults', JSON.stringify(results));
     localStorage.setItem('interviewCompleted', 'true');
     
-    // Navigate back to practice
-    navigate('/practice');
+    // Save to backend SectionData.json
+    try {
+      const response = await fetch('http://localhost:8000/api/section-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(results),
+      });
+      
+      if (response.ok) {
+        console.log('Section data saved successfully');
+      } else {
+        console.error('Failed to save section data to backend');
+      }
+    } catch (error) {
+      console.error('Error saving section data:', error);
+    }
+    
+    // Navigate to results page instead of practice
+    navigate('/results');
   };
 
   const stopTracks = (stream: MediaStream | null) => {

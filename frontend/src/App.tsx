@@ -7,6 +7,7 @@ import { Dashboard } from "@/pages/Dashboard";
 import { Analytics } from "@/pages/Analytics";
 import { Practice } from "@/pages/Practice";
 import { Session } from "@/pages/Section/ActiveSession";
+import { InterviewResults } from "@/pages/Section/InterviewResults";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
@@ -47,6 +48,18 @@ export default function App() {
               }
             >
               <Route path="/active-section/session" element={<Session />} />
+            </Route>
+
+            <Route
+              element={
+                <ProtectedRoute>
+                  <div className="min-h-screen">
+                    <InterviewResults />
+                  </div>
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/results" element={<InterviewResults />} />
             </Route>
 
 

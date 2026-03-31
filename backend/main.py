@@ -37,6 +37,19 @@ class QuestionsResponse(BaseModel):
 class RolesResponse(BaseModel):
     roles: List[Role]
 
+class SectionData(BaseModel):
+    role: str
+    level: str
+    questionsAnswered: int
+    totalQuestions: int
+    timeSpent: str
+    completedAt: str
+    sectionCode: str
+    sessionStartTime: str
+    sessionEndTime: str
+    totalAttendanceTime: str
+    averageTimePerQuestion: str
+
 # Load data from JSON files
 def load_questions():
     """Load questions from questions.json file"""
@@ -63,6 +76,30 @@ def load_roles():
         roles.append(role)
     
     return roles
+
+def load_section_data():
+    """Load section data from SectionData.json file"""
+    try:
+        with open('SectionData.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"sections": []}
+    except json.JSONDecodeError:
+        return {"sections": []}
+
+def save_section_data(section_data: dict):
+    """Save section data to SectionData.json file"""
+    try:
+        data = load_section_data()
+        data["sections"].append(section_data)
+        
+        with open('SectionData.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        return True
+    except Exception as e:
+        print(f"Error saving section data: {e}")
+        return False
 
 @app.get("/")
 async def root():
@@ -144,6 +181,37 @@ async def get_section_info(section_code: str):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "Aiva Interview API"}
+
+@app.post("/api/section-data")
+async def save_section_data_endpoint(section_data: SectionData):
+    """
+    Save interview section data to SectionData.json
+    
+    Args:
+        section_data: Interview session data to save
+    """
+    try:
+        success = save_section_data(section_data.dict())
+        if success:
+            return {"message": "Section data saved successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to save section data")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving section data: {str(e)}")
+
+@app.get("/api/section-data")
+async def get_section_data():
+    """
+    Get all section data from SectionData.json
+    
+    Returns:
+        Dictionary containing all saved section data
+    """
+    try:
+        data = load_section_data()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading section data: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
