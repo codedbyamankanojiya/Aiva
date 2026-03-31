@@ -1,16 +1,24 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
+import { CinematicOverlay } from "@/components/effects/CinematicOverlay";
+import { AivaCursor } from "@/components/effects/AivaCursor";
 
 export function AppLayout() {
   return (
     <>
-      {/* Animated gradient background */}
+      {/* Base gradient background (UNTOUCHED) */}
       <div className="aiva-bg" aria-hidden="true">
         <div className="blob blob-pink" />
         <div className="blob blob-purple" />
         <div className="blob blob-blue" />
       </div>
+
+      {/* Cinematic 3D overlay ON TOP of background */}
+      <CinematicOverlay />
+
+      {/* Custom cursor */}
+      <AivaCursor />
 
       {/* App shell */}
       <div className="relative z-10 flex min-h-screen">
