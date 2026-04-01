@@ -1,459 +1,637 @@
-import { useRef, useMemo, useCallback, useEffect, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
+import { useRef, useEffect, useCallback, useState } from "react";
 
-// ─── Constants ──────────────────────────────────────────────
-const THEME_COLORS = {
-  purple: new THREE.Color("#8B5CF6"),
-  indigo: new THREE.Color("#6366F1"),
-  blue: new THREE.Color("#818CF8"),
-  pink: new THREE.Color("#EC4899"),
-  lavender: new THREE.Color("#C4B5FD"),
+// ─── Configuration ──────────────────────────────────────────
+const COLORS = {
+  primary: "rgba(139, 92, 246,",      // purple
+  secondary: "rgba(99, 102, 241,",     // indigo
+  accent: "rgba(236, 72, 153,",        // pink
+  cyan: "rgba(34, 211, 238,",          // cyan
+  lavender: "rgba(196, 181, 253,",     // lavender
+  white: "rgba(255, 255, 255,",        // white
 };
 
-const NODE_COUNT = 28;
-const PARTICLE_COUNT = 60;
-const STREAM_COUNT = 18;
-
-// ─── Mouse Tracker (shared state) ───────────────────────────
-const mouseState = { x: 0, y: 0 };
-
-function useMouseParallax() {
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      mouseState.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseState.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
-    window.addEventListener("mousemove", handleMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, []);
+// ─── HUD Ring (Rotating concentric radar rings) ─────────────
+interface HUDRing {
+  x: number;
+  y: number;
+  radius: number;
+  rotation: number;
+  speed: number;
+  dashPattern: number[];
+  color: string;
+  lineWidth: number;
+  opacity: number;
+  innerRings: number;
 }
 
-// ─── Parallax Camera Rig ────────────────────────────────────
-function ParallaxCameraRig() {
-  const { camera } = useThree();
-  const target = useRef(new THREE.Vector3());
-
-  useFrame(() => {
-    target.current.set(mouseState.x * 0.8, mouseState.y * 0.5, 5);
-    camera.position.lerp(target.current, 0.03);
-    camera.lookAt(0, 0, 0);
-  });
-
-  return null;
+function createHUDRings(w: number, h: number): HUDRing[] {
+  return [
+    // Top-right large reticle
+    {
+      x: w * 0.82, y: h * 0.18, radius: 90,
+      rotation: 0, speed: 0.008, dashPattern: [12, 8, 4, 8],
+      color: COLORS.primary, lineWidth: 1.5, opacity: 0.25, innerRings: 3,
+    },
+    // Bottom-left medium reticle
+    {
+      x: w * 0.12, y: h * 0.75, radius: 65,
+      rotation: Math.PI, speed: -0.012, dashPattern: [20, 10],
+      color: COLORS.cyan, lineWidth: 1, opacity: 0.2, innerRings: 2,
+    },
+    // Center-right small reticle
+    {
+      x: w * 0.92, y: h * 0.55, radius: 45,
+      rotation: 0, speed: 0.015, dashPattern: [6, 6],
+      color: COLORS.secondary, lineWidth: 1, opacity: 0.18, innerRings: 2,
+    },
+    // Top-left small
+    {
+      x: w * 0.15, y: h * 0.25, radius: 35,
+      rotation: Math.PI / 2, speed: -0.01, dashPattern: [8, 12],
+      color: COLORS.accent, lineWidth: 1, opacity: 0.15, innerRings: 1,
+    },
+  ];
 }
 
-// ─── Neural Network Nodes ───────────────────────────────────
-function NeuralNodes() {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const linesRef = useRef<THREE.LineSegments>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
+function drawHUDRing(ctx: CanvasRenderingContext2D, ring: HUDRing, time: number) {
+  ctx.save();
+  ctx.translate(ring.x, ring.y);
+  ctx.rotate(ring.rotation + time * ring.speed);
 
-  const nodes = useMemo(() => {
-    const arr = [];
-    for (let i = 0; i < NODE_COUNT; i++) {
-      arr.push({
-        pos: new THREE.Vector3(
-          (Math.random() - 0.5) * 14,
-          (Math.random() - 0.5) * 10,
-          (Math.random() - 0.5) * 8
-        ),
-        speed: 0.15 + Math.random() * 0.3,
-        phase: Math.random() * Math.PI * 2,
-        scale: 0.04 + Math.random() * 0.06,
-        colorIdx: Math.floor(Math.random() * 5),
-      });
-    }
-    return arr;
-  }, []);
+  // Outer ring
+  ctx.setLineDash(ring.dashPattern);
+  ctx.strokeStyle = `${ring.color}${ring.opacity})`;
+  ctx.lineWidth = ring.lineWidth;
+  ctx.beginPath();
+  ctx.arc(0, 0, ring.radius, 0, Math.PI * 2);
+  ctx.stroke();
 
-  const colorKeys = useMemo(() => Object.keys(THEME_COLORS) as (keyof typeof THEME_COLORS)[], []);
+  // Inner concentric rings
+  for (let i = 1; i <= ring.innerRings; i++) {
+    const r = ring.radius * (1 - i * 0.28);
+    ctx.globalAlpha = ring.opacity * (1 - i * 0.25);
+    ctx.strokeStyle = `${ring.color}${ring.opacity * (1 - i * 0.2)})`;
+    ctx.lineWidth = ring.lineWidth * 0.7;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 
-  // Build edges between close nodes
-  const edgeGeometry = useMemo(() => {
-    const positions: number[] = [];
-    const CONNECTION_DIST = 4.5;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        if (nodes[i].pos.distanceTo(nodes[j].pos) < CONNECTION_DIST) {
-          positions.push(
-            nodes[i].pos.x, nodes[i].pos.y, nodes[i].pos.z,
-            nodes[j].pos.x, nodes[j].pos.y, nodes[j].pos.z
-          );
-        }
+  // Crosshair lines
+  ctx.setLineDash([]);
+  ctx.strokeStyle = `${ring.color}${ring.opacity * 0.5})`;
+  ctx.lineWidth = 0.5;
+  const cr = ring.radius * 0.35;
+  ctx.beginPath();
+  ctx.moveTo(-cr, 0); ctx.lineTo(cr, 0);
+  ctx.moveTo(0, -cr); ctx.lineTo(0, cr);
+  ctx.stroke();
+
+  // Scanning arc (partial arc that sweeps)
+  const sweepAngle = Math.PI * 0.4;
+  const sweepStart = time * ring.speed * 3;
+  ctx.strokeStyle = `${ring.color}${ring.opacity * 1.5})`;
+  ctx.lineWidth = ring.lineWidth * 2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.arc(0, 0, ring.radius * 0.7, sweepStart, sweepStart + sweepAngle);
+  ctx.stroke();
+
+  // Dot at center
+  ctx.fillStyle = `${ring.color}${ring.opacity * 2})`;
+  ctx.beginPath();
+  ctx.arc(0, 0, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ─── Data Waveform (flowing sine waves) ─────────────────────
+interface Waveform {
+  yBase: number;
+  amplitude: number;
+  frequency: number;
+  speed: number;
+  color: string;
+  opacity: number;
+  lineWidth: number;
+  phase: number;
+}
+
+function createWaveforms(h: number): Waveform[] {
+  return [
+    {
+      yBase: h * 0.2, amplitude: 25, frequency: 0.012,
+      speed: 1.2, color: COLORS.accent, opacity: 0.15, lineWidth: 1.5, phase: 0,
+    },
+    {
+      yBase: h * 0.22, amplitude: 18, frequency: 0.018,
+      speed: 0.8, color: COLORS.primary, opacity: 0.12, lineWidth: 1, phase: Math.PI / 3,
+    },
+    {
+      yBase: h * 0.78, amplitude: 30, frequency: 0.01,
+      speed: -0.9, color: COLORS.cyan, opacity: 0.12, lineWidth: 1.2, phase: Math.PI,
+    },
+    {
+      yBase: h * 0.8, amplitude: 15, frequency: 0.025,
+      speed: 1.5, color: COLORS.lavender, opacity: 0.1, lineWidth: 0.8, phase: Math.PI / 2,
+    },
+  ];
+}
+
+function drawWaveform(ctx: CanvasRenderingContext2D, w: number, wf: Waveform, time: number) {
+  ctx.beginPath();
+  ctx.strokeStyle = `${wf.color}${wf.opacity})`;
+  ctx.lineWidth = wf.lineWidth;
+
+  for (let x = 0; x < w; x += 2) {
+    const y = wf.yBase +
+      Math.sin(x * wf.frequency + time * wf.speed + wf.phase) * wf.amplitude +
+      Math.sin(x * wf.frequency * 2.3 + time * wf.speed * 0.7) * wf.amplitude * 0.3;
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Glow effect
+  ctx.strokeStyle = `${wf.color}${wf.opacity * 0.4})`;
+  ctx.lineWidth = wf.lineWidth * 3;
+  ctx.filter = "blur(4px)";
+  ctx.stroke();
+  ctx.filter = "none";
+}
+
+// ─── Holographic Bar Chart ──────────────────────────────────
+interface BarChart {
+  x: number;
+  y: number;
+  barCount: number;
+  barWidth: number;
+  maxHeight: number;
+  gap: number;
+  color: string;
+  opacity: number;
+}
+
+function createBarCharts(w: number, h: number): BarChart[] {
+  return [
+    {
+      x: w * 0.05, y: h * 0.55, barCount: 12, barWidth: 4,
+      maxHeight: 50, gap: 3, color: COLORS.cyan, opacity: 0.2,
+    },
+    {
+      x: w * 0.7, y: h * 0.85, barCount: 16, barWidth: 3,
+      maxHeight: 35, gap: 2, color: COLORS.primary, opacity: 0.15,
+    },
+    {
+      x: w * 0.88, y: h * 0.35, barCount: 8, barWidth: 3,
+      maxHeight: 30, gap: 2, color: COLORS.accent, opacity: 0.12,
+    },
+  ];
+}
+
+function drawBarChart(ctx: CanvasRenderingContext2D, chart: BarChart, time: number) {
+  ctx.save();
+
+  for (let i = 0; i < chart.barCount; i++) {
+    const barX = chart.x + i * (chart.barWidth + chart.gap);
+    const heightPhase = Math.sin(time * 1.5 + i * 0.7) * 0.5 + 0.5;
+    const barHeight = chart.maxHeight * (0.2 + heightPhase * 0.8);
+
+    // Bar fill
+    const gradient = ctx.createLinearGradient(barX, chart.y, barX, chart.y - barHeight);
+    gradient.addColorStop(0, `${chart.color}${chart.opacity * 0.3})`);
+    gradient.addColorStop(1, `${chart.color}${chart.opacity * 1.2})`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(barX, chart.y - barHeight, chart.barWidth, barHeight);
+
+    // Bar top glow
+    ctx.fillStyle = `${chart.color}${chart.opacity * 2})`;
+    ctx.fillRect(barX, chart.y - barHeight, chart.barWidth, 1.5);
+  }
+
+  // Baseline
+  ctx.strokeStyle = `${chart.color}${chart.opacity * 0.5})`;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(chart.x - 5, chart.y);
+  ctx.lineTo(chart.x + chart.barCount * (chart.barWidth + chart.gap) + 5, chart.y);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ─── Hexagonal Grid ─────────────────────────────────────────
+interface HexGrid {
+  x: number;
+  y: number;
+  size: number;
+  cols: number;
+  rows: number;
+  color: string;
+  opacity: number;
+}
+
+function createHexGrids(w: number, h: number): HexGrid[] {
+  return [
+    { x: w * 0.02, y: h * 0.05, size: 18, cols: 5, rows: 4, color: COLORS.secondary, opacity: 0.08 },
+    { x: w * 0.75, y: h * 0.65, size: 14, cols: 4, rows: 3, color: COLORS.lavender, opacity: 0.06 },
+  ];
+}
+
+function drawHexGrid(ctx: CanvasRenderingContext2D, grid: HexGrid, time: number) {
+  ctx.save();
+  ctx.strokeStyle = `${grid.color}${grid.opacity})`;
+  ctx.lineWidth = 0.8;
+
+  for (let row = 0; row < grid.rows; row++) {
+    for (let col = 0; col < grid.cols; col++) {
+      const offsetX = row % 2 === 0 ? 0 : grid.size * 0.866;
+      const cx = grid.x + col * grid.size * 1.732 + offsetX;
+      const cy = grid.y + row * grid.size * 1.5;
+
+      // Pulse individual hexagons
+      const pulse = Math.sin(time * 0.8 + row * 1.2 + col * 0.7) * 0.5 + 0.5;
+      ctx.globalAlpha = grid.opacity + pulse * 0.06;
+
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 6;
+        const hx = cx + grid.size * Math.cos(angle);
+        const hy = cy + grid.size * Math.sin(angle);
+        if (i === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+
+      // Occasional fill for "active" hexagons
+      if (pulse > 0.85) {
+        ctx.fillStyle = `${grid.color}${grid.opacity * 1.5})`;
+        ctx.fill();
       }
     }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    return geo;
-  }, [nodes]);
+  }
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (!meshRef.current) return;
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
 
-    nodes.forEach((node, i) => {
-      dummy.position.copy(node.pos);
-      dummy.position.x += Math.sin(t * node.speed + node.phase) * 0.5;
-      dummy.position.y += Math.cos(t * node.speed * 0.7 + node.phase) * 0.4;
-      dummy.position.z += Math.sin(t * node.speed * 0.5 + node.phase * 2) * 0.3;
-      dummy.scale.setScalar(node.scale * (1 + Math.sin(t * 2 + node.phase) * 0.3));
-      dummy.updateMatrix();
-      meshRef.current!.setMatrixAt(i, dummy.matrix);
-      meshRef.current!.setColorAt(i, THEME_COLORS[colorKeys[node.colorIdx]]);
-    });
+// ─── Circuit Traces (PCB-style lines with glowing nodes) ────
+interface CircuitTrace {
+  points: { x: number; y: number }[];
+  color: string;
+  opacity: number;
+  nodeSize: number;
+  pulseSpeed: number;
+}
 
-    meshRef.current.instanceMatrix.needsUpdate = true;
-    if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+function createCircuitTraces(w: number, h: number): CircuitTrace[] {
+  const traces: CircuitTrace[] = [];
 
-    // Update edge positions to follow animated nodes
-    if (linesRef.current) {
-      const posAttr = linesRef.current.geometry.getAttribute("position");
-      if (posAttr) {
-        let idx = 0;
-        for (let i = 0; i < nodes.length && idx < posAttr.count; i++) {
-          for (let j = i + 1; j < nodes.length && idx < posAttr.count; j++) {
-            if (nodes[i].pos.distanceTo(nodes[j].pos) < 4.5) {
-              const ni = nodes[i];
-              const nj = nodes[j];
-              const px1 = ni.pos.x + Math.sin(t * ni.speed + ni.phase) * 0.5;
-              const py1 = ni.pos.y + Math.cos(t * ni.speed * 0.7 + ni.phase) * 0.4;
-              const pz1 = ni.pos.z + Math.sin(t * ni.speed * 0.5 + ni.phase * 2) * 0.3;
-              const px2 = nj.pos.x + Math.sin(t * nj.speed + nj.phase) * 0.5;
-              const py2 = nj.pos.y + Math.cos(t * nj.speed * 0.7 + nj.phase) * 0.4;
-              const pz2 = nj.pos.z + Math.sin(t * nj.speed * 0.5 + nj.phase * 2) * 0.3;
-              posAttr.setXYZ(idx, px1, py1, pz1);
-              posAttr.setXYZ(idx + 1, px2, py2, pz2);
-              idx += 2;
-            }
-          }
-        }
-        posAttr.needsUpdate = true;
+  // Generate several circuit-like paths (right-angle turns)
+  const configs = [
+    { startX: w * 0.08, startY: h * 0.4, color: COLORS.primary, opacity: 0.12, steps: 8 },
+    { startX: w * 0.6, startY: h * 0.1, color: COLORS.cyan, opacity: 0.1, steps: 6 },
+    { startX: w * 0.4, startY: h * 0.88, color: COLORS.secondary, opacity: 0.08, steps: 7 },
+    { startX: w * 0.85, startY: h * 0.45, color: COLORS.lavender, opacity: 0.1, steps: 5 },
+  ];
+
+  for (const cfg of configs) {
+    const points: { x: number; y: number }[] = [{ x: cfg.startX, y: cfg.startY }];
+    let cx = cfg.startX, cy = cfg.startY;
+    let horizontal = Math.random() > 0.5;
+
+    for (let i = 0; i < cfg.steps; i++) {
+      const len = 30 + Math.random() * 60;
+      if (horizontal) {
+        cx += (Math.random() > 0.5 ? 1 : -1) * len;
+      } else {
+        cy += (Math.random() > 0.5 ? 1 : -1) * len;
       }
+      // Clamp to canvas
+      cx = Math.max(20, Math.min(w - 20, cx));
+      cy = Math.max(20, Math.min(h - 20, cy));
+      points.push({ x: cx, y: cy });
+      horizontal = !horizontal;
     }
-  });
 
-  return (
-    <group>
-      <instancedMesh ref={meshRef} args={[undefined, undefined, NODE_COUNT]}>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshBasicMaterial transparent opacity={0.35} toneMapped={false} />
-      </instancedMesh>
-      <lineSegments ref={linesRef} geometry={edgeGeometry}>
-        <lineBasicMaterial color="#8B5CF6" transparent opacity={0.18} />
-      </lineSegments>
-    </group>
-  );
-}
-
-// ─── Circuit Particles ──────────────────────────────────────
-function CircuitParticles() {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  const particles = useMemo(() => {
-    const arr = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      // Pick a random axis for circuit-like movement
-      const axis = Math.floor(Math.random() * 3);
-      arr.push({
-        pos: new THREE.Vector3(
-          (Math.random() - 0.5) * 16,
-          (Math.random() - 0.5) * 12,
-          (Math.random() - 0.5) * 10
-        ),
-        axis,
-        speed: 0.3 + Math.random() * 0.8,
-        phase: Math.random() * Math.PI * 2,
-        turnInterval: 2 + Math.random() * 3,
-        scale: 0.015 + Math.random() * 0.025,
-      });
-    }
-    return arr;
-  }, []);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (!meshRef.current) return;
-
-    particles.forEach((p, i) => {
-      // Circuit-like movement: primarily travel along one axis, with periodic turns
-      const segment = Math.floor(t / p.turnInterval + p.phase) % 3;
-      const moveAxis = (p.axis + segment) % 3;
-      const progress = ((t * p.speed + p.phase) % 20) - 10;
-
-      dummy.position.copy(p.pos);
-      if (moveAxis === 0) dummy.position.x += progress * 0.3;
-      else if (moveAxis === 1) dummy.position.y += progress * 0.3;
-      else dummy.position.z += progress * 0.2;
-
-      // Wrap around
-      if (dummy.position.x > 8) dummy.position.x -= 16;
-      if (dummy.position.x < -8) dummy.position.x += 16;
-      if (dummy.position.y > 6) dummy.position.y -= 12;
-      if (dummy.position.y < -6) dummy.position.y += 12;
-
-      dummy.scale.setScalar(p.scale);
-      dummy.rotation.set(t * 0.5, t * 0.3, 0);
-      dummy.updateMatrix();
-      meshRef.current!.setMatrixAt(i, dummy.matrix);
+    traces.push({
+      points,
+      color: cfg.color,
+      opacity: cfg.opacity,
+      nodeSize: 3 + Math.random() * 2,
+      pulseSpeed: 0.5 + Math.random() * 1.5,
     });
+  }
 
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, PARTICLE_COUNT]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial color="#818CF8" transparent opacity={0.2} toneMapped={false} />
-    </instancedMesh>
-  );
+  return traces;
 }
 
-// ─── Tech Entities (Orbiting Geometric Shapes) ──────────────
-function TechEntities() {
-  const groupRef = useRef<THREE.Group>(null);
+function drawCircuitTrace(ctx: CanvasRenderingContext2D, trace: CircuitTrace, time: number) {
+  ctx.save();
+  ctx.strokeStyle = `${trace.color}${trace.opacity})`;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
 
-  const entities = useMemo(() => [
-    { type: "torus", pos: [5, 3, -2], speed: 0.2, scale: 0.4, color: THEME_COLORS.purple },
-    { type: "octahedron", pos: [-6, -2, -3], speed: 0.15, scale: 0.3, color: THEME_COLORS.indigo },
-    { type: "torus", pos: [-3, 4, -4], speed: 0.25, scale: 0.35, color: THEME_COLORS.blue },
-    { type: "octahedron", pos: [4, -4, -1], speed: 0.18, scale: 0.25, color: THEME_COLORS.lavender },
-    { type: "torus", pos: [0, -3, -5], speed: 0.22, scale: 0.3, color: THEME_COLORS.pink },
-    { type: "octahedron", pos: [-5, 1, -2], speed: 0.12, scale: 0.35, color: THEME_COLORS.purple },
-  ] as const, []);
+  // Draw path
+  ctx.beginPath();
+  trace.points.forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  ctx.stroke();
 
-  useFrame(({ clock }) => {
-    if (!groupRef.current) return;
-    const t = clock.getElapsedTime();
+  // Draw nodes at each vertex
+  trace.points.forEach((p, i) => {
+    const pulse = Math.sin(time * trace.pulseSpeed + i * 1.5) * 0.5 + 0.5;
 
-    groupRef.current.children.forEach((child, i) => {
-      const entity = entities[i];
-      if (!entity) return;
-      child.rotation.x = t * entity.speed * 0.5;
-      child.rotation.y = t * entity.speed;
-      child.rotation.z = t * entity.speed * 0.3;
+    // Outer glow
+    ctx.fillStyle = `${trace.color}${trace.opacity * pulse * 2})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, trace.nodeSize + pulse * 2, 0, Math.PI * 2);
+    ctx.fill();
 
-      child.position.x = entity.pos[0] + Math.sin(t * entity.speed + i) * 0.8;
-      child.position.y = entity.pos[1] + Math.cos(t * entity.speed * 0.7 + i) * 0.6;
+    // Inner bright dot
+    ctx.fillStyle = `${trace.color}${trace.opacity * 3})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Traveling pulse along the trace
+  const totalLen = trace.points.length - 1;
+  const progress = ((time * trace.pulseSpeed) % totalLen);
+  const segIdx = Math.floor(progress);
+  const segFrac = progress - segIdx;
+
+  if (segIdx < totalLen) {
+    const p1 = trace.points[segIdx];
+    const p2 = trace.points[segIdx + 1];
+    const px = p1.x + (p2.x - p1.x) * segFrac;
+    const py = p1.y + (p2.y - p1.y) * segFrac;
+
+    ctx.fillStyle = `${trace.color}${trace.opacity * 5})`;
+    ctx.beginPath();
+    ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Trailing glow
+    ctx.fillStyle = `${trace.color}${trace.opacity * 2})`;
+    ctx.beginPath();
+    ctx.arc(px, py, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ─── Scanning Lines (horizontal sweep) ──────────────────────
+function drawScanLines(ctx: CanvasRenderingContext2D, w: number, h: number, time: number) {
+  // Horizontal scanning line
+  const scanY = ((time * 30) % (h + 60)) - 30;
+  const gradient = ctx.createLinearGradient(0, scanY - 20, 0, scanY + 20);
+  gradient.addColorStop(0, "rgba(139, 92, 246, 0)");
+  gradient.addColorStop(0.5, "rgba(139, 92, 246, 0.06)");
+  gradient.addColorStop(1, "rgba(139, 92, 246, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, scanY - 20, w, 40);
+
+  // Thin bright line
+  ctx.strokeStyle = "rgba(139, 92, 246, 0.12)";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(0, scanY);
+  ctx.lineTo(w, scanY);
+  ctx.stroke();
+}
+
+// ─── Floating Binary/Code Text ──────────────────────────────
+interface FloatingText {
+  x: number;
+  y: number;
+  speed: number;
+  text: string;
+  opacity: number;
+  fontSize: number;
+}
+
+function createFloatingTexts(w: number, h: number): FloatingText[] {
+  const texts: FloatingText[] = [];
+  const codeSnippets = [
+    "01001010", "0xAF3C", "10110", "sys.init()", ">>_", "0x7F",
+    "SCAN..", "AI_OK", "λ→", "∑∆", "█▓░", "READY",
+    "model.fit()", "GPU:ON", "⟨ψ|φ⟩", "∫dx", "nodes:28",
+  ];
+
+  for (let i = 0; i < 20; i++) {
+    texts.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      speed: 0.15 + Math.random() * 0.4,
+      text: codeSnippets[Math.floor(Math.random() * codeSnippets.length)],
+      opacity: 0.04 + Math.random() * 0.08,
+      fontSize: 9 + Math.random() * 4,
     });
-  });
-
-  return (
-    <group ref={groupRef}>
-      {entities.map((entity, i) => (
-        <mesh key={i} position={entity.pos as unknown as [number, number, number]} scale={entity.scale}>
-          {entity.type === "torus" ? (
-            <torusGeometry args={[1, 0.3, 8, 24]} />
-          ) : (
-            <octahedronGeometry args={[1, 0]} />
-          )}
-          <meshBasicMaterial
-            color={entity.color}
-            transparent
-            opacity={0.22}
-            wireframe
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
+  }
+  return texts;
 }
 
-// ─── Data Streams (Falling Code Rain) ───────────────────────
-function DataStreams() {
-  const pointsRef = useRef<THREE.Points>(null);
+function drawFloatingTexts(ctx: CanvasRenderingContext2D, texts: FloatingText[], h: number, time: number) {
+  ctx.save();
+  ctx.font = "10px 'JetBrains Mono', 'Fira Code', monospace";
 
-  const { positions, opacities, speeds } = useMemo(() => {
-    const pos = new Float32Array(STREAM_COUNT * 30 * 3); // 30 chars per stream
-    const opa = new Float32Array(STREAM_COUNT * 30);
-    const spd = new Float32Array(STREAM_COUNT * 30);
+  texts.forEach((t) => {
+    const y = (t.y + time * t.speed * 50) % (h + 40) - 20;
+    const flicker = Math.sin(time * 3 + t.x * 0.01) * 0.5 + 0.5;
+    ctx.globalAlpha = t.opacity * (0.5 + flicker * 0.5);
+    ctx.font = `${t.fontSize}px 'JetBrains Mono', 'Fira Code', monospace`;
 
-    for (let s = 0; s < STREAM_COUNT; s++) {
-      const baseX = (Math.random() - 0.5) * 16;
-      const baseZ = -2 - Math.random() * 6;
-      const streamSpeed = 0.5 + Math.random() * 1.5;
-
-      for (let c = 0; c < 30; c++) {
-        const idx = (s * 30 + c) * 3;
-        pos[idx] = baseX + (Math.random() - 0.5) * 0.15;
-        pos[idx + 1] = 8 - c * 0.4 + Math.random() * 0.2;
-        pos[idx + 2] = baseZ;
-        opa[s * 30 + c] = Math.max(0, 1 - c / 30) * 0.4;
-        spd[s * 30 + c] = streamSpeed;
-      }
-    }
-
-    return { positions: pos, opacities: opa, speeds: spd };
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (!pointsRef.current) return;
-    const posAttr = pointsRef.current.geometry.getAttribute("position") as THREE.BufferAttribute;
-    const t = clock.getElapsedTime();
-
-    for (let i = 0; i < posAttr.count; i++) {
-      let y = posAttr.getY(i);
-      y -= speeds[i] * 0.02;
-      if (y < -8) y = 8 + Math.random() * 2;
-      posAttr.setY(i, y);
-
-      // Subtle flicker
-      const opaAttr = pointsRef.current!.geometry.getAttribute("opacity") as THREE.BufferAttribute;
-      if (opaAttr) {
-        const baseOpa = opacities[i];
-        opaAttr.setX(i, baseOpa * (0.5 + Math.sin(t * 8 + i * 0.5) * 0.5));
-      }
-    }
-    posAttr.needsUpdate = true;
-    const opaAttr = pointsRef.current.geometry.getAttribute("opacity") as THREE.BufferAttribute;
-    if (opaAttr) opaAttr.needsUpdate = true;
+    ctx.fillStyle = `${COLORS.primary}${t.opacity * 3})`;
+    ctx.fillText(t.text, t.x, y);
   });
 
-  const shaderMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        uColor: { value: new THREE.Color("#8B5CF6") },
-      },
-      vertexShader: `
-        attribute float opacity;
-        varying float vOpacity;
-        void main() {
-          vOpacity = opacity;
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = 3.0 * (1.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 uColor;
-        varying float vOpacity;
-        void main() {
-          float d = length(gl_PointCoord - vec2(0.5));
-          if (d > 0.5) discard;
-          float alpha = vOpacity * smoothstep(0.5, 0.1, d);
-          gl_FragColor = vec4(uColor, alpha * 1.0);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-  }, []);
-
-  return (
-    <points ref={pointsRef} material={shaderMaterial}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-opacity"
-          args={[opacities, 1]}
-        />
-      </bufferGeometry>
-    </points>
-  );
+  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
-// ─── Ambient Glow Particles ─────────────────────────────────
-function AmbientGlow() {
-  const pointsRef = useRef<THREE.Points>(null);
+// ─── Grid Overlay (subtle perspective grid) ─────────────────
+function drawGridOverlay(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(139, 92, 246, 0.025)";
+  ctx.lineWidth = 0.5;
 
-  const positions = useMemo(() => {
-    const pos = new Float32Array(40 * 3);
-    for (let i = 0; i < 40; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
-    }
-    return pos;
-  }, []);
+  // Vertical lines
+  const gridSpacing = 60;
+  for (let x = 0; x < w; x += gridSpacing) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
 
-  useFrame(({ clock }) => {
-    if (!pointsRef.current) return;
-    pointsRef.current.rotation.y = clock.getElapsedTime() * 0.01;
-    pointsRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.008) * 0.1;
-  });
+  // Horizontal lines
+  for (let y = 0; y < h; y += gridSpacing) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
 
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#C4B5FD"
-        size={0.05}
-        transparent
-        opacity={0.45}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  );
+  ctx.restore();
 }
 
-// ─── Scene (all entities composed) ──────────────────────────
-function Scene() {
-  return (
-    <>
-      <ParallaxCameraRig />
-      <ambientLight intensity={0.15} />
-      <NeuralNodes />
-      <CircuitParticles />
-      <TechEntities />
-      <DataStreams />
-      <AmbientGlow />
-    </>
-  );
+// ─── Corner Brackets (HUD targeting brackets) ───────────────
+function drawCornerBrackets(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.save();
+  ctx.strokeStyle = `${COLORS.primary}0.08)`;
+  ctx.lineWidth = 1.5;
+  const s = 30; // bracket size
+  const m = 25; // margin
+
+  // Top-left
+  ctx.beginPath();
+  ctx.moveTo(m, m + s); ctx.lineTo(m, m); ctx.lineTo(m + s, m);
+  ctx.stroke();
+
+  // Top-right
+  ctx.beginPath();
+  ctx.moveTo(w - m - s, m); ctx.lineTo(w - m, m); ctx.lineTo(w - m, m + s);
+  ctx.stroke();
+
+  // Bottom-left
+  ctx.beginPath();
+  ctx.moveTo(m, h - m - s); ctx.lineTo(m, h - m); ctx.lineTo(m + s, h - m);
+  ctx.stroke();
+
+  // Bottom-right
+  ctx.beginPath();
+  ctx.moveTo(w - m - s, h - m); ctx.lineTo(w - m, h - m); ctx.lineTo(w - m, h - m - s);
+  ctx.stroke();
+
+  ctx.restore();
 }
 
 // ─── Main Overlay Component ─────────────────────────────────
 export function CinematicOverlay() {
-  useMouseParallax();
-  const [isVisible, setIsVisible] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const frameRef = useRef<number>(0);
+  const stateRef = useRef<{
+    hudRings: HUDRing[];
+    waveforms: Waveform[];
+    barCharts: BarChart[];
+    hexGrids: HexGrid[];
+    circuitTraces: CircuitTrace[];
+    floatingTexts: FloatingText[];
+  } | null>(null);
 
-  // Fade in after mount for smooth appearance
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Skip on touch-only devices for performance
   const [isTouch] = useState(() => {
     if (typeof window === "undefined") return false;
     return "ontouchstart" in window && !window.matchMedia("(pointer: fine)").matches;
   });
 
+  const init = useCallback((w: number, h: number) => {
+    stateRef.current = {
+      hudRings: createHUDRings(w, h),
+      waveforms: createWaveforms(h),
+      barCharts: createBarCharts(w, h),
+      hexGrids: createHexGrids(w, h),
+      circuitTraces: createCircuitTraces(w, h),
+      floatingTexts: createFloatingTexts(w, h),
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+
+    const resize = () => {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.scale(dpr, dpr);
+      init(w, h);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+
+    const animate = (timestamp: number) => {
+      const time = timestamp * 0.001; // Convert to seconds
+      const state = stateRef.current;
+      if (!state) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Layer 1: Subtle grid overlay
+      drawGridOverlay(ctx, w, h);
+
+      // Layer 2: Corner brackets
+      drawCornerBrackets(ctx, w, h);
+
+      // Layer 3: Hexagonal grids
+      state.hexGrids.forEach((grid) => drawHexGrid(ctx, grid, time));
+
+      // Layer 4: Circuit traces with traveling pulses
+      state.circuitTraces.forEach((trace) => drawCircuitTrace(ctx, trace, time));
+
+      // Layer 5: Bar charts
+      state.barCharts.forEach((chart) => drawBarChart(ctx, chart, time));
+
+      // Layer 6: Waveforms
+      state.waveforms.forEach((wf) => drawWaveform(ctx, w, wf, time));
+
+      // Layer 7: HUD rings
+      state.hudRings.forEach((ring) => drawHUDRing(ctx, ring, time));
+
+      // Layer 8: Scanning line
+      drawScanLines(ctx, w, h, time);
+
+      // Layer 9: Floating code/binary text
+      drawFloatingTexts(ctx, state.floatingTexts, h, time);
+
+      frameRef.current = requestAnimationFrame(animate);
+    };
+
+    // Fade in after a short delay
+    canvas.style.opacity = "0";
+    setTimeout(() => {
+      if (canvas) canvas.style.opacity = "1";
+    }, 200);
+
+    frameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      window.removeEventListener("resize", resize);
+    };
+  }, [init, isTouch]);
+
   if (isTouch) return null;
 
   return (
-    <div
+    <canvas
+      ref={canvasRef}
       className="cinematic-overlay"
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 1,
         pointerEvents: "none",
-        opacity: isVisible ? 1 : 0,
         transition: "opacity 1.5s ease-in-out",
       }}
-    >
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 60 }}
-        dpr={[1, 1.5]}
-        gl={{
-          alpha: true,
-          antialias: false,
-          powerPreference: "high-performance",
-        }}
-        style={{ background: "transparent" }}
-      >
-        <Scene />
-      </Canvas>
-    </div>
+    />
   );
 }

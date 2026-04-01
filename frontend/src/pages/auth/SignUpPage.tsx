@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { Mail, Lock, Eye, EyeOff, User, Shield, Check } from "lucide-react";
+import { CinematicOverlay } from "@/components/effects/CinematicOverlay";
 
 const STEPS = [
   { id: 1, title: "Account" },
@@ -102,6 +103,9 @@ export function SignUpPage() {
         <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-purple-300/40 to-indigo-300/30 blur-3xl animate-blob1" />
         <div className="absolute bottom-[-15%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-br from-pink-300/30 to-purple-300/30 blur-3xl animate-blob2" />
       </div>
+
+      {/* Cinematic HUD overlay */}
+      <CinematicOverlay />
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
         <motion.div
