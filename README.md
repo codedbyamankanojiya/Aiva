@@ -119,21 +119,21 @@ Python + FastAPI
 
 ```
 aiva/
-├── frontend/                 # React frontend application
+├── frontend/               # React frontend application
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
+│   │   ├── components/     # Reusable UI components
 │   │   ├── context/        # React context providers
 │   │   ├── pages/          # Application pages
 │   │   ├── hooks/          # Custom React hooks
 │   │   └── utils/          # Utility functions
-│   ├── public/              # Static assets
-│   └── package.json         # Frontend dependencies
-├── backend/                 # FastAPI backend
+│   ├── public/             # Static assets
+│   └── package.json        # Frontend dependencies
+├── backend/                # FastAPI backend
 │   ├── main.py             # Main application entry
-│   ├── requirements.txt     # Python dependencies
-│   └── .env               # Environment variables
-├── INSTRUCTIONS.md          # Detailed setup guide
-└── README.md              # This file
+│   ├── requirements.txt    # Python dependencies
+│   └── .env                # Environment variables
+├── INSTRUCTIONS.md         # Detailed setup guide
+└── README.md               # This file
 ```
 
 ## 🎮 Usage Guide
