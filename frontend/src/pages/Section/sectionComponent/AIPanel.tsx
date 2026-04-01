@@ -17,7 +17,6 @@ interface AIPanelProps {
   sttError?: string;
   isSTTConnecting?: boolean;
   sttLatency?: number | null;
-  accumulatedTranscript?: string;
 }
 
 export function AIPanel({
@@ -36,7 +35,6 @@ export function AIPanel({
   sttError = "",
   isSTTConnecting = false,
   sttLatency = null,
-  accumulatedTranscript = "",
 }: AIPanelProps) {
   if (!showAIPanel) return null;
 
@@ -89,22 +87,22 @@ export function AIPanel({
                 </div>
               </div>
 
-              {finalTranscripts.map((transcript, idx) => (
-                <div key={`final-${idx}`} className="flex items-start gap-3 justify-end">
-                  <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                    <p className="text-gray-900 text-sm font-medium">{transcript}</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                    You
-                  </div>
-                </div>
-              ))}
-
-              {accumulatedTranscript && (
+              {/* Single user response box with complete transcription */}
+              {(liveTranscript || finalTranscripts.length > 0) && (
                 <div className="flex items-start gap-3 justify-end">
-                  <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200 opacity-80">
-                    <p className="text-gray-900 text-sm font-medium">{accumulatedTranscript}</p>
-                    <span className="text-gray-400 text-xs ml-1 animate-pulse">▌</span>
+                  <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
+                    <p className="text-gray-900 text-sm font-medium">
+                      {/* Show all final transcripts combined */}
+                      {finalTranscripts.join(' ')}
+                      {/* Append live transcript if available */}
+                      {liveTranscript && (
+                        <>
+                          {finalTranscripts.length > 0 && ' '}
+                          {liveTranscript}
+                          <span className="text-gray-400 text-xs ml-1 animate-pulse">▌</span>
+                        </>
+                      )}
+                    </p>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
                     You
@@ -208,22 +206,22 @@ export function AIPanel({
               </div>
             </div>
 
-            {finalTranscripts.map((transcript, idx) => (
-              <div key={`final-${idx}`} className="flex items-start gap-3 justify-end">
-                <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                  <p className="text-gray-900 text-sm font-medium">{transcript}</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                  You
-                </div>
-              </div>
-            ))}
-
-            {accumulatedTranscript && (
+            {/* Single user response box with complete transcription */}
+            {(liveTranscript || finalTranscripts.length > 0) && (
               <div className="flex items-start gap-3 justify-end">
-                <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200 opacity-80">
-                  <p className="text-gray-900 text-sm font-medium">{accumulatedTranscript}</p>
-                  <span className="text-gray-400 text-xs ml-1 animate-pulse">▌</span>
+                <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
+                  <p className="text-gray-900 text-sm font-medium">
+                    {/* Show all final transcripts combined */}
+                    {finalTranscripts.join(' ')}
+                    {/* Append live transcript if available */}
+                    {liveTranscript && (
+                      <>
+                        {finalTranscripts.length > 0 && ' '}
+                        {liveTranscript}
+                        <span className="text-gray-400 text-xs ml-1 animate-pulse">▌</span>
+                      </>
+                    )}
+                  </p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
                   You

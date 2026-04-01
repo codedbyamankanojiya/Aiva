@@ -35,7 +35,6 @@ export function Session() {
   const [sttError, setSttError] = useState<string>("");
   const [isSTTConnecting, setIsSTTConnecting] = useState(false);
   const [sttLatency, setSttLatency] = useState<number | null>(null);
-  const [accumulatedTranscript, setAccumulatedTranscript] = useState<string>("");
 
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
@@ -352,15 +351,10 @@ export function Session() {
             }
             
             if (msg.is_final) {
-              // Add accumulated transcript to final transcripts
-              const finalText = accumulatedTranscript + msg.transcript;
-              setFinalTranscripts((prev) => [...prev, finalText]);
+              setFinalTranscripts((prev) => [...prev, msg.transcript]);
               setLiveTranscript("");
-              setAccumulatedTranscript(""); // Reset accumulator
             } else {
-              // Accumulate partial transcript
-              setAccumulatedTranscript((prev) => prev + msg.transcript);
-              setLiveTranscript(accumulatedTranscript + msg.transcript);
+              setLiveTranscript(msg.transcript);
             }
           }
         } catch {
@@ -616,7 +610,6 @@ export function Session() {
                 sttError={sttError}
                 isSTTConnecting={isSTTConnecting}
                 sttLatency={sttLatency}
-                accumulatedTranscript={accumulatedTranscript}
                 currentQuestionIndex={currentQuestionIndex}
                 totalQuestions={state.questions.length}
                 isLastQuestion={isLastQuestion}
@@ -640,7 +633,6 @@ export function Session() {
             sttError={sttError}
             isSTTConnecting={isSTTConnecting}
             sttLatency={sttLatency}
-            accumulatedTranscript={accumulatedTranscript}
             currentQuestionIndex={currentQuestionIndex}
             totalQuestions={state.questions.length}
             isLastQuestion={isLastQuestion}
