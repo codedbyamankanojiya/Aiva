@@ -25,6 +25,19 @@
       "sessionEndTime": "2026-03-31T21:35:14.234Z",
       "totalAttendanceTime": "0m 15s",
       "averageTimePerQuestion": "7s"
+    },
+    {
+      "role": "Web Developer",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "01:25",
+      "completedAt": "2026-04-01T07:03:04.620Z",
+      "sectionCode": "82SBK8R1",
+      "sessionStartTime": "2026-04-01T07:01:38.648Z",
+      "sessionEndTime": "2026-04-01T07:03:04.620Z",
+      "totalAttendanceTime": "1m 25s",
+      "averageTimePerQuestion": "0s"
     }
   ]
 }
