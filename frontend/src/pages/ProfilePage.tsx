@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
+import { AnimatedButton } from "@/components/common/AnimatedButton";
+import { InteractiveCard } from "@/components/common/InteractiveCard";
+import { ProfilePictureUpload } from "@/components/common/ProfilePictureUpload";
 import { authService } from "@/services/authService";
 import {
   User as UserIcon, Briefcase, Settings, Shield,
   MapPin, Globe, Calendar, Award, Flame, Clock,
-  Plus, X, Linkedin, Github,
+  Plus, X, Linkedin, Github, Camera, Upload, Check,
 } from "lucide-react";
 
 const TABS = [
@@ -30,6 +33,7 @@ export function ProfilePage() {
   const [bio, setBio] = useState(user?.bio ?? "");
   const [location, setLocation] = useState(user?.location ?? "");
   const [website, setWebsite] = useState(user?.website ?? "");
+  const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
 
   // Professional
   const [jobTitle, setJobTitle] = useState(user?.jobTitle ?? "");
@@ -39,6 +43,27 @@ export function ProfilePage() {
   const [skills, setSkills] = useState<string[]>(user?.skills ?? []);
   const [linkedin, setLinkedin] = useState(user?.linkedin ?? "");
   const [github, setGithub] = useState(user?.github ?? "");
+
+  // Update local state when user context changes (e.g. after save or initial load)
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName ?? "");
+      setLastName(user.lastName ?? "");
+      setUsername(user.username ?? "");
+      setBio(user.bio ?? "");
+      setLocation(user.location ?? "");
+      setWebsite(user.website ?? "");
+      setProfilePicture(user.profilePicture || "");
+      setJobTitle(user.jobTitle ?? "");
+      setCompany(user.company ?? "");
+      setExperience(user.experience ?? "");
+      setSkills(user.skills ?? []);
+      setLinkedin(user.linkedin ?? "");
+      setGithub(user.github ?? "");
+    }
+  }, [user]);
+
+  // General
 
   // Security
   const [currentPwd, setCurrentPwd] = useState("");
@@ -52,7 +77,7 @@ export function ProfilePage() {
 
   async function saveGeneral() {
     setSaving(true);
-    await updateProfile({ firstName, lastName, username, bio, location, website });
+    await updateProfile({ firstName, lastName, username, bio, location, website, profilePicture });
     setSaveMsg("Changes saved successfully!");
     setSaving(false);
     setTimeout(() => setSaveMsg(""), 3000);
@@ -104,87 +129,131 @@ export function ProfilePage() {
         </div>
 
         {/* Profile info card overlapping banner */}
-        <div className="relative -mt-16 mx-4 sm:mx-6 rounded-2xl bg-white/70 backdrop-blur-xl shadow-lg ring-1 ring-white/40 p-5">
-          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-            {/* Avatar */}
-            <div className="-mt-14 sm:-mt-16">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-3xl font-bold shadow-xl ring-4 ring-white">
-                {initials}
-              </div>
-            </div>
+        <InteractiveCard hover={true} scale={true} glow={true} tilt={false}>
+          <div className="relative -mt-16 mx-4 sm:mx-6 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-lg ring-1 ring-white/40 dark:ring-gray-700/40 p-5">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-5">
+              {/* Avatar section */}
+              <motion.div 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 15 }}
+                className="-mt-14 sm:-mt-16 relative"
+              >
+                <ProfilePictureUpload
+                  currentImage={profilePicture}
+                  onImageChange={setProfilePicture}
+                  size="lg"
+                />
+                <div className="absolute bottom-1 right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 z-10 shadow-sm" title="Online" />
+              </motion.div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0 pb-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{user.firstName} {user.lastName}</h2>
-                  <p className="text-sm text-gray-500 font-medium">@{user.username}</p>
+              {/* Info section */}
+              <div className="flex-1 min-w-0 pb-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      {user.firstName} {user.lastName}
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">@{user.username}</p>
+                  </div>
+                  
+                  <div className="flex flex-col items-end gap-1.5 self-start sm:self-center">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-aiva-purple/10 to-aiva-indigo/10 dark:from-aiva-purple/20 dark:to-aiva-indigo/20 px-4 py-1.5 text-sm font-bold text-aiva-purple dark:text-aiva-purple ring-1 ring-aiva-purple/20">
+                      <Award size={14} />
+                      Level {user.level}
+                    </span>
+                    {/* Level Progress Bar */}
+                    <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: "65%" }} 
+                        className="h-full bg-gradient-to-r from-aiva-purple to-aiva-indigo"
+                        transition={{ duration: 1, delay: 0.5 }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Mastery 65%</span>
+                  </div>
                 </div>
-                <span className="self-start inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-aiva-purple/10 to-aiva-indigo/10 px-4 py-1.5 text-sm font-bold text-aiva-purple ring-1 ring-aiva-purple/20">
-                  <Award size={14} />
-                  Level {user.level}
-                </span>
-              </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                <span className="flex items-center gap-1"><Calendar size={12} /> Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
-                {user.location && <span className="flex items-center gap-1"><MapPin size={12} /> {user.location}</span>}
-                {user.website && <span className="flex items-center gap-1"><Globe size={12} /> {user.website}</span>}
+                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="flex items-center gap-1.5"><Calendar size={12} className="text-aiva-purple" /> Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
+                  {user.location && <span className="flex items-center gap-1.5"><MapPin size={12} className="text-aiva-purple" /> {user.location}</span>}
+                  {user.website && <span className="flex items-center gap-1.5"><Globe size={12} className="text-aiva-purple" /> {user.website}</span>}
+                </div>
               </div>
             </div>
-          </div>
 
           {/* Stats row */}
-          <div className="mt-5 grid grid-cols-3 gap-3">
-            <StatCard icon={Clock} label="Practice Hours" value={user.stats.practiceHours} color="from-blue-500/10 to-cyan-500/10" iconColor="text-blue-500" />
-            <StatCard icon={Award} label="Achievements" value={user.stats.achievements} color="from-amber-500/10 to-orange-500/10" iconColor="text-amber-500" />
-            <StatCard icon={Flame} label="Day Streak" value={user.stats.streak} color="from-rose-500/10 to-pink-500/10" iconColor="text-rose-500" />
+          <div className="mt-6 grid grid-cols-3 gap-4">
+            <StatCard 
+              icon={Clock} 
+              label="Practice Hours" 
+              value={user.stats.practiceHours} 
+              color="from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20" 
+              iconColor="text-blue-500" 
+            />
+            <StatCard 
+              icon={Award} 
+              label="Achievements" 
+              value={user.stats.achievements} 
+              color="from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20" 
+              iconColor="text-amber-500" 
+            />
+            <StatCard 
+              icon={Flame} 
+              label="Day Streak" 
+              value={user.stats.streak} 
+              color="from-rose-500/10 to-pink-500/10 dark:from-rose-500/20 dark:to-pink-500/20" 
+              iconColor="text-rose-500" 
+            />
           </div>
-        </div>
+          </div>
+        </InteractiveCard>
       </div>
 
       {/* ── Tab content ── */}
-      <div className="rounded-3xl bg-white/60 backdrop-blur-xl shadow-lg ring-1 ring-white/40 overflow-hidden">
-        {/* Tab bar */}
-        <div className="flex border-b border-gray-200/50 bg-white/30">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold transition-colors ${
-                activeTab === tab.id
-                  ? "text-aiva-purple"
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <tab.icon size={16} />
-              <span className="hidden sm:inline">{tab.label}</span>
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="profile-tab-indicator"
-                  className="absolute bottom-0 inset-x-4 h-0.5 rounded-full bg-aiva-purple"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-
-        <div className="p-5 sm:p-6">
-          {/* Save message */}
-          <AnimatePresence>
-            {saveMsg && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="mb-5 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium flex items-center gap-2"
+      <InteractiveCard hover={false} scale={false} glow={true} tilt={false}>
+        <div className="rounded-3xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl shadow-lg ring-1 ring-white/40 dark:ring-gray-700/40 overflow-hidden">
+          {/* Tab bar */}
+          <div className="flex border-b border-gray-200/50 dark:border-gray-700/50 bg-white/30 dark:bg-gray-900/10">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all ${
+                  activeTab === tab.id
+                    ? "text-aiva-purple"
+                    : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                }`}
               >
-                <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span>
-                {saveMsg}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <tab.icon size={16} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="profile-tab-indicator"
+                    className="absolute bottom-0 inset-x-6 h-0.5 rounded-full bg-aiva-purple"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-5 sm:p-6">
+            {/* Save message */}
+            <AnimatePresence>
+              {saveMsg && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mb-5 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium flex items-center gap-2"
+                >
+                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span>
+                  {saveMsg}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
           {/* ── General ── */}
           {activeTab === "general" && (
@@ -198,23 +267,28 @@ export function ProfilePage() {
                 <GlassField label="Email" value={user.email} onChange={() => {}} disabled />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Bio</label>
+                <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 block uppercase tracking-wider">Bio</label>
                 <textarea
                   value={bio} onChange={(e) => setBio(e.target.value)}
                   maxLength={280} rows={3}
-                  className="w-full rounded-xl bg-white/60 backdrop-blur-sm px-4 py-3 text-sm ring-1 ring-gray-200/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 resize-none transition-shadow"
+                  className="w-full rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm px-4 py-3 text-sm text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/60 dark:ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 resize-none transition-shadow"
                   placeholder="Write something about yourself..."
                 />
-                <div className="text-right text-xs text-gray-400 mt-1">{bio.length}/280</div>
+                <div className="text-right text-[10px] text-gray-400 mt-1 font-semibold">{bio.length}/280</div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <GlassField label="Location" value={location} onChange={setLocation} placeholder="City, Country" icon={<MapPin size={14} />} />
                 <GlassField label="Website" value={website} onChange={setWebsite} placeholder="https://yoursite.com" icon={<Globe size={14} />} />
               </div>
               <div className="pt-2">
-                <Button onClick={saveGeneral} disabled={saving}>
+                <AnimatedButton 
+                  onClick={saveGeneral} 
+                  disabled={saving}
+                  loading={saving}
+                  icon={<Check size={16} />}
+                >
                   {saving ? "Saving..." : "Save Changes"}
-                </Button>
+                </AnimatedButton>
               </div>
             </motion.div>
           )}
@@ -267,9 +341,14 @@ export function ProfilePage() {
               </div>
 
               <div className="pt-2">
-                <Button onClick={saveProfessional} disabled={saving}>
+                <AnimatedButton 
+                  onClick={saveProfessional} 
+                  disabled={saving}
+                  loading={saving}
+                  icon={<Check size={16} />}
+                >
                   {saving ? "Saving..." : "Save Changes"}
-                </Button>
+                </AnimatedButton>
               </div>
             </motion.div>
           )}
@@ -312,7 +391,9 @@ export function ProfilePage() {
                   <GlassField label="Confirm New Password" value={confirmPwd} onChange={setConfirmPwd} type="password" />
                 </div>
                 <div>
-                  <Button onClick={handleChangePassword}>Update Password</Button>
+                  <AnimatedButton onClick={handleChangePassword} icon={<Shield size={16} />}>
+                    Update Password
+                  </AnimatedButton>
                 </div>
               </SettingsSection>
 
@@ -354,6 +435,7 @@ export function ProfilePage() {
           )}
         </div>
       </div>
+    </InteractiveCard>
     </motion.div>
   );
 }
@@ -364,17 +446,27 @@ function StatCard({ icon: Icon, label, value, color, iconColor }: {
   icon: React.ElementType; label: string; value: number; color: string; iconColor: string;
 }) {
   return (
-    <div className={`rounded-xl bg-gradient-to-br ${color} p-3.5 ring-1 ring-gray-200/30`}>
-      <div className="flex items-center gap-2.5">
-        <div className={`w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center ${iconColor}`}>
-          <Icon size={16} />
+    <motion.div
+      whileHover={{ scale: 1.02, y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      className={`rounded-2xl bg-gradient-to-br ${color} p-4 ring-1 ring-gray-200/30 dark:ring-white/10 shadow-sm`}
+    >
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-xl bg-white/90 dark:bg-gray-800/90 flex items-center justify-center ${iconColor} shadow-sm`}>
+          <Icon size={20} strokeWidth={2.5} />
         </div>
         <div>
-          <div className="text-xl font-bold text-gray-900 leading-none">{value}</div>
-          <div className="text-[10px] font-medium text-gray-500 mt-0.5">{label}</div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-2xl font-black text-gray-900 dark:text-white leading-none"
+          >
+            {value}
+          </motion.div>
+          <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-tight">{label}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -384,13 +476,13 @@ function GlassField({ label, type = "text", value, onChange, placeholder, disabl
 }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-gray-600 mb-1.5 block">{label}</label>
+      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1.5 block uppercase tracking-wider">{label}</label>
       <div className="relative">
-        {icon && <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">{icon}</span>}
+        {icon && <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">{icon}</span>}
         <input
           type={type} value={value} onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder} disabled={disabled}
-          className={`w-full rounded-xl bg-white/60 backdrop-blur-sm ${icon ? "pl-10" : "px-4"} pr-4 py-2.5 text-sm ring-1 ring-gray-200/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 disabled:opacity-50 disabled:cursor-not-allowed transition-shadow`}
+          className={`w-full rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm ${icon ? "pl-11" : "px-4"} pr-4 py-3 text-sm text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/60 dark:ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
         />
       </div>
     </div>
@@ -399,9 +491,11 @@ function GlassField({ label, type = "text", value, onChange, placeholder, disabl
 
 function SettingsSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
-    <div>
-      <h4 className="text-sm font-bold text-gray-800">{title}</h4>
-      <p className="text-xs text-gray-500 mt-0.5 mb-4">{description}</p>
+    <div className="space-y-4">
+      <div>
+        <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">{title}</h4>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+      </div>
       <div className="space-y-3">{children}</div>
     </div>
   );
@@ -410,16 +504,16 @@ function SettingsSection({ title, description, children }: { title: string; desc
 function ToggleRow({ label, desc, defaultChecked = false }: { label: string; desc: string; defaultChecked?: boolean }) {
   const [checked, setChecked] = useState(defaultChecked);
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl bg-white/60 backdrop-blur-sm p-4 ring-1 ring-gray-200/40 hover:ring-gray-200/60 transition-all">
+    <div className="flex items-center justify-between gap-4 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm p-4 ring-1 ring-gray-200/40 dark:ring-gray-700/40 hover:ring-gray-200/60 dark:hover:ring-gray-700/60 transition-all">
       <div>
-        <div className="text-sm font-semibold text-gray-800">{label}</div>
-        <div className="text-xs text-gray-500 mt-0.5">{desc}</div>
+        <div className="text-sm font-bold text-gray-800 dark:text-gray-200">{label}</div>
+        <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">{desc}</div>
       </div>
       <button
         type="button" role="switch" aria-checked={checked}
         onClick={() => setChecked(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
-          checked ? "bg-aiva-purple" : "bg-gray-300"
+          checked ? "bg-aiva-purple" : "bg-gray-300 dark:bg-gray-700"
         }`}
       >
         <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${

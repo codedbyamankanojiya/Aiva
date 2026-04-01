@@ -286,7 +286,7 @@ export function SignUpPage() {
                         <h2 className="auth-form-title">Create Account</h2>
                         <p className="auth-form-sub">Start your AI interview journey</p>
                       </div>
-                      <GlassField id="su-email" label="Email Address" type="email" value={email} onChange={setEmail} error={fieldErrors.email} placeholder="you@example.com" icon={<Mail size={15} />} />
+                      <GlassField id="su-email" label="Email Address" type="email" value={email} onChange={setEmail} error={fieldErrors.email} placeholder="priya.sharma@example.com" icon={<Mail size={15} />} />
                       <div className="auth-field">
                         <label htmlFor="su-password" className="auth-label">Password</label>
                         <div className="auth-input-wrap">
@@ -316,10 +316,10 @@ export function SignUpPage() {
                         <p className="auth-form-sub">Tell us about yourself</p>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <GlassField id="su-first" label="First Name" value={firstName} onChange={setFirstName} error={fieldErrors.firstName} placeholder="John" />
-                        <GlassField id="su-last" label="Last Name" value={lastName} onChange={setLastName} error={fieldErrors.lastName} placeholder="Doe" />
+                        <GlassField id="su-first" label="First Name" value={firstName} onChange={setFirstName} error={fieldErrors.firstName} placeholder="Priya" />
+                        <GlassField id="su-last" label="Last Name" value={lastName} onChange={setLastName} error={fieldErrors.lastName} placeholder="Sharma" />
                       </div>
-                      <GlassField id="su-username" label="Username" value={username} onChange={setUsername} error={fieldErrors.username} placeholder="john_doe42" icon={<User size={15} />} />
+                      <GlassField id="su-username" label="Username" value={username} onChange={setUsername} error={fieldErrors.username} placeholder="priyasharma71" icon={<User size={15} />} />
                       <GlassField id="su-dob" label="Date of Birth (optional)" type="date" value={dateOfBirth} onChange={setDateOfBirth} />
                     </div>
                   )}

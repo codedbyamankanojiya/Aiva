@@ -66,8 +66,12 @@ export function Navbar() {
           className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-1 bg-white/40 backdrop-blur-md ring-1 ring-white/30 hover:bg-white/60 transition-all cursor-pointer"
         >
           {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-md">
-            {initials}
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-md overflow-hidden ring-2 ring-white/20">
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </div>
           {/* Name */}
           {user && (
@@ -89,15 +93,15 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white/80 backdrop-blur-xl shadow-xl ring-1 ring-black/5 border border-white/50 overflow-hidden"
+              className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white/90 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl ring-1 ring-black/5 dark:ring-white/10 border border-white/50 dark:border-white/10 overflow-hidden"
             >
               {/* User info header */}
               {user && (
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-bold text-gray-800 truncate">
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-bold text-gray-800 dark:text-white truncate">
                     {user.firstName} {user.lastName}
                   </p>
-                  <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
                 </div>
               )}
 
@@ -139,13 +143,13 @@ function DropdownItem({ icon: Icon, label, onClick, danger = false }: {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
+      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-all ${
         danger
-          ? "text-red-600 hover:bg-red-50"
-          : "text-gray-700 hover:bg-gray-50"
+          ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5"
       }`}
     >
-      <Icon size={16} className={danger ? "text-red-500" : "text-gray-400"} />
+      <Icon size={16} className={danger ? "text-red-500" : "text-gray-400 dark:text-gray-500"} />
       {label}
     </button>
   );

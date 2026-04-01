@@ -10,6 +10,7 @@ export interface User {
   lastName: string;
   username: string;
   avatar: string | null;
+  profilePicture?: string;
   bio: string;
   location: string;
   website: string;

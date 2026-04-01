@@ -274,12 +274,44 @@ body {
   background-color: rgba(31, 41, 55, 0.9) !important;
 }
 
+.dark .bg-white\/70 {
+  background-color: rgba(31, 41, 55, 0.7) !important;
+}
+
+.dark .bg-white\/60 {
+  background-color: rgba(31, 41, 55, 0.6) !important;
+}
+
 .dark .border-gray-200 {
   border-color: #374151 !important;
 }
 
 .dark .border-gray-200\/60 {
   border-color: rgba(55, 65, 81, 0.6) !important;
+}
+
+.dark .border-gray-200\/50 {
+  border-color: rgba(55, 65, 81, 0.5) !important;
+}
+
+.dark .border-gray-200\/40 {
+  border-color: rgba(55, 65, 81, 0.4) !important;
+}
+
+.dark .ring-gray-200\/30 {
+  box-shadow: 0 0 0 1px rgba(55, 65, 81, 0.3) !important;
+}
+
+.dark .ring-gray-200\/40 {
+  box-shadow: 0 0 0 1px rgba(55, 65, 81, 0.4) !important;
+}
+
+.dark .ring-gray-200\/60 {
+  box-shadow: 0 0 0 1px rgba(55, 65, 81, 0.6) !important;
+}
+
+.dark .ring-white\/40 {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) !important;
 }
 
 .dark .text-gray-900 {
@@ -309,6 +341,29 @@ body {
 .dark .text-gray-300 {
   color: #4b5563 !important;
 }
+
+/* Profile Page Specific Dark Mode Fixes - Cleaned up to use standard Tailwind behavior */
+.dark .bg-gradient-to-r,
+.dark .bg-gradient-to-br {
+  background-origin: border-box;
+}
+
+/* Ensure glass backgrounds are dark enough in dark mode */
+.dark .bg-white\/70,
+.dark .bg-white\/60,
+.dark .bg-white\/40,
+.dark .bg-white\/30 {
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(20px);
+}
+
+.dark .text-gray-900 { color: #f9fafb !important; }
+.dark .text-gray-800 { color: #f3f4f6 !important; }
+.dark .text-gray-700 { color: #e5e7eb !important; }
+.dark .text-gray-600 { color: #d1d5db !important; }
+.dark .text-gray-500 { color: #9ca3af !important; }
+.dark .text-gray-400 { color: #6b7280 !important; }
+
 
 /* ── Border colors for dark mode ─────────────────────────── */
 .dark .border-gray-100 {

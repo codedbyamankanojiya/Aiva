@@ -191,7 +191,7 @@ export function LoginPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
+                      placeholder="priya.sharma@example.com"
                       autoComplete="email"
                       className="auth-input"
                     />
