@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, BookOpen, Users, UserCircle, Settings as SettingsIcon } from "lucide-react";
+import { Home, BookOpen, Users } from "lucide-react";
 
 /* ── Icon nav items ──────────────────────────────────────── */
 const iconNavItems = [
@@ -16,7 +16,17 @@ const iconNavItems = [
       { label: "Analytics", path: "/analytics" },
     ],
   },
-  { icon: BookOpen, label: "Resources", id: "resources", path: "/resources" },
+  { 
+    icon: BookOpen, 
+    label: "Resources", 
+    id: "resources", 
+    path: "/resources",
+    subItems: [
+      { label: "Learning Materials", path: "/resources" },
+      { label: "Practice Tools", path: "/resources" },
+      { label: "Downloads", path: "/resources" },
+    ]
+  },
   {
     icon: Users,
     label: "Community",
@@ -26,10 +36,6 @@ const iconNavItems = [
   },
 ];
 
-const bottomNavItems = [
-  { icon: UserCircle, label: "Profile", id: "profile", path: "/profile" },
-  { icon: SettingsIcon, label: "Settings", id: "settings", path: "/settings" },
-];
 
 /* Larger sidebar sizes */
 const HEADER_HEIGHT = 76;
@@ -49,8 +55,6 @@ export function Sidebar() {
     if (p === "/" || p === "/practice" || p === "/analytics") return "home";
     if (p.startsWith("/resources")) return "resources";
     if (p.startsWith("/community")) return "community";
-    if (p.startsWith("/profile")) return "profile";
-    if (p.startsWith("/settings")) return "settings";
     return "home";
   })();
 
@@ -174,46 +178,6 @@ export function Sidebar() {
               );
             })}
           </nav>
-
-          {/* Bottom navigation (Profile & Settings) */}
-          <div className="mt-auto flex flex-col items-center gap-4 w-full pb-6">
-            {bottomNavItems.map((item) => {
-              const isActive = activeId === item.id;
-              return (
-                <div key={item.id} className="relative w-full flex justify-end" onMouseEnter={() => setHoveredId(null)}>
-                  <Link
-                    to={item.path}
-                    className={`
-                      flex flex-col items-center justify-center
-                      rounded-xl w-[64px] mr-2 py-2.5
-                      text-[11px] font-medium tracking-wide
-                      transition-all duration-200
-                      ${
-                        isActive
-                          ? "bg-white/10 text-white"
-                          : "text-white/45 hover:text-white/70 hover:bg-white/5"
-                      }
-                    `}
-                  >
-                    <item.icon
-                      size={24}
-                      strokeWidth={isActive ? 2 : 1.5}
-                    />
-                    <span className="mt-1.5 leading-none">{item.label}</span>
-                  </Link>
-
-                  {/* Active bar indicator for bottom items */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="sidebar-active-bar"
-                      className="absolute -left-1 top-1/2 -translate-y-1/2 w-[4px] h-8 rounded-r-full bg-white"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
         </div>
 
         {/* ── Right expand panel (HOVER ONLY contiguous shape) ── */}
