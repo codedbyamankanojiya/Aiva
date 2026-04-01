@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
 import { CinematicOverlay } from "@/components/effects/CinematicOverlay";
-import { AivaCursor } from "@/components/effects/AivaCursor";
 
 export function AppLayout() {
   return (
@@ -16,9 +15,6 @@ export function AppLayout() {
 
       {/* Cinematic 3D overlay ON TOP of background */}
       <CinematicOverlay />
-
-      {/* Custom cursor */}
-      <AivaCursor />
 
       {/* App shell */}
       <div className="relative z-10 flex min-h-screen">
