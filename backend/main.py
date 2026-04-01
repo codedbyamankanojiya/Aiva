@@ -1,11 +1,17 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import json
 import os
+import asyncio
+
+from dotenv import load_dotenv
+import websockets
 
 app = FastAPI(title="Aiva Interview API", version="1.0.0")
+
+load_dotenv()
 
 # Enable CORS
 app.add_middleware(
@@ -212,6 +218,104 @@ async def get_section_data():
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading section data: {str(e)}")
+
+
+@app.websocket("/ws/stt")
+async def stt_websocket(websocket: WebSocket):
+    await websocket.accept()
+
+    api_key = os.getenv("DEEPGRAM_API_KEY")
+    if not api_key:
+        await websocket.send_text(json.dumps({"type": "error", "message": "DEEPGRAM_API_KEY not configured"}))
+        await websocket.close(code=1011)
+        return
+
+    # Check if API key looks valid (basic format check)
+    if len(api_key) < 10:
+        await websocket.send_text(json.dumps({"type": "error", "message": "Invalid Deepgram API key format"}))
+        await websocket.close(code=1011)
+        return
+
+    deepgram_url = (
+        "wss://api.deepgram.com/v1/listen"
+        "?model=nova-3"
+        "&encoding=linear16"
+        "&sample_rate=16000"
+        "&interim_results=true"
+        "&endpointing=300"
+        "&punctuate=true"
+        "&smart_format=true"
+    )
+
+    try:
+        async with websockets.connect(
+            deepgram_url,
+            extra_headers={"Authorization": f"Token {api_key}"},
+            ping_interval=20,
+            ping_timeout=20,
+            close_timeout=5,
+            max_size=2**23,
+        ) as dg:
+
+            async def client_to_deepgram():
+                try:
+                    while True:
+                        message = await websocket.receive()
+                        if message.get("type") == "websocket.disconnect":
+                            break
+                        data = message.get("bytes")
+                        if data is None:
+                            continue
+                        await dg.send(data)
+                except WebSocketDisconnect:
+                    pass
+                except Exception:
+                    pass
+                finally:
+                    try:
+                        await dg.send(json.dumps({"type": "CloseStream"}))
+                    except Exception:
+                        pass
+
+            async def deepgram_to_client():
+                try:
+                    async for raw in dg:
+                        try:
+                            payload = json.loads(raw)
+                        except Exception:
+                            continue
+
+                        channel = payload.get("channel") or {}
+                        alternatives = channel.get("alternatives") or []
+                        transcript = ""
+                        if alternatives and isinstance(alternatives, list):
+                            transcript = (alternatives[0] or {}).get("transcript") or ""
+
+                        is_final = bool(payload.get("is_final"))
+                        if transcript:
+                            await websocket.send_text(
+                                json.dumps(
+                                    {
+                                        "type": "transcript",
+                                        "transcript": transcript,
+                                        "is_final": is_final,
+                                    }
+                                )
+                            )
+                except Exception:
+                    pass
+
+            await asyncio.gather(client_to_deepgram(), deepgram_to_client())
+
+    except Exception as e:
+        try:
+            await websocket.send_text(json.dumps({"type": "error", "message": str(e)}))
+        except Exception:
+            pass
+        try:
+            await websocket.close(code=1011)
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     import uvicorn

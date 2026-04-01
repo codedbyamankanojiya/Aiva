@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
@@ -6,12 +6,13 @@ import { useInterview } from "@/context/InterviewContext";
 import { useTimer } from "@/hooks/useTimer";
 import { Mic, MicOff, Video, VideoOff, Hand, ChevronRight, Phone, MessageSquare } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { AIPanel } from "./sectionComponent/AIPanel";
 
 /* ── Active session phase (screenshot 6) ─────────────────── */
 export function Session() {
   const { state, setQuestions } = useInterview();
   const { formatted } = useTimer({ autoStart: true });
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start with mic muted
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,17 @@ export function Session() {
   const [hasPlayedFirstQuestion, setHasPlayedFirstQuestion] = useState(false);
   const hasInitialized = useRef(false);
   const [sessionStartTime] = useState(new Date().toISOString());
+
+  const sttSocketRef = useRef<WebSocket | null>(null);
+  const sttAudioContextRef = useRef<AudioContext | null>(null);
+  const sttWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
+  const sttStreamRef = useRef<MediaStream | null>(null);
+  const [liveTranscript, setLiveTranscript] = useState<string>("");
+  const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
+  const [sttError, setSttError] = useState<string>("");
+  const [isSTTConnecting, setIsSTTConnecting] = useState(false);
+  const [sttLatency, setSttLatency] = useState<number | null>(null);
+  const [accumulatedTranscript, setAccumulatedTranscript] = useState<string>("");
 
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
@@ -55,6 +67,55 @@ export function Session() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [state.role, state.level, state.roleId, currentQuestionIndex, sectionCode]);
 
+  // Session ID for persistence
+  const sessionId = useMemo(() => {
+    const base = `${state.roleId}-${state.level}-${sectionCode}`;
+    const stored = sessionStorage.getItem('interviewSessionId');
+    if (stored && stored.startsWith(base)) {
+      return stored;
+    }
+    const id = `${base}-${Date.now()}`;
+    sessionStorage.setItem('interviewSessionId', id);
+    return id;
+  }, [state.roleId, state.level, sectionCode]);
+
+  // Load persisted transcripts on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(`transcripts-${sessionId}`);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setFinalTranscripts(parsed);
+        }
+      } catch {
+        localStorage.removeItem(`transcripts-${sessionId}`);
+      }
+    }
+  }, [sessionId]);
+
+  // Save transcripts to localStorage on change
+  useEffect(() => {
+    if (finalTranscripts.length > 0) {
+      localStorage.setItem(`transcripts-${sessionId}`, JSON.stringify(finalTranscripts));
+    }
+  }, [finalTranscripts, sessionId]);
+
+  // Clear transcripts when starting new session
+  useEffect(() => {
+    const handleNewSession = () => {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('transcripts-') && !key.includes(sessionId)) {
+          localStorage.removeItem(key);
+        }
+      });
+    };
+
+    window.addEventListener('beforeunload', handleNewSession);
+    return () => window.removeEventListener('beforeunload', handleNewSession);
+  }, [sessionId]);
+
   // Current question with navigation
   const currentQuestion = state.questions[currentQuestionIndex] || null;
   const isLastQuestion = currentQuestionIndex === state.questions.length - 1;
@@ -85,8 +146,9 @@ export function Session() {
         
         if (data.questions?.length > 0 && !hasPlayedFirstQuestion) {
           setQuestions(data.questions);
-          await playQuestionAudio(data.questions[0].question);
+          setLoading(false);
           setHasPlayedFirstQuestion(true);
+          void playQuestionAudio(data.questions[0].question);
         }
       } catch (error) {
         console.error('Failed to fetch questions:', error);
@@ -183,7 +245,9 @@ export function Session() {
       sessionStartTime: sessionStartTime,
       sessionEndTime: sessionEndTime,
       totalAttendanceTime: totalAttendanceTime,
-      averageTimePerQuestion: avgTimeFormatted
+      averageTimePerQuestion: avgTimeFormatted,
+      transcripts: finalTranscripts,
+      sessionId: sessionId,
     };
     
     // Save to localStorage for compatibility
@@ -217,6 +281,194 @@ export function Session() {
     if (!stream) return;
     stream.getTracks().forEach((t) => t.stop());
   };
+
+  const stopSTT = () => {
+    try {
+      if (sttWorkletNodeRef.current) {
+        sttWorkletNodeRef.current.port.close();
+        sttWorkletNodeRef.current.disconnect();
+      }
+    } catch {
+    }
+
+    try {
+      if (sttAudioContextRef.current && sttAudioContextRef.current.state !== 'closed') {
+        sttAudioContextRef.current.close();
+      }
+    } catch {
+    }
+
+    sttWorkletNodeRef.current = null;
+    sttAudioContextRef.current = null;
+
+    if (sttSocketRef.current) {
+      try {
+        sttSocketRef.current.close();
+      } catch {
+      }
+    }
+    sttSocketRef.current = null;
+
+    stopTracks(sttStreamRef.current);
+    sttStreamRef.current = null;
+    setLiveTranscript("");
+    setSttError("");
+    setIsSTTConnecting(false);
+    setSttLatency(null);
+  };
+
+  const startSTT = async () => {
+    // Prevent multiple simultaneous connections
+    if (sttSocketRef.current || sttAudioContextRef.current) {
+      console.log('STT already running, skipping...');
+      return;
+    }
+
+    setIsSTTConnecting(true);
+    setSttError("");
+    setSttLatency(null);
+
+    try {
+      console.log('Starting STT connection...');
+      // Step 1: Connect WebSocket
+      const wsUrl = "ws://localhost:8000/ws/stt";
+      const socket = new WebSocket(wsUrl);
+      socket.binaryType = "arraybuffer";
+      sttSocketRef.current = socket;
+
+      socket.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(String(event.data));
+          if (msg?.type === "error") {
+            setSttError(msg.message || "STT service error");
+            stopSTT();
+            return;
+          }
+          if (msg?.type === "transcript") {
+            // Calculate latency if we have a timestamp
+            if (msg.metadata?.start_time) {
+              const latency = Date.now() - msg.metadata.start_time;
+              setSttLatency(latency);
+            }
+            
+            if (msg.is_final) {
+              // Add accumulated transcript to final transcripts
+              const finalText = accumulatedTranscript + msg.transcript;
+              setFinalTranscripts((prev) => [...prev, finalText]);
+              setLiveTranscript("");
+              setAccumulatedTranscript(""); // Reset accumulator
+            } else {
+              // Accumulate partial transcript
+              setAccumulatedTranscript((prev) => prev + msg.transcript);
+              setLiveTranscript(accumulatedTranscript + msg.transcript);
+            }
+          }
+        } catch {
+        }
+      };
+
+      socket.onerror = () => {
+        setSttError("STT connection failed");
+        stopSTT();
+      };
+
+      socket.onclose = (event) => {
+        sttSocketRef.current = null;
+        if (!event.wasClean && sttError === "") {
+          setSttError("STT connection lost");
+        }
+      };
+
+      await new Promise<void>((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+          reject(new Error("STT socket timeout"));
+        }, 5000);
+        socket.onopen = () => {
+          window.clearTimeout(timeout);
+          resolve();
+        };
+        socket.onerror = () => {
+          window.clearTimeout(timeout);
+          reject(new Error("STT socket error"));
+        };
+      });
+
+      // Step 2: Setup AudioWorklet
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+        sampleRate: 16000,
+        latencyHint: 'interactive'
+      });
+      sttAudioContextRef.current = audioContext;
+
+      // Load AudioWorklet processor
+      await audioContext.audioWorklet.addModule('/audio-processor.js');
+
+      // Get microphone stream
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          sampleRate: 16000,
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }, 
+        video: false 
+      });
+      sttStreamRef.current = stream;
+
+      // Create audio source and worklet node
+      const source = audioContext.createMediaStreamSource(stream);
+      const workletNode = new AudioWorkletNode(audioContext, 'audio-processor', {
+        processorOptions: {
+          sampleRate: 16000
+        }
+      });
+      sttWorkletNodeRef.current = workletNode;
+
+      // Connect audio pipeline
+      source.connect(workletNode);
+      workletNode.connect(audioContext.destination);
+
+      // Handle PCM data from AudioWorklet
+      workletNode.port.onmessage = (event) => {
+        if (socket.readyState === WebSocket.OPEN && !isMuted) {
+          const pcmBuffer = event.data;
+          socket.send(pcmBuffer);
+        }
+      };
+
+      setIsSTTConnecting(false);
+      console.log('✅ AudioWorklet STT initialized successfully');
+      
+    } catch (error) {
+      console.error("STT setup failed:", error);
+      setSttError("Failed to start speech recognition");
+      stopSTT();
+    }
+  };
+
+  useEffect(() => {
+    if (isMuted) {
+      stopSTT();
+      return;
+    }
+
+    // Add a small delay to ensure proper initialization
+    const timer = setTimeout(() => {
+      void startSTT();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      stopSTT();
+    };
+  }, [isMuted]);
+
+  useEffect(() => {
+    return () => {
+      stopSTT();
+    };
+  }, []);
 
   const startCamera = async () => {
     try {
@@ -353,190 +605,49 @@ export function Session() {
             </div>
 
             {/* AI Panel - Desktop only in grid */}
-            {showAIPanel && !isMobile && (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-lg h-full flex flex-col">
-                {/* AI Panel Header */}
-                <div className="p-4 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white font-semibold shadow-sm">
-                      AI
-                    </div>
-                    <div>
-                      <h3 className="text-gray-900 text-sm font-semibold">Aiva Assistant</h3>
-                      <p className="text-gray-600 text-xs">Interview Coach</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Chat messages area */}
-                <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50/50">
-                  {loading ? (
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-aiva-purple/20 flex items-center justify-center">
-                        <div className="w-2 h-2 bg-aiva-purple rounded-full animate-pulse" />
-                      </div>
-                      <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                        <p className="text-gray-700 text-sm">Loading questions...</p>
-                      </div>
-                    </div>
-                  ) : currentQuestion ? (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-aiva-purple flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                        A
-                      </div>
-                      <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                        <p className="text-gray-900 text-sm font-medium">{currentQuestion.question}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                        A
-                      </div>
-                      <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                        <p className="text-gray-600 text-sm">No questions available</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Question navigation */}
-                {currentQuestion && (
-                  <div className="p-4 border-t border-gray-200 bg-white">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-gray-600 text-xs">
-                        Question {currentQuestionIndex + 1} of {state.questions.length}
-                      </span>
-                      <Button
-                        size="sm"
-                        onClick={handleNextQuestion}
-                        disabled={isLastQuestion || isSpeaking}
-                        className="flex items-center gap-1 bg-aiva-purple hover:bg-aiva-purple/90 text-white shadow-sm"
-                      >
-                        Next
-                        <ChevronRight size={14} />
-                      </Button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
-                        <p className="text-gray-600 text-xs">Listening...</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+            {!isMobile && (
+              <AIPanel
+                showAIPanel={showAIPanel}
+                isMobile={isMobile}
+                loading={loading}
+                currentQuestion={currentQuestion}
+                liveTranscript={liveTranscript}
+                finalTranscripts={finalTranscripts}
+                sttError={sttError}
+                isSTTConnecting={isSTTConnecting}
+                sttLatency={sttLatency}
+                accumulatedTranscript={accumulatedTranscript}
+                currentQuestionIndex={currentQuestionIndex}
+                totalQuestions={state.questions.length}
+                isLastQuestion={isLastQuestion}
+                isSpeaking={isSpeaking}
+                onClose={() => setShowAIPanel(false)}
+                onNextQuestion={handleNextQuestion}
+              />
             )}
           </div>
         </div>
 
         {/* Mobile AI Panel - Full screen overlay */}
-        {showAIPanel && isMobile && (
-          <div className="fixed inset-0 bg-white z-50 flex flex-col">
-            {/* AI Panel Header */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white font-semibold shadow-sm">
-                    AI
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900 text-sm font-semibold">Aiva Assistant</h3>
-                    <p className="text-gray-600 text-xs">Interview Coach</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAIPanel(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                >
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Chat messages area */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50/50">
-              {loading ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-aiva-purple/20 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-aiva-purple rounded-full animate-pulse" />
-                  </div>
-                  <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                    <p className="text-gray-700 text-sm">Loading questions...</p>
-                  </div>
-                </div>
-              ) : currentQuestion ? (
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-aiva-purple flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                    A
-                  </div>
-                  <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                    <p className="text-gray-900 text-sm font-medium">{currentQuestion.question}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                    A
-                  </div>
-                  <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                    <p className="text-gray-600 text-sm">No questions available</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Question navigation */}
-            {currentQuestion && (
-              <div className="p-4 border-t border-gray-200 bg-white">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-gray-600 text-xs">
-                    Question {currentQuestionIndex + 1} of {state.questions.length}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
-                    <p className="text-gray-600 text-xs">Listening...</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Mobile bottom controls */}
-            <div className="p-4 border-t border-gray-200 bg-white">
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
-                    isMuted 
-                      ? "bg-red-500 hover:bg-red-600 text-white shadow-red-200" 
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
-                  }`}
-                >
-                  <Mic size={20} />
-                </button>
-                
-                <button
-                  onClick={handleEndInterview}
-                  className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 shadow-md shadow-red-200"
-                >
-                  <Phone size={20} />
-                </button>
-
-                {currentQuestion && !isLastQuestion && !isSpeaking && (
-                  <Button
-                    size="sm"
-                    onClick={handleNextQuestion}
-                    className="flex items-center gap-1 bg-aiva-purple hover:bg-aiva-purple/90 text-white shadow-sm"
-                  >
-                    Next
-                    <ChevronRight size={14} />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
+        {isMobile && (
+          <AIPanel
+            showAIPanel={showAIPanel}
+            isMobile={isMobile}
+            loading={loading}
+            currentQuestion={currentQuestion}
+            liveTranscript={liveTranscript}
+            finalTranscripts={finalTranscripts}
+            sttError={sttError}
+            isSTTConnecting={isSTTConnecting}
+            sttLatency={sttLatency}
+            accumulatedTranscript={accumulatedTranscript}
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={state.questions.length}
+            isLastQuestion={isLastQuestion}
+            isSpeaking={isSpeaking}
+            onClose={() => setShowAIPanel(false)}
+            onNextQuestion={handleNextQuestion}
+          />
         )}
 
         {/* Bottom controls - Professional Layout */}
