@@ -36,6 +36,12 @@ export function Session() {
   const [isSTTConnecting, setIsSTTConnecting] = useState(false);
   const [sttLatency, setSttLatency] = useState<number | null>(null);
 
+  // Silence detection state
+  const [lastTranscriptLength, setLastTranscriptLength] = useState<number>(0);
+  const [hasSpoken, setHasSpoken] = useState<boolean>(false);
+  const [isSilenceDetected, setIsSilenceDetected] = useState<boolean>(false);
+  const silenceTimerRef = useRef<number | null>(null);
+
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
 
@@ -125,6 +131,15 @@ export function Session() {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       
+      // Reset silence detection state for new question
+      setHasSpoken(false);
+      setLastTranscriptLength(0);
+      setIsSilenceDetected(false);
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+      
       // Play TTS for the next question
       const nextQuestion = state.questions[nextIndex];
       if (nextQuestion) {
@@ -197,6 +212,92 @@ export function Session() {
       }, 100);
     });
   };
+
+  // Silence detection logic
+  const handleSilenceDetected = async () => {
+    if (isSilenceDetected || !currentQuestion) return;
+    
+    setIsSilenceDetected(true);
+    
+    // Combine all transcripts for complete answer
+    const completeAnswer = [...finalTranscripts, liveTranscript].join(' ').trim();
+    
+    if (completeAnswer) {
+      try {
+        // Save question transcript to backend
+        await fetch('http://localhost:8000/api/question-transcript', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId: sessionId,
+            questionId: currentQuestion.id,
+            question: currentQuestion.question,
+            transcript: completeAnswer,
+            timestamp: new Date().toISOString(),
+            sectionCode: sectionCode
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to save question transcript:', error);
+      }
+    }
+    
+    // Stop STT and turn off mic
+    stopSTT();
+    setIsMuted(true);
+    
+    // Clear transcripts for next question
+    setFinalTranscripts([]);
+    setLiveTranscript('');
+    setHasSpoken(false);
+    setLastTranscriptLength(0);
+    
+    // Auto-advance to next question
+    if (!isLastQuestion) {
+      setTimeout(() => {
+        handleNextQuestion();
+        setIsSilenceDetected(false);
+      }, 1000);
+    }
+  };
+
+  // Silence detection useEffect
+  useEffect(() => {
+    // Clear existing timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+    }
+
+    const currentLength = liveTranscript.length;
+    
+    // Check if user has spoken (transcript length > 0)
+    if (currentLength > 0) {
+      setHasSpoken(true);
+    }
+    
+    // Check for silence conditions
+    const isSilenceCondition = 
+      (hasSpoken && currentLength === 0) || // Empty transcript after speaking
+      (hasSpoken && currentLength === lastTranscriptLength && currentLength > 0); // Same length for 5 seconds
+    
+    if (isSilenceCondition) {
+      // Set timer for 5 seconds
+      silenceTimerRef.current = window.setTimeout(() => {
+        handleSilenceDetected();
+      }, 5000);
+    } else {
+      // Update last transcript length when it changes
+      setLastTranscriptLength(currentLength);
+    }
+
+    return () => {
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
+    };
+  }, [liveTranscript, hasSpoken, lastTranscriptLength, isSilenceDetected, currentQuestion, isLastQuestion]);
 
   // Handle responsive behavior
   useEffect(() => {
@@ -282,6 +383,12 @@ export function Session() {
   };
 
   const stopSTT = () => {
+    // Clear silence detection timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+
     try {
       if (sttWorkletNodeRef.current) {
         sttWorkletNodeRef.current.port.close();
@@ -314,6 +421,10 @@ export function Session() {
     setSttError("");
     setIsSTTConnecting(false);
     setSttLatency(null);
+    
+    // Reset silence detection state
+    setHasSpoken(false);
+    setLastTranscriptLength(0);
   };
 
   const startSTT = async () => {
@@ -614,6 +725,7 @@ export function Session() {
                 totalQuestions={state.questions.length}
                 isLastQuestion={isLastQuestion}
                 isSpeaking={isSpeaking}
+                isSilenceDetected={isSilenceDetected}
                 onClose={() => setShowAIPanel(false)}
                 onNextQuestion={handleNextQuestion}
               />
@@ -637,9 +749,30 @@ export function Session() {
             totalQuestions={state.questions.length}
             isLastQuestion={isLastQuestion}
             isSpeaking={isSpeaking}
+            isSilenceDetected={isSilenceDetected}
             onClose={() => setShowAIPanel(false)}
             onNextQuestion={handleNextQuestion}
           />
+        )}
+
+        {/* Silence Detection Overlay */}
+        {isSilenceDetected && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 flex items-center justify-center">
+            <div className="bg-white rounded-xl p-6 shadow-2xl max-w-sm mx-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <Mic size={20} className="text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-gray-900 font-semibold">Processing Answer</h3>
+                  <p className="text-gray-600 text-sm">Silence detected - saving your response</p>
+                </div>
+              </div>
+              <div className="bg-gray-100 rounded-lg px-3 py-2">
+                <p className="text-gray-700 text-sm">Moving to next question...</p>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Bottom controls - Professional Layout */}

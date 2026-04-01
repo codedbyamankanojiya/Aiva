@@ -219,6 +219,75 @@ async def get_section_data():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading section data: {str(e)}")
 
+class QuestionTranscript(BaseModel):
+    sessionId: str
+    questionId: str
+    question: str
+    transcript: str
+    timestamp: str
+    sectionCode: str
+
+@app.post("/api/question-transcript")
+async def save_question_transcript(transcript_data: QuestionTranscript):
+    """
+    Save individual question transcript to SectionData.json with questionTranscripts field
+    
+    Args:
+        transcript_data: Question transcript data to save
+    """
+    try:
+        # Load existing section data
+        data = load_section_data()
+        
+        # Find or create section entry for this session
+        section_entry = None
+        for section in data.get("sections", []):
+            if section.get("sectionCode") == transcript_data.sectionCode:
+                section_entry = section
+                break
+        
+        if not section_entry:
+            # Create new section entry if not found
+            section_entry = {
+                "role": "",  # Will be updated when session completes
+                "level": "",
+                "questionsAnswered": 0,
+                "totalQuestions": 0,
+                "timeSpent": "",
+                "completedAt": transcript_data.timestamp,
+                "sectionCode": transcript_data.sectionCode,
+                "sessionStartTime": transcript_data.timestamp,
+                "sessionEndTime": transcript_data.timestamp,
+                "totalAttendanceTime": "",
+                "averageTimePerQuestion": "",
+                "questionTranscripts": []
+            }
+            data["sections"].append(section_entry)
+        
+        # Initialize questionTranscripts field if not exists
+        if "questionTranscripts" not in section_entry:
+            section_entry["questionTranscripts"] = []
+        
+        # Add new question transcript
+        section_entry["questionTranscripts"].append({
+            "questionId": transcript_data.questionId,
+            "question": transcript_data.question,
+            "transcript": transcript_data.transcript,
+            "timestamp": transcript_data.timestamp
+        })
+        
+        # Update questions answered count
+        section_entry["questionsAnswered"] = len(section_entry["questionTranscripts"])
+        
+        # Save updated data
+        with open('SectionData.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        return {"message": "Question transcript saved successfully", "questionsAnswered": len(section_entry["questionTranscripts"])}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving question transcript: {str(e)}")
+
 
 @app.websocket("/ws/stt")
 async def stt_websocket(websocket: WebSocket):

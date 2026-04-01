@@ -10,6 +10,7 @@ interface AIPanelProps {
   totalQuestions: number;
   isLastQuestion: boolean;
   isSpeaking: boolean;
+  isSilenceDetected?: boolean;
   onClose: () => void;
   onNextQuestion: () => void;
   liveTranscript?: string;
@@ -28,6 +29,7 @@ export function AIPanel({
   totalQuestions,
   isLastQuestion,
   isSpeaking,
+  isSilenceDetected = false,
   onClose,
   onNextQuestion,
   liveTranscript = "",
@@ -155,8 +157,15 @@ export function AIPanel({
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
                 <p className="text-gray-600 text-xs">
-                  {isSTTConnecting ? "Connecting..." : sttError ? "Speech recognition unavailable" : "Listening..."}
-                  {sttLatency && !sttError && !isSTTConnecting && (
+                  {isSilenceDetected 
+                    ? "Silence detected - processing answer..." 
+                    : isSTTConnecting 
+                      ? "Connecting..." 
+                      : sttError 
+                        ? "Speech recognition unavailable" 
+                        : "Listening..."
+                  }
+                  {sttLatency && !sttError && !isSTTConnecting && !isSilenceDetected && (
                     <span className="ml-2 text-green-600">{sttLatency}ms</span>
                   )}
                 </p>
@@ -283,8 +292,15 @@ export function AIPanel({
           <div className="flex items-center gap-2">
             <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
               <p className="text-gray-600 text-xs">
-                {isSTTConnecting ? "Connecting..." : sttError ? "Speech recognition unavailable" : "Listening..."}
-                {sttLatency && !sttError && !isSTTConnecting && (
+                {isSilenceDetected 
+                  ? "Silence detected - processing answer..." 
+                  : isSTTConnecting 
+                    ? "Connecting..." 
+                    : sttError 
+                      ? "Speech recognition unavailable" 
+                      : "Listening..."
+                }
+                {sttLatency && !sttError && !isSTTConnecting && !isSilenceDetected && (
                   <span className="ml-2 text-green-600">{sttLatency}ms</span>
                 )}
               </p>
