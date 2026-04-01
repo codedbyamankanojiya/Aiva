@@ -2,20 +2,66 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { Mail, Lock, Eye, EyeOff, User, Shield, Check } from "lucide-react";
+import {
+  Mail, Lock, Eye, EyeOff, User, Shield, Check,
+  ArrowRight, ArrowLeft, Sparkles
+} from "lucide-react";
 import { CinematicOverlay } from "@/components/effects/CinematicOverlay";
 
 const STEPS = [
-  { id: 1, title: "Account" },
-  { id: 2, title: "Personal" },
-  { id: 3, title: "Preferences" },
-  { id: 4, title: "Confirm" },
+  { id: 1, title: "Account", icon: Mail },
+  { id: 2, title: "Profile", icon: User },
+  { id: 3, title: "Interests", icon: Sparkles },
+  { id: 4, title: "Confirm", icon: Shield },
 ];
 
 const INTEREST_OPTIONS = [
   "Machine Learning", "Web Development", "Data Science", "System Design",
   "Algorithms", "Cloud Computing", "Mobile Dev", "DevOps",
+  "Leadership", "Communication", "Product Management", "UI/UX Design",
 ];
+
+const ROBO_MESSAGES: Record<number, string> = {
+  1: "Let's get you set up! Your AI interview journey starts here. 🚀",
+  2: "Great start! Tell me a little about yourself.",
+  3: "Pick your areas — I'll tailor your mock interviews just for you!",
+  4: "Almost there! Let's confirm your details before we dive in.",
+};
+
+/* ── Reusable glass input ── */
+function GlassField({
+  id, label, type = "text", value, onChange, error, placeholder, icon,
+}: {
+  id?: string; label: string; type?: string; value: string;
+  onChange: (v: string) => void; error?: string; placeholder?: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="auth-field">
+      <label htmlFor={id} className="auth-label">{label}</label>
+      <div className="auth-input-wrap">
+        {icon && <span className="auth-input-icon">{icon}</span>}
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={`auth-input ${icon ? "pl-10" : ""}`}
+        />
+      </div>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="auth-field-error"
+        >
+          {error}
+        </motion.p>
+      )}
+    </div>
+  );
+}
 
 export function SignUpPage() {
   const { register } = useAuth();
@@ -39,10 +85,8 @@ export function SignUpPage() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [marketingConsent, setMarketingConsent] = useState(false);
 
-  function toggleInterest(interest: string) {
-    setInterests((prev) =>
-      prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest],
-    );
+  function toggleInterest(i: string) {
+    setInterests((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]);
   }
 
   function validateStep(): boolean {
@@ -69,18 +113,15 @@ export function SignUpPage() {
 
   function goNext() {
     if (!validateStep()) return;
-    setDirection(1);
-    setStep((s) => Math.min(4, s + 1));
+    setDirection(1); setStep((s) => Math.min(4, s + 1));
   }
   function goPrev() {
-    setDirection(-1);
-    setStep((s) => Math.max(1, s - 1));
+    setDirection(-1); setStep((s) => Math.max(1, s - 1));
   }
 
   async function handleSubmit() {
     if (!agreeToTerms) { setError("You must agree to the terms"); return; }
-    setStatus("loading");
-    setError("");
+    setStatus("loading"); setError("");
     try {
       await register({ email, password, firstName, lastName, username, dateOfBirth });
       navigate("/", { replace: true });
@@ -91,215 +132,310 @@ export function SignUpPage() {
   }
 
   const slideVariants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 50 : -50, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir > 0 ? -50 : 50, opacity: 0 }),
+    exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#ece5f6] via-[#e8dff5] to-[#d5c8f0]">
-      {/* Background blobs */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-purple-300/40 to-indigo-300/30 blur-3xl animate-blob1" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-br from-pink-300/30 to-purple-300/30 blur-3xl animate-blob2" />
-      </div>
-
-      {/* Cinematic HUD overlay */}
+    <div className="auth-root">
+      <div className="auth-bg" />
       <CinematicOverlay />
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
+      <div className="auth-split">
+
+        {/* LEFT PANEL */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-lg"
+          className="auth-left"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
         >
-          {/* Progress steps */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between">
-              {STEPS.map((s, index) => (
-                <div key={s.id} className="flex items-center flex-1 last:flex-none">
-                  <div className="flex flex-col items-center">
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300 ${
-                      s.id < step
-                        ? "border-emerald-500 bg-emerald-500 text-white"
-                        : s.id === step
-                          ? "border-aiva-purple bg-aiva-purple text-white shadow-glass"
-                          : "border-gray-300 bg-white/60 text-gray-400"
-                    }`}>
-                      {s.id < step ? <Check size={16} /> : s.id}
-                    </div>
-                    <span className={`mt-1.5 text-xs font-medium ${s.id <= step ? "text-gray-700" : "text-gray-400"}`}>{s.title}</span>
-                  </div>
-                  {index < STEPS.length - 1 && (
-                    <div className="flex-1 mx-2.5 mt-[-1.25rem]">
-                      <div className="h-0.5 rounded-full bg-gray-200 overflow-hidden">
-                        <div className="h-full bg-aiva-purple transition-all duration-500" style={{ width: s.id < step ? "100%" : "0%" }} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          {/* Brand */}
+          <div className="auth-brand">
+            <motion.div
+              className="auth-brand-dot"
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className="auth-brand-name">Aiva</span>
+            <span className="auth-brand-badge">AI Coach</span>
           </div>
 
-          {/* Card */}
-          <div className="glass-card rounded-3xl overflow-hidden shadow-xl">
-            <div className="h-1 bg-gradient-to-r from-aiva-purple via-aiva-indigo to-aiva-purple" />
+          {/* Robot */}
+          <motion.div
+            className="auth-robo-wrap"
+            animate={{ y: [0, -18, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <motion.div
+              className="auth-robo-ring"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div
+              className="auth-robo-ring auth-robo-ring-2"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+            />
+            <img src="/Assets/Robo.png" alt="Aiva Robot" className="auth-robo-img" />
+            <div className="auth-robo-glow" />
+          </motion.div>
 
-            <div className="p-8">
-              {error && (
-                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                  className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">{error}</motion.div>
-              )}
+          {/* Speech bubble — changes per step */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.35 }}
+              className="auth-robo-bubble"
+            >
+              {ROBO_MESSAGES[step]}
+            </motion.div>
+          </AnimatePresence>
 
+          {/* Step progress dots */}
+          <div className="auth-step-dots">
+            {STEPS.map((s) => (
+              <motion.div
+                key={s.id}
+                className={`auth-step-dot ${s.id === step ? "auth-step-dot-active" : s.id < step ? "auth-step-dot-done" : ""}`}
+                animate={{ scale: s.id === step ? 1.3 : 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            ))}
+          </div>
+
+          {/* Feature chips */}
+          <div className="auth-chips">
+            {["AI-Powered", "Real Feedback", "Role-aware", "Progress Analytics"].map((f, i) => (
+              <motion.span
+                key={f}
+                className="auth-chip"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+              >
+                <Sparkles size={11} />
+                {f}
+              </motion.span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* RIGHT PANEL — multi-step form */}
+        <motion.div
+          className="auth-right"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="auth-form-card auth-signup-card">
+            <div className="auth-accent-bar" />
+
+            <div className="auth-form-inner">
+              {/* Step indicator */}
+              <div className="auth-steps-header">
+                {STEPS.map((s, idx) => {
+                  const Icon = s.icon;
+                  return (
+                    <div key={s.id} className="auth-step-item">
+                      <div className={`auth-step-circle ${s.id < step ? "done" : s.id === step ? "active" : ""}`}>
+                        {s.id < step ? <Check size={12} /> : <Icon size={12} />}
+                      </div>
+                      <span className={`auth-step-label ${s.id <= step ? "active" : ""}`}>{s.title}</span>
+                      {idx < STEPS.length - 1 && (
+                        <div className={`auth-step-line ${s.id < step ? "done" : ""}`} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Global error */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="auth-error"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Step content */}
               <AnimatePresence mode="wait" custom={direction}>
-                <motion.div key={step} custom={direction} variants={slideVariants}
-                  initial="enter" animate="center" exit="exit" transition={{ duration: 0.25, ease: "easeOut" }}>
-
+                <motion.div
+                  key={step}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25 }}
+                  className="auth-step-content"
+                >
                   {step === 1 && (
-                    <div className="space-y-4">
-                      <div className="text-center mb-5">
-                        <h2 className="text-xl font-bold text-gray-800">Create Your Account</h2>
-                        <p className="text-gray-500 text-sm mt-1">Start your AI interview journey</p>
+                    <div className="auth-form-fields">
+                      <div className="auth-form-header">
+                        <h2 className="auth-form-title">Create Account</h2>
+                        <p className="auth-form-sub">Start your AI interview journey</p>
                       </div>
-                      <GlassField label="Email Address" type="email" value={email} onChange={setEmail} error={fieldErrors.email} placeholder="you@example.com" icon={<Mail size={16} />} />
-                      <div className="relative">
-                        <GlassField label="Password (min 8 chars)" type={showPassword ? "text" : "password"} value={password} onChange={setPassword} error={fieldErrors.password} placeholder="Create a secure password" icon={<Lock size={16} />} />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-[2.15rem] text-gray-400 hover:text-gray-600 transition-colors" tabIndex={-1}>
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
+                      <GlassField id="su-email" label="Email Address" type="email" value={email} onChange={setEmail} error={fieldErrors.email} placeholder="you@example.com" icon={<Mail size={15} />} />
+                      <div className="auth-field">
+                        <label htmlFor="su-password" className="auth-label">Password</label>
+                        <div className="auth-input-wrap">
+                          <Lock size={15} className="auth-input-icon" />
+                          <input
+                            id="su-password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Min 8 characters"
+                            className="auth-input"
+                          />
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="auth-eye-btn" tabIndex={-1}>
+                            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                          </button>
+                        </div>
+                        {fieldErrors.password && <p className="auth-field-error">{fieldErrors.password}</p>}
                       </div>
-                      <GlassField label="Confirm Password" type="password" value={confirmPassword} onChange={setConfirmPassword} error={fieldErrors.confirmPassword} placeholder="Confirm your password" icon={<Shield size={16} />} />
+                      <GlassField id="su-confirm" label="Confirm Password" type="password" value={confirmPassword} onChange={setConfirmPassword} error={fieldErrors.confirmPassword} placeholder="Repeat password" icon={<Shield size={15} />} />
                     </div>
                   )}
 
                   {step === 2 && (
-                    <div className="space-y-4">
-                      <div className="text-center mb-5">
-                        <h2 className="text-xl font-bold text-gray-800">Personal Details</h2>
-                        <p className="text-gray-500 text-sm mt-1">Tell us about yourself</p>
+                    <div className="auth-form-fields">
+                      <div className="auth-form-header">
+                        <h2 className="auth-form-title">Personal Details</h2>
+                        <p className="auth-form-sub">Tell us about yourself</p>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <GlassField label="First Name" value={firstName} onChange={setFirstName} error={fieldErrors.firstName} placeholder="John" />
-                        <GlassField label="Last Name" value={lastName} onChange={setLastName} error={fieldErrors.lastName} placeholder="Doe" />
+                        <GlassField id="su-first" label="First Name" value={firstName} onChange={setFirstName} error={fieldErrors.firstName} placeholder="John" />
+                        <GlassField id="su-last" label="Last Name" value={lastName} onChange={setLastName} error={fieldErrors.lastName} placeholder="Doe" />
                       </div>
-                      <GlassField label="Username" value={username} onChange={setUsername} error={fieldErrors.username} placeholder="john_doe42" icon={<User size={16} />} />
-                      <GlassField label="Date of Birth (optional)" type="date" value={dateOfBirth} onChange={setDateOfBirth} />
+                      <GlassField id="su-username" label="Username" value={username} onChange={setUsername} error={fieldErrors.username} placeholder="john_doe42" icon={<User size={15} />} />
+                      <GlassField id="su-dob" label="Date of Birth (optional)" type="date" value={dateOfBirth} onChange={setDateOfBirth} />
                     </div>
                   )}
 
                   {step === 3 && (
-                    <div className="space-y-4">
-                      <div className="text-center mb-5">
-                        <h2 className="text-xl font-bold text-gray-800">Learning Interests</h2>
-                        <p className="text-gray-500 text-sm mt-1">Select topics that interest you</p>
+                    <div className="auth-form-fields">
+                      <div className="auth-form-header">
+                        <h2 className="auth-form-title">Your Interests</h2>
+                        <p className="auth-form-sub">We'll tailor your experience</p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="auth-interests-grid">
                         {INTEREST_OPTIONS.map((opt) => (
-                          <button key={opt} type="button" onClick={() => toggleInterest(opt)}
-                            className={`rounded-full px-4 py-2 text-sm font-medium border transition-all duration-200 ${
-                              interests.includes(opt)
-                                ? "border-aiva-purple/40 bg-aiva-purple/10 text-aiva-purple"
-                                : "border-white/40 bg-white/50 text-gray-600 hover:bg-white/70"
-                            }`}>
-                            {interests.includes(opt) && <span className="mr-1">✓</span>}{opt}
-                          </button>
+                          <motion.button
+                            key={opt}
+                            type="button"
+                            onClick={() => toggleInterest(opt)}
+                            whileHover={{ scale: 1.04 }}
+                            whileTap={{ scale: 0.96 }}
+                            className={`auth-interest-chip ${interests.includes(opt) ? "selected" : ""}`}
+                          >
+                            {interests.includes(opt) && <Check size={11} />}
+                            {opt}
+                          </motion.button>
                         ))}
                       </div>
-                      <label className="flex items-start gap-3 rounded-xl bg-white/50 backdrop-blur-sm border border-white/40 p-4 cursor-pointer">
-                        <input type="checkbox" checked={marketingConsent} onChange={(e) => setMarketingConsent(e.target.checked)}
-                          className="mt-0.5 w-4 h-4 rounded border-gray-300 text-aiva-purple focus:ring-aiva-purple" />
-                        <div>
-                          <div className="text-sm text-gray-800 font-medium">Subscribe to updates</div>
-                          <div className="text-xs text-gray-500 mt-0.5">Get tips, new features, and learning recommendations</div>
-                        </div>
+                      <label className="auth-consent-row">
+                        <input type="checkbox" checked={marketingConsent} onChange={(e) => setMarketingConsent(e.target.checked)} className="auth-checkbox" />
+                        <span className="text-sm text-gray-600">Get tips and feature updates by email</span>
                       </label>
                     </div>
                   )}
 
                   {step === 4 && (
-                    <div className="space-y-4">
-                      <div className="text-center mb-5">
-                        <h2 className="text-xl font-bold text-gray-800">Confirm Details</h2>
-                        <p className="text-gray-500 text-sm mt-1">Review your information</p>
+                    <div className="auth-form-fields">
+                      <div className="auth-form-header">
+                        <h2 className="auth-form-title">Almost Ready!</h2>
+                        <p className="auth-form-sub">Review your details</p>
                       </div>
-                      <div className="space-y-2">
-                        {([["Email", email], ["Name", `${firstName} ${lastName}`], ["Username", `@${username}`], ["Interests", interests.join(", ") || "None selected"]] as const).map(([label, value]) => (
-                          <div key={label} className="flex justify-between rounded-xl bg-white/50 backdrop-blur-sm ring-1 ring-white/40 px-4 py-3">
-                            <span className="text-sm text-gray-500">{label}</span>
-                            <span className="text-sm text-gray-800 font-medium">{value}</span>
+                      <div className="auth-confirm-list">
+                        {([
+                          ["Email", email],
+                          ["Name", `${firstName} ${lastName}`],
+                          ["Username", `@${username}`],
+                          ["Interests", interests.length ? interests.slice(0, 3).join(", ") + (interests.length > 3 ? ` +${interests.length - 3}` : "") : "None selected"],
+                        ] as const).map(([l, v]) => (
+                          <div key={l} className="auth-confirm-row">
+                            <span className="auth-confirm-label">{l}</span>
+                            <span className="auth-confirm-value">{v}</span>
                           </div>
                         ))}
                       </div>
-                      <label className="flex items-start gap-3 rounded-xl bg-white/50 backdrop-blur-sm border border-white/40 p-4 cursor-pointer">
-                        <input type="checkbox" checked={agreeToTerms} onChange={(e) => setAgreeToTerms(e.target.checked)}
-                          className="mt-0.5 w-4 h-4 rounded border-gray-300 text-aiva-purple focus:ring-aiva-purple" />
-                        <div>
-                          <div className="text-sm text-gray-800 font-medium">I agree to the Terms & Conditions</div>
-                          <div className="text-xs text-gray-500 mt-0.5">By creating an account you agree to our Terms of Service and Privacy Policy</div>
-                        </div>
+                      <label className="auth-consent-row">
+                        <input type="checkbox" checked={agreeToTerms} onChange={(e) => setAgreeToTerms(e.target.checked)} className="auth-checkbox" />
+                        <span className="text-sm text-gray-600">
+                          I agree to the{" "}
+                          <a href="#" className="auth-link">Terms of Service</a>{" "}
+                          and{" "}
+                          <a href="#" className="auth-link">Privacy Policy</a>
+                        </span>
                       </label>
                     </div>
                   )}
                 </motion.div>
               </AnimatePresence>
 
-              {/* Navigation */}
-              <div className="flex justify-between mt-8">
-                <button type="button" onClick={goPrev} disabled={step === 1}
-                  className="px-5 py-2.5 text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                  ← Previous
-                </button>
+              {/* Navigation buttons */}
+              <div className="auth-nav-row">
+                <motion.button
+                  type="button"
+                  onClick={goPrev}
+                  disabled={step === 1}
+                  whileHover={{ scale: step === 1 ? 1 : 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="auth-back-btn"
+                >
+                  <ArrowLeft size={15} />
+                  Back
+                </motion.button>
+
                 {step < 4 ? (
-                  <motion.button type="button" onClick={goNext} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    className="px-6 py-2.5 bg-gradient-to-r from-aiva-purple to-aiva-indigo text-white rounded-xl text-sm font-semibold shadow-glass hover:shadow-lg transition-all">
-                    Next →
+                  <motion.button
+                    type="button"
+                    onClick={goNext}
+                    whileHover={{ scale: 1.03, boxShadow: "0 8px 32px rgba(139,92,246,0.4)" }}
+                    whileTap={{ scale: 0.97 }}
+                    className="auth-submit-btn auth-next-btn"
+                  >
+                    Continue
+                    <ArrowRight size={15} />
                   </motion.button>
                 ) : (
-                  <motion.button type="button" onClick={handleSubmit} disabled={status === "loading"} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50">
+                  <motion.button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={status === "loading"}
+                    whileHover={{ scale: 1.03, boxShadow: "0 8px 32px rgba(16,185,129,0.4)" }}
+                    whileTap={{ scale: 0.97 }}
+                    className="auth-submit-btn auth-finish-btn"
+                  >
                     {status === "loading" ? (
-                      <span className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Creating...</span>
-                    ) : "Create Account ✓"}
+                      <span className="auth-btn-loading"><span className="auth-spinner" />Creating Account...</span>
+                    ) : (
+                      <span className="auth-btn-content"><Check size={15} />Create Account</span>
+                    )}
                   </motion.button>
                 )}
               </div>
 
-              <p className="text-center text-sm text-gray-500 mt-6">
+              <p className="auth-switch-text">
                 Already have an account?{" "}
-                <Link to="/login" className="text-aiva-purple hover:text-aiva-indigo font-medium transition-colors">Sign in</Link>
+                <Link to="/login" className="auth-link auth-link-bold">Sign in →</Link>
               </p>
             </div>
           </div>
         </motion.div>
       </div>
-    </div>
-  );
-}
-
-/* ── Reusable glass input field ── */
-function GlassField({ label, type = "text", value, onChange, error, placeholder, icon }: {
-  label: string; type?: string; value: string; onChange: (v: string) => void;
-  error?: string; placeholder?: string; icon?: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-semibold text-gray-700 mb-1.5">{label}</label>
-      <div className="relative">
-        {icon && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            {icon}
-          </span>
-        )}
-        <input
-          type={type} value={value} onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={`w-full rounded-xl bg-white/60 ${icon ? "pl-10" : "pl-4"} pr-4 py-2.5 text-sm text-gray-800 ring-1 ring-white/40 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-aiva-purple/40 backdrop-blur-sm transition-shadow`}
-        />
-      </div>
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
