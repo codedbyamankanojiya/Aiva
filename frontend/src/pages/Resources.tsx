@@ -326,6 +326,11 @@ export function Resources() {
   const [chatMessages, setChatMessages] = useState<{ id: string; role: "user" | "aiva"; text: string }[]>([]);
   const [chatMenuOpen, setChatMenuOpen] = useState(false);
   const [isAivaThinking, setIsAivaThinking] = useState(false);
+  
+  // New filtering states
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+  const [isApplying, setIsApplying] = useState(false);
 
   const supportsSpeechRecognition = useMemo(() => {
     const w = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
@@ -349,30 +354,43 @@ export function Resources() {
     }
   }, [isVoiceOpen]);
 
-  function handleAskSend() {
-    const trimmed = askQuery.trim();
-    if (!trimmed) return;
-    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    setChatMessages((prev) => [
-      ...prev,
-      { id, role: "user", text: trimmed },
-    ]);
-    setAskQuery("");
-    setIsAivaThinking(true);
+  // Reset filters when switching categories
+  useEffect(() => {
+    setSelectedTopics([]);
+    setAppliedFilters([]);
+  }, [selectedCategory]);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: `${id}-aiva`,
-          role: "aiva",
-          text: "Got it. Pick a subject on the left or search for a topic — I’ll help you navigate resources.",
-        },
-      ]);
-      setIsAivaThinking(false);
-    }, 1500);
+  function handleTopicToggle(topic: string) {
+    setSelectedTopics(prev => 
+      prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
+    );
   }
+
+  function handleApplyFilters() {
+    setIsApplying(true);
+    // Simulate a slight loading state for professional feel
+    setTimeout(() => {
+      setAppliedFilters(selectedTopics);
+      setIsApplying(false);
+    }, 400);
+  }
+
+  // Sample materials that will be filtered
+  const allMaterials = useMemo(() => [
+    { title: "Introduction Guide", type: "pdf", size: "2.4 MB", description: "Core concepts and fundamentals.", topics: ["DSA", "System Design", "Chemistry", "Biology"] },
+    { title: "Advanced Techniques", type: "video", duration: "12:45", description: "Deep dive into complex patterns.", topics: ["Algorithms", "OOP", "Physics", "Mathematics"] },
+    { title: "Interactive Roadmap", type: "link", site: "ROADMAP.SH", description: "Step-by-step path to master.", topics: ["System Design", "Algorithms", "Mathematics"] },
+    { title: "Cheat Sheet v2.0", type: "pdf", size: "1.1 MB", description: "Quick reference for all syntax.", topics: ["DSA", "OOP", "Chemistry", "Physics"] },
+    { title: "Community Resources", type: "link", site: "GITHUB.COM", description: "Curated list of learning materials.", topics: ["System Design", "Testing", "Biology"] },
+    { title: "Practice Assessment", type: "video", duration: "08:20", description: "Watch common interview problems.", topics: ["DSA", "Algorithms", "Testing"] }
+  ], []);
+
+  const displayedMaterials = useMemo(() => {
+    if (appliedFilters.length === 0) return allMaterials;
+    return allMaterials.filter(m => 
+      m.topics.some(t => appliedFilters.includes(t))
+    );
+  }, [appliedFilters, allMaterials]);
 
   function handleOpenVoice() {
     setIsVoiceOpen(true);
@@ -398,6 +416,31 @@ export function Resources() {
       return;
     }
     setIsListening((prev) => !prev);
+  }
+
+  function handleAskSend() {
+    const trimmed = askQuery.trim();
+    if (!trimmed) return;
+    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    setChatMessages((prev) => [
+      ...prev,
+      { id, role: "user", text: trimmed },
+    ]);
+    setAskQuery("");
+    setIsAivaThinking(true);
+
+    // Simulate AI response delay
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `${id}-aiva`,
+          role: "aiva",
+          text: "Got it. Pick a subject on the left or search for a topic — I’ll help you navigate resources.",
+        },
+      ]);
+      setIsAivaThinking(false);
+    }, 1500);
   }
 
   return (
@@ -863,62 +906,89 @@ export function Resources() {
               </div>
 
               {/* Content Grid with Purple Layer */}
-              <div className="relative ml-4 mt-8">
+              <div className="relative ml-4 mt-8 min-h-[400px]">
                 {/* Purple glassmorphic layer behind boxes */}
                 <div className="absolute inset-0 -m-6 rounded-[3rem] bg-gradient-to-br from-aiva-purple/15 to-blue-500/10 backdrop-blur-3xl ring-1 ring-white/10 pointer-events-none" />
                 
-                <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    { title: "Introduction Guide", type: "pdf", size: "2.4 MB", description: "Core concepts and fundamentals." },
-                    { title: "Advanced Techniques", type: "video", duration: "12:45", description: "Deep dive into complex patterns." },
-                    { title: "Interactive Roadmap", type: "link", site: "ROADMAP.SH", description: "Step-by-step path to master." },
-                    { title: "Cheat Sheet v2.0", type: "pdf", size: "1.1 MB", description: "Quick reference for all syntax." },
-                    { title: "Community Resources", type: "link", site: "GITHUB.COM", description: "Curated list of learning materials." },
-                    { title: "Practice Assessment", type: "video", duration: "08:20", description: "Watch common interview problems." }
-                  ].map((item, idx) => (
+                <AnimatePresence mode="popLayout">
+                  {isApplying ? (
                     <motion.div
-                      key={item.title}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.04 + 0.2 }}
-                      whileHover={{ scale: 1.01, y: -1 }}
-                      className="group relative rounded-[2rem] p-5 bg-white/50 dark:bg-gray-900/40 backdrop-blur-xl border border-white/40 dark:border-white/5 transition-all duration-300"
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center z-20"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-                          item.type === 'pdf' ? 'bg-rose-500/10 text-rose-500' :
-                          item.type === 'video' ? 'bg-blue-500/10 text-blue-500' :
-                          'bg-emerald-500/10 text-emerald-500'
-                        }`}>
-                          {item.type === 'pdf' ? <FileText size={20} /> :
-                           item.type === 'video' ? <Video size={20} /> :
-                           <LinkIcon size={20} />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors truncate">
-                            {item.title}
-                          </h4>
-                          <p className="text-[11px] text-gray-500/80 dark:text-gray-400/80 mt-0.5 line-clamp-1">
-                            {item.description}
-                          </p>
-                          <div className="mt-1 text-[9px] font-bold tracking-widest text-gray-400 uppercase">
-                            {item.type === 'pdf' ? item.size : 
-                             item.type === 'video' ? item.duration : 
-                             item.site}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-                            {item.type === 'link' ? <ExternalLink size={14} /> : <Download size={14} />}
-                          </button>
-                          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-                            <Bookmark size={14} />
-                          </button>
-                        </div>
+                      <div className="flex gap-2">
+                        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 rounded-full bg-aiva-purple" />
+                        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 rounded-full bg-aiva-purple" />
+                        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 rounded-full bg-aiva-purple" />
                       </div>
                     </motion.div>
-                  ))}
-                </div>
+                  ) : (
+                    <motion.div 
+                      key="grid"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="relative grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+                      {displayedMaterials.map((item, idx) => (
+                        <motion.div
+                          key={item.title}
+                          layout
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: idx * 0.04 }}
+                          whileHover={{ scale: 1.01, y: -1 }}
+                          className="group relative rounded-[2rem] p-5 bg-white/50 dark:bg-gray-900/40 backdrop-blur-xl border border-white/40 dark:border-white/5 transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
+                              item.type === 'pdf' ? 'bg-rose-500/10 text-rose-500' :
+                              item.type === 'video' ? 'bg-blue-500/10 text-blue-500' :
+                              'bg-emerald-500/10 text-emerald-500'
+                            }`}>
+                              {item.type === 'pdf' ? <FileText size={20} /> :
+                               item.type === 'video' ? <Video size={20} /> :
+                               <LinkIcon size={20} />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors truncate">
+                                {item.title}
+                              </h4>
+                              <p className="text-[11px] text-gray-500/80 dark:text-gray-400/80 mt-0.5 line-clamp-1">
+                                {item.description}
+                              </p>
+                              <div className="mt-1 text-[9px] font-bold tracking-widest text-gray-400 uppercase">
+                                {item.type === 'pdf' ? (item as any).size : 
+                                 item.type === 'video' ? (item as any).duration : 
+                                 (item as any).site}
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                                {item.type === 'link' ? <ExternalLink size={14} /> : <Download size={14} />}
+                              </button>
+                              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                                <Bookmark size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                      
+                      {displayedMaterials.length === 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="col-span-full py-20 text-center"
+                        >
+                          <p className="text-gray-400 font-medium italic">No materials found for the selected filters.</p>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -947,12 +1017,39 @@ export function Resources() {
 
                 {/* Topic chips */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Quick Filters</h4>
+                  <div className="flex items-center justify-between ml-1">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-gray-400">Quick Filters</h4>
+                    {selectedTopics.length > 0 && (
+                      <button 
+                        onClick={() => setSelectedTopics([])}
+                        className="text-[10px] font-bold text-rose-500 hover:underline"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {selected?.topics.map((topic, i) => (
-                      <TopicChip key={topic} label={topic} index={i} />
+                      <TopicChip 
+                        key={topic} 
+                        label={topic} 
+                        index={i} 
+                        isActive={selectedTopics.includes(topic)}
+                        onToggle={() => handleTopicToggle(topic)}
+                      />
                     ))}
                   </div>
+                  
+                  {/* Apply Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleApplyFilters}
+                    disabled={selectedTopics.length === 0 && appliedFilters.length === 0}
+                    className="w-full py-3 rounded-2xl bg-aiva-purple text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-aiva-purple/20 disabled:opacity-50 disabled:grayscale transition-all mt-2"
+                  >
+                    Apply Filters
+                  </motion.button>
                 </div>
 
                 {/* Action card */}
@@ -981,9 +1078,14 @@ export function Resources() {
 }
 
 /* ── Topic Chip ───────────────────────────────────────────── */
-function TopicChip({ label, index }: { label: string; index: number }) {
-  const [active, setActive] = useState(false);
+interface TopicChipProps {
+  label: string;
+  index: number;
+  isActive: boolean;
+  onToggle: () => void;
+}
 
+function TopicChip({ label, index, isActive, onToggle }: TopicChipProps) {
   return (
     <motion.button
       initial={{ opacity: 0, scale: 0.8 }}
@@ -991,9 +1093,9 @@ function TopicChip({ label, index }: { label: string; index: number }) {
       transition={{ delay: index * 0.03 + 0.4 }}
       whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.95 }}
-      onClick={() => setActive(!active)}
+      onClick={onToggle}
       className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
-        active
+        isActive
           ? "bg-aiva-purple text-white shadow-[0_8px_20px_-5px_rgba(139,92,246,0.4)] ring-2 ring-aiva-purple/20"
           : "bg-white/60 dark:bg-gray-900/60 text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 ring-1 ring-black/5 dark:ring-white/5"
       }`}
