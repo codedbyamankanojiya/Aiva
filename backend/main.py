@@ -10,6 +10,13 @@ import re
 from dotenv import load_dotenv
 import websockets
 
+# Semantic similarity imports
+from sentence_transformers import SentenceTransformer, util
+import torch
+
+# Initialize model globally (only once)
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
 app = FastAPI(title="Aiva Interview API", version="1.0.0")
 
 load_dotenv()
@@ -25,14 +32,14 @@ app.add_middleware(
 
 def analyze_keywords(question_id: str, transcript: str) -> Dict[str, List[str]]:
     """
-    Analyze which keyPoints from a question are mentioned in the transcript
+    Analyze which keyPoints from a question are semantically similar to the transcript
     
     Args:
         question_id: The ID of the question to analyze
         transcript: The user's transcript to analyze
         
     Returns:
-        Dictionary with 'mentioned' and 'notMentioned' keyPoints
+        Dictionary with 'mentioned' and 'notMentioned' keyPoints based on semantic similarity
     """
     try:
         # Load questions data
@@ -52,30 +59,50 @@ def analyze_keywords(question_id: str, transcript: str) -> Dict[str, List[str]]:
         if not key_points:
             return {"mentioned": [], "notMentioned": []}
         
-        # Convert transcript to lowercase for case-insensitive matching
-        transcript_lower = transcript.lower()
+        if not transcript or transcript.strip() == "":
+            return {"mentioned": [], "notMentioned": key_points}
+        
+        # Clean and prepare transcript
+        transcript_clean = transcript.strip()
+        
+        # Generate embeddings for the transcript
+        transcript_embedding = model.encode(transcript_clean, convert_to_tensor=True)
         
         mentioned = []
         not_mentioned = []
         
+        # Set similarity threshold (can be adjusted)
+        similarity_threshold = 0.3  # Lowered threshold for better sensitivity
+        
         for key_point in key_points:
-            # Convert key point to lowercase and remove special characters for matching
-            key_point_lower = key_point.lower()
-            # Create a simple pattern to match the key point (allowing for word variations)
-            pattern = re.compile(r'\b' + re.escape(key_point_lower) + r'\b')
+            # Generate embedding for the key point
+            key_point_embedding = model.encode(key_point, convert_to_tensor=True)
             
-            if pattern.search(transcript_lower):
+            # Calculate cosine similarity
+            similarity_score = util.cos_sim(transcript_embedding, key_point_embedding).item()
+            
+            print(f"🔍 Semantic Analysis - Key Point: '{key_point}'")
+            print(f"🔍 Similarity Score: {similarity_score:.4f}")
+            print(f"🔍 Threshold: {similarity_threshold}")
+            
+            # Classify based on similarity threshold
+            if similarity_score >= similarity_threshold:
                 mentioned.append(key_point)
+                print(f"✅ CLASSIFIED AS MENTIONED")
             else:
                 not_mentioned.append(key_point)
+                print(f"❌ CLASSIFIED AS NOT MENTIONED")
         
-        return {
+        result = {
             "mentioned": mentioned,
             "notMentioned": not_mentioned
         }
         
+        print(f"🔍 Final Semantic Analysis Result: {result}")
+        return result
+        
     except Exception as e:
-        print(f"Error analyzing keywords: {str(e)}")
+        print(f"Error in semantic analysis: {str(e)}")
         return {"mentioned": [], "notMentioned": []}
 
 # Pydantic models
