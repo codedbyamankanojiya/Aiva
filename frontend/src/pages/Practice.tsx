@@ -69,7 +69,7 @@ function RoleCard({ role }: { role: Role }) {
             {role.description}
           </p>
           <div className="flex flex-wrap gap-1.5 mb-4">
-            {role.tags.slice(0, 3).map((tag) => (
+            {(role.tags || []).slice(0, 3).map((tag) => (
               <motion.div
                 key={tag}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -79,14 +79,14 @@ function RoleCard({ role }: { role: Role }) {
                 <TagBadge label={tag} variant="purple" />
               </motion.div>
             ))}
-            {role.tags.length > 3 && (
+            {(role.tags || []).length > 3 && (
               <motion.span 
                 className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                +{role.tags.length - 3} more
+                +{(role.tags || []).length - 3} more
               </motion.span>
             )}
           </div>
@@ -153,9 +153,13 @@ export function Practice() {
         const response = await fetch("http://localhost:8000/api/roles");
         const data = await response.json();
         
+        console.log('🔍 DEBUG: Frontend received data:', data);
+        
         if (data.roles) {
+          console.log('🔍 DEBUG: Setting roles:', data.roles);
           setAllRoles(data.roles);
         } else {
+          console.log('🔍 DEBUG: No roles found, setting empty array');
           setAllRoles([]);
         }
       } catch (error) {
@@ -191,7 +195,7 @@ export function Practice() {
   const filtered = currentTopics.filter(
     (r: Role) =>
       r.title.toLowerCase().includes(search.toLowerCase()) ||
-      r.tags.some((t: string) => t.toLowerCase().includes(search.toLowerCase())),
+      (r.tags || []).some((t: string) => t.toLowerCase().includes(search.toLowerCase())),
   );
 
   if (loading) {

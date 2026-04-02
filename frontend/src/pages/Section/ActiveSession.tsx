@@ -41,6 +41,75 @@ export function Session() {
   const [isMicDisabled, setIsMicDisabled] = useState<boolean>(false);
   const silenceTimerRef = useRef<number | null>(null);
 
+  // AI Analysis state
+  const [aiAnalysis, setAiAnalysis] = useState<string>(""); // Add AI analysis state
+
+  // Fetch AI analysis from backend
+  const fetchAIAnalysis = async (question: any, transcript: string, mentioned: string[], notMentioned: string[]) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/ai-analysis`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: question.question,
+          transcript: transcript,
+          mentioned: mentioned,
+          notMentioned: notMentioned
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAiAnalysis(data.analysis || 'AI analysis not available');
+        console.log('✅ AI Analysis received:', data.analysis);
+      } else {
+        console.error('❌ Failed to fetch AI analysis');
+        setAiAnalysis('AI analysis failed');
+      }
+    } catch (error) {
+      console.error('❌ Error fetching AI analysis:', error);
+      setAiAnalysis('AI analysis error');
+    }
+  };
+
+  // Fetch semantic analysis and then AI analysis
+  const fetchSemanticAnalysisAndAI = async (question: any, transcript: string) => {
+    try {
+      // First get semantic analysis from backend
+      const response = await fetch(`http://localhost:8000/api/semantic-analysis`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionId: currentQuestion?.id || '',
+          transcript: transcript
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const mentioned = data.mentioned || [];
+        const notMentioned = data.notMentioned || [];
+        
+        console.log('✅ Semantic Analysis:', { mentioned, notMentioned });
+        
+        // Then fetch AI analysis with semantic context
+        await fetchAIAnalysis(question, transcript, mentioned, notMentioned);
+      } else {
+        console.error('❌ Failed to fetch semantic analysis');
+        // Fallback to AI analysis without semantic context
+        await fetchAIAnalysis(question, transcript, [], []);
+      }
+    } catch (error) {
+      console.error('❌ Error in semantic analysis:', error);
+      // Fallback to AI analysis without semantic context
+      await fetchAIAnalysis(question, transcript, [], []);
+    }
+  };
+
   // Get section code from URL
   const sectionCode = searchParams.get('section') || '';
 
@@ -134,6 +203,9 @@ export function Session() {
       setFinalTranscripts([]);
       setLiveTranscript('');
       
+      // Clear AI analysis for new question
+      setAiAnalysis('');
+      
       // Reset silence detection state for new question
       setHasSpoken(false);
       setLastTranscriptLength(0);
@@ -178,6 +250,9 @@ export function Session() {
           setQuestions(data.questions);
           setLoading(false);
           setHasPlayedFirstQuestion(true);
+          
+          // Clear AI analysis when starting new session
+          setAiAnalysis('');
           
           // Play first question and wait for TTS to complete before enabling mic
           await playQuestionAudio(data.questions[0].question);
@@ -302,6 +377,9 @@ export function Session() {
       setIsSilenceDetected(false);
       setHasSpoken(false);
       setLastTranscriptLength(0);
+      
+      // Get semantic analysis first, then fetch AI analysis
+      fetchSemanticAnalysisAndAI(currentQuestion, finalTranscripts.join(' '));
     }, 2000); // Show "Analyzing your response" for 2 seconds
     
     // Auto-advance to next question (COMMENTED OUT)
@@ -312,6 +390,12 @@ export function Session() {
     //   }, 1000);
     // }
   };
+
+  // Clear AI analysis when question changes
+  useEffect(() => {
+    // Clear AI analysis when moving to a new question
+    setAiAnalysis('');
+  }, [currentQuestionIndex]);
 
   // Silence detection useEffect
   useEffect(() => {
@@ -751,11 +835,6 @@ export function Session() {
                 isMobile={isMobile}
                 loading={loading}
                 currentQuestion={currentQuestion}
-                liveTranscript={liveTranscript}
-                finalTranscripts={finalTranscripts}
-                sttError={sttError}
-                isSTTConnecting={isSTTConnecting}
-                sttLatency={sttLatency}
                 currentQuestionIndex={currentQuestionIndex}
                 totalQuestions={state.questions.length}
                 isLastQuestion={isLastQuestion}
@@ -763,6 +842,12 @@ export function Session() {
                 isSilenceDetected={isSilenceDetected}
                 onClose={() => setShowAIPanel(false)}
                 onNextQuestion={handleNextQuestion}
+                liveTranscript={liveTranscript}
+                finalTranscripts={finalTranscripts}
+                sttError={sttError}
+                isSTTConnecting={isSTTConnecting}
+                sttLatency={sttLatency}
+                aiAnalysis={aiAnalysis} // Pass AI analysis to component
               />
             )}
           </div>

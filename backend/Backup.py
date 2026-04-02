@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+"""
+Simplified SectionData system to prevent nested structure issues
+"""
+
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

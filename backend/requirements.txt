@@ -4,5 +4,7 @@ pydantic==2.5.0
 python-multipart==0.0.6
 python-dotenv==1.0.0
 websockets==12.0
-sentence-transformers>=2.2.0
-torch>=2.2.0
+httpx==0.25.0
+# Note: sentence-transformers and torch are disabled due to dependency conflicts
+# sentence-transformers==2.2.2
+# torch==1.26.4

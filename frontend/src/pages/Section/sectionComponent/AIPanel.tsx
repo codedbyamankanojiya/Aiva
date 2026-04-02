@@ -18,6 +18,7 @@ interface AIPanelProps {
   sttError?: string;
   isSTTConnecting?: boolean;
   sttLatency?: number | null;
+  aiAnalysis?: string; // Add AI analysis prop
 }
 
 export function AIPanel({
@@ -37,6 +38,7 @@ export function AIPanel({
   sttError = "",
   isSTTConnecting = false,
   sttLatency = null,
+  aiAnalysis = "", // Add AI analysis prop
 }: AIPanelProps) {
   if (!showAIPanel) return null;
 
@@ -108,6 +110,19 @@ export function AIPanel({
                   </div>
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
                     You
+                  </div>
+                </div>
+              )}
+
+              {/* AI Coach Response - Display below user response */}
+              {aiAnalysis && (
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-xs font-semibold shadow-sm">
+                    AI
+                  </div>
+                  <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
+                    {/* <p className="text-gray-900 text-sm font-medium mb-1">🤖 Aiva Coach</p> */}
+                    <p className="text-gray-700 text-xs">{aiAnalysis}</p>
                   </div>
                 </div>
               )}
@@ -234,6 +249,19 @@ export function AIPanel({
                 </div>
                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
                   You
+                </div>
+              </div>
+            )}
+
+            {/* AI Coach Response - Display below user response */}
+            {aiAnalysis && (
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-xs font-semibold shadow-sm">
+                  AI
+                </div>
+                <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
+                  <p className="text-gray-900 text-sm font-medium mb-1">🤖 Aiva Coach</p>
+                  <p className="text-gray-700 text-xs">{aiAnalysis}</p>
                 </div>
               </div>
             )}
