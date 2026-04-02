@@ -1,225 +1,755 @@
-import { motion } from "framer-motion";
-import { GlassCard } from "@/components/common/GlassCard";
-import {
-  BookOpen, Download, Video, FileText, Headphones, Globe,
-  Award, Clock, Users, Star, ChevronDown,
-} from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
+import { Search, Mic, ArrowLeft, Edit3, Sparkles, Send, X, MoreVertical, Trash2, Pencil } from "lucide-react";
 
+/* ── Resource categories data ─────────────────────────────── */
+const CATEGORIES = [
+  // Tech Roles from Practice Section
+  {
+    id: "software-engineer",
+    title: "Software Engineering",
+    subtitle: "Interview prep & coding questions",
+    topics: ["DSA", "System Design", "OOP", "Design Patterns", "Testing", "Algorithms"],
+    type: "tech"
+  },
+  {
+    id: "web-developer",
+    title: "Web Development",
+    subtitle: "Frontend & backend development",
+    topics: ["React", "Node.js", "HTML/CSS", "JavaScript", "APIs"],
+    type: "tech"
+  },
+  {
+    id: "backend-developer",
+    title: "Backend Developer",
+    subtitle: "Server-side development",
+    topics: ["APIs", "Databases", "Authentication", "Microservices", "Caching"],
+    type: "tech"
+  },
+  {
+    id: "ui-ux-designer",
+    title: "UI/UX Designer",
+    subtitle: "Design principles & tools",
+    topics: ["Figma", "User Research", "Prototyping", "Wireframing", "Design Systems"],
+    type: "tech"
+  },
+  {
+    id: "app-developer",
+    title: "App Development",
+    subtitle: "Mobile app development",
+    topics: ["React Native", "Flutter", "iOS", "Android", "Mobile UI"],
+    type: "tech"
+  },
+  {
+    id: "devops-engineer",
+    title: "DevOps Engineer",
+    subtitle: "Deployment & operations",
+    topics: ["Docker", "Kubernetes", "CI/CD", "Cloud Services", "Monitoring"],
+    type: "tech"
+  },
+  {
+    id: "data-scientist",
+    title: "Data Scientist",
+    subtitle: "Data analysis & machine learning",
+    topics: ["Statistics", "ML Models", "Python", "Data Viz", "NLP"],
+    type: "tech"
+  },
+  {
+    id: "product-manager",
+    title: "Product Manager",
+    subtitle: "Product strategy & management",
+    topics: ["Product Strategy", "Roadmapping", "User Stories", "Analytics", "Stakeholder Management"],
+    type: "tech"
+  },
+  {
+    id: "hr-recruiter",
+    title: "HR Recruiter",
+    subtitle: "Recruitment & talent management",
+    topics: ["Sourcing", "Interviewing", "Onboarding", "Compensation", "Employer Branding"],
+    type: "tech"
+  },
+  
+  // Skill Development from Practice Section
+  {
+    id: "behavioral-upskilling",
+    title: "Behavioral Skills",
+    subtitle: "Professional behavior development",
+    topics: ["Leadership", "Teamwork", "Problem Solving", "Adaptability", "Communication"],
+    type: "skill"
+  },
+  {
+    id: "presentation-skills",
+    title: "Presentation Skills",
+    subtitle: "Public speaking & presentations",
+    topics: ["Public Speaking", "Slide Design", "Body Language", "Storytelling", "Q&A Handling"],
+    type: "skill"
+  },
+  {
+    id: "communication-boost",
+    title: "Communication",
+    subtitle: "Effective communication techniques",
+    topics: ["Active Listening", "Written Communication", "Verbal Skills", "Non-verbal Cues", "Empathy"],
+    type: "skill"
+  },
+  {
+    id: "leadership-skills",
+    title: "Leadership",
+    subtitle: "Leadership development",
+    topics: ["Team Management", "Decision Making", "Strategic Thinking", "Motivation", "Conflict Resolution"],
+    type: "skill"
+  },
+  {
+    id: "negotiation-skills",
+    title: "Negotiation Skills",
+    subtitle: "Negotiation techniques",
+    topics: ["Salary Negotiation", "Contract Terms", "Win-Win Solutions", "Persuasion", "BATNA"],
+    type: "skill"
+  },
+  {
+    id: "time-management",
+    title: "Time Management",
+    subtitle: "Productivity & time optimization",
+    topics: ["Prioritization", "Goal Setting", "Delegation", "Focus Techniques", "Work-Life Balance"],
+    type: "skill"
+  },
+  {
+    id: "stress-management",
+    title: "Stress Management",
+    subtitle: "Stress reduction techniques",
+    topics: ["Mindfulness", "Work-Life Balance", "Coping Strategies", "Relaxation Techniques", "Resilience"],
+    type: "skill"
+  },
+  {
+    id: "networking-skills",
+    title: "Networking Skills",
+    subtitle: "Professional networking",
+    topics: ["Building Connections", "LinkedIn", "Informational Interviews", "Follow-up", "Personal Branding"],
+    type: "skill"
+  },
+  {
+    id: "critical-thinking",
+    title: "Critical Thinking",
+    subtitle: "Analytical thinking skills",
+    topics: ["Logical Reasoning", "Problem Analysis", "Decision Making", "Creative Thinking", "Evaluation"],
+    type: "skill"
+  },
+  
+  // Academic Subjects
+  {
+    id: "chemistry",
+    title: "Chemistry",
+    subtitle: "Periodic table & chemical reactions",
+    topics: ["Organic", "Inorganic", "Physical", "Analytical"],
+    type: "academic"
+  },
+  {
+    id: "biology",
+    title: "Biology",
+    subtitle: "Life sciences & organisms",
+    topics: ["Cell Biology", "Genetics", "Ecology", "Microbiology"],
+    type: "academic"
+  },
+  {
+    id: "physics",
+    title: "Physics",
+    subtitle: "Laws of nature & matter",
+    topics: ["Mechanics", "Thermodynamics", "Electromagnetism", "Quantum Physics"],
+    type: "academic"
+  },
+  {
+    id: "mathematics",
+    title: "Mathematics",
+    subtitle: "Mathematical concepts & problems",
+    topics: ["Calculus", "Algebra", "Geometry", "Statistics", "Probability"],
+    type: "academic"
+  },
+  {
+    id: "commerce",
+    title: "Commerce",
+    subtitle: "Business studies & economics",
+    topics: ["Accounting", "Business Studies", "Economics", "Finance", "Marketing", "Entrepreneurship"],
+    type: "academic"
+  },
+  {
+    id: "accounting",
+    title: "Accounting",
+    subtitle: "Financial accounting & bookkeeping",
+    topics: ["Financial Accounting", "Cost Accounting", "Taxation", "Auditing", "Bookkeeping"],
+    type: "academic"
+  },
+  {
+    id: "economics",
+    title: "Economics",
+    subtitle: "Economic principles & theories",
+    topics: ["Microeconomics", "Macroeconomics", "International Trade", "Monetary Policy", "Market Analysis"],
+    type: "academic"
+  },
+  {
+    id: "business-studies",
+    title: "Business Studies",
+    subtitle: "Business management & organization",
+    topics: ["Business Management", "Organizational Behavior", "Strategic Planning", "Operations Management", "Business Ethics"],
+    type: "academic"
+  },
+  {
+    id: "finance",
+    title: "Finance",
+    subtitle: "Financial management & investment",
+    topics: ["Corporate Finance", "Investment Analysis", "Financial Markets", "Risk Management", "Portfolio Management"],
+    type: "academic"
+  },
+  {
+    id: "marketing",
+    title: "Marketing",
+    subtitle: "Marketing strategies & branding",
+    topics: ["Digital Marketing", "Brand Management", "Market Research", "Consumer Behavior", "Advertising"],
+    type: "academic"
+  },
+  {
+    id: "entrepreneurship",
+    title: "Entrepreneurship",
+    subtitle: "Starting & running businesses",
+    topics: ["Business Planning", "Startup Funding", "Business Models", "Innovation", "Venture Capital"],
+    type: "academic"
+  },
+];
+
+/* ── Animations ───────────────────────────────────────────── */
 const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
+  show: { transition: { staggerChildren: 0.07 } },
 };
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
+const slideIn = {
+  hidden: { opacity: 0, x: 30 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
+/* ── Main Component ───────────────────────────────────────── */
 export function Resources() {
+  const { user } = useAuth();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | "tech" | "skill" | "academic">("all");
+  const [askQuery, setAskQuery] = useState("");
+  const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [chatMessages, setChatMessages] = useState<{ id: string; role: "user" | "aiva"; text: string }[]>([]);
+  const [chatMenuOpen, setChatMenuOpen] = useState(false);
+
+  const supportsSpeechRecognition = useMemo(() => {
+    const w = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
+    return Boolean(w.SpeechRecognition || w.webkitSpeechRecognition);
+  }, []);
+
+  const firstName = user?.firstName || "there";
+  const selected = CATEGORIES.find((c) => c.id === selectedCategory);
+
+  const filteredCategories = CATEGORIES.filter(
+    (c) =>
+      (activeFilter === "all" || c.type === activeFilter) &&
+      (c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.topics.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())))
+  );
+
+  useEffect(() => {
+    if (!isVoiceOpen) {
+      setIsListening(false);
+      setVoiceTranscript("");
+    }
+  }, [isVoiceOpen]);
+
+  function handleAskSend() {
+    const trimmed = askQuery.trim();
+    if (!trimmed) return;
+    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    setChatMessages((prev) => [
+      ...prev,
+      { id, role: "user", text: trimmed },
+      {
+        id: `${id}-aiva`,
+        role: "aiva",
+        text: "Got it. Pick a subject on the left or search for a topic — I’ll help you navigate resources.",
+      },
+    ]);
+    setAskQuery("");
+  }
+
+  function handleOpenVoice() {
+    setIsVoiceOpen(true);
+  }
+
+  function handleCloseVoice() {
+    setIsVoiceOpen(false);
+  }
+
+  function handleClearChat() {
+    setChatMessages([]);
+    setChatMenuOpen(false);
+  }
+
+  function handleDeleteLast() {
+    setChatMessages((prev) => prev.slice(0, -2));
+    setChatMenuOpen(false);
+  }
+
+  function toggleListening() {
+    if (!supportsSpeechRecognition) {
+      setIsListening((prev) => !prev);
+      return;
+    }
+    setIsListening((prev) => !prev);
+  }
+
   return (
-    <motion.div
-      variants={stagger}
-      initial="hidden"
-      animate="show"
-      className="max-w-4xl mx-auto space-y-8 pb-16"
-    >
-      {/* ── RESOURCES OVERVIEW ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="blue" className="p-6 sm:p-8">
-          <SectionTitle>RESOURCES OVERVIEW</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Welcome to the AIVA Resources Hub — your <strong>comprehensive learning center</strong> designed to support your journey toward{" "}
-              <strong>interview excellence and communication mastery.</strong> This curated collection of materials provides you with everything you need to{" "}
-              <strong>prepare, practice, and succeed</strong> in various professional and academic scenarios.
-            </p>
-            <p>
-              Our resources are carefully selected and organized to help you build <strong>confidence, improve technical knowledge,</strong> and{" "}
-              <strong>master communication skills</strong> essential for modern workplace success. Whether you're preparing for technical vivas, job interviews, or looking to enhance your professional presence, you'll find valuable materials here.
-            </p>
-          </div>
-        </GlassCard>
-      </motion.div>
+    <div className="w-full max-w-[1200px] mx-auto pb-12">
+      <AnimatePresence mode="wait">
+        {!selectedCategory ? (
+          /* ═══════════════════════════════════════════════════════
+             VIEW 1 — Category Listing + Robo Assistant
+             ═══════════════════════════════════════════════════════ */
+          <motion.div
+            key="listing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.3 }}
+            className="flex gap-8"
+          >
+            {/* ── Left: Filter + Search + Category List ── */}
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              animate="show"
+              className="flex-1 min-w-0 space-y-4"
+            >
+              {/* Filter buttons */}
+              <motion.div variants={fadeUp} className="flex gap-2 flex-wrap">
+                {([
+                  { key: "all" as const, label: "All Subjects", activeClass: "bg-aiva-purple" },
+                  { key: "tech" as const, label: "Tech Roles", activeClass: "bg-blue-500" },
+                  { key: "skill" as const, label: "Skill Development", activeClass: "bg-green-500" },
+                  { key: "academic" as const, label: "Academic", activeClass: "bg-orange-500" },
+                ] as const).map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setActiveFilter(f.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                      activeFilter === f.key
+                        ? `${f.activeClass} text-white shadow-lg`
+                        : "bg-white/50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-700/70 ring-1 ring-gray-200/30 dark:ring-gray-700/30"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </motion.div>
 
-      {/* ── LEARNING MATERIALS ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="default" className="p-6 sm:p-8">
-          <SectionTitle>LEARNING MATERIALS</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Access our comprehensive library of <strong>study materials, guides, and references</strong> designed to support your learning journey across various domains and skill levels.
-            </p>
-          </div>
+              {/* Search bar */}
+              <motion.div variants={fadeUp} className="relative max-w-sm">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="search notes"
+                  className="w-full pl-5 pr-12 py-3 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/40 dark:ring-gray-700/40 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-all shadow-sm"
+                />
+                <Search
+                  size={18}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-aiva-purple"
+                />
+              </motion.div>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <ResourceCard icon={BookOpen} title="Interview Guides" desc="Comprehensive guides covering various interview types and preparation strategies." />
-            <ResourceCard icon={FileText} title="Study Notes" desc="Organized study materials for technical and non-technical topics." />
-            <ResourceCard icon={Video} title="Video Tutorials" desc="Visual learning resources covering key concepts and best practices." />
-            <ResourceCard icon={Headphones} title="Audio Lessons" desc="Podcast-style lessons for improving listening and communication skills." />
-          </div>
-        </GlassCard>
-      </motion.div>
+              {/* Results counter */}
+              {filteredCategories.length !== CATEGORIES.length && (
+                <motion.div variants={fadeUp} className="text-xs font-medium text-gray-500 dark:text-gray-400 -mt-1">
+                  Showing {filteredCategories.length} of {CATEGORIES.length} subjects
+                </motion.div>
+              )}
 
-      {/* ── PRACTICE TOOLS ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="purple" className="p-6 sm:p-8">
-          <SectionTitle>PRACTICE TOOLS</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Enhance your preparation with our <strong>interactive practice tools</strong> designed to simulate real-world scenarios and provide immediate feedback for continuous improvement.
-            </p>
-            <p>
-              These tools are built to help you <strong>apply your knowledge</strong> in practical situations, identify areas for improvement, and build the confidence needed to excel in actual interviews and assessments.
-            </p>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <StatBadge icon={Clock} label="Practice Hours" value="1000+" />
-            <StatBadge icon={Users} label="Active Learners" value="5K+" />
-            <StatBadge icon={Award} label="Success Rate" value="92%" />
-          </div>
-        </GlassCard>
-      </motion.div>
-
-      {/* ── DOWNLOADABLE CONTENT ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="default" className="p-6 sm:p-8">
-          <SectionTitle>DOWNLOADABLE CONTENT</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Access our collection of <strong>premium downloadable resources</strong> including templates, checklists, cheat sheets, and comprehensive study materials that you can use offline.
-            </p>
-          </div>
-
-          <div className="mt-6 rounded-2xl bg-gradient-to-r from-aiva-purple/5 to-aiva-indigo/5 p-5 ring-1 ring-aiva-purple/10">
-            <h4 className="text-sm font-bold text-gray-800 mb-3">Available Downloads</h4>
-            <ul className="space-y-2">
-              {[
-                "Interview preparation checklist template",
-                "Resume and cover letter templates",
-                "Technical viva question banks",
-                "Communication skills workbook",
-                "Mock interview assessment rubric",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
-                  <Download size={14} className="mt-0.5 text-aiva-purple flex-shrink-0" />
-                  {item}
-                </li>
+              {/* Category cards */}
+              {filteredCategories.map((cat, i) => (
+                <motion.button
+                  key={cat.id}
+                  variants={fadeUp}
+                  whileHover={{ scale: 1.012, x: 4 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className="w-full text-left group"
+                >
+                  <div
+                    className="relative overflow-hidden rounded-2xl px-6 py-4 backdrop-blur-xl shadow-md ring-1 ring-white/20 dark:ring-white/10 transition-all duration-300 group-hover:shadow-lg group-hover:ring-aiva-purple/20"
+                    style={{
+                      background: `linear-gradient(135deg, 
+                        rgba(165, 148, 249, ${0.18 + (i % 8) * 0.03}) 0%, 
+                        rgba(129, 140, 248, ${0.12 + (i % 8) * 0.02}) 50%, 
+                        rgba(196, 181, 253, ${0.15 + (i % 8) * 0.02}) 100%)`,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -skew-x-12" />
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white relative z-10">
+                      {cat.title}
+                    </h3>
+                    {cat.subtitle && (
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 relative z-10">
+                        {cat.subtitle}
+                      </p>
+                    )}
+                  </div>
+                </motion.button>
               ))}
-            </ul>
-          </div>
-        </GlassCard>
-      </motion.div>
 
-      {/* ── COMMUNITY RESOURCES ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="blue" className="p-6 sm:p-8">
-          <SectionTitle>COMMUNITY RESOURCES</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Connect with fellow learners and access <strong>community-contributed content</strong> including shared experiences, success stories, and collaborative learning materials.
-            </p>
-            <p>
-              Our community platform enables you to <strong>learn from peers</strong>, share your own insights, and participate in group study sessions that enhance your preparation journey.
-            </p>
-          </div>
-        </GlassCard>
-      </motion.div>
+              {filteredCategories.length === 0 && (
+                <motion.p
+                  variants={fadeUp}
+                  className="text-sm text-gray-400 dark:text-gray-500 text-center py-8"
+                >
+                  No categories match "{searchQuery}"
+                </motion.p>
+              )}
+            </motion.div>
 
-      {/* ── EXTERNAL LINKS ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="default" className="p-6 sm:p-8">
-          <SectionTitle>EXTERNAL LINKS</SectionTitle>
-          <div className="mt-4 space-y-4 text-sm text-gray-700 leading-relaxed">
-            <p>
-              Explore our curated list of <strong>external resources</strong> from reputable sources that complement our in-house materials and provide additional perspectives on interview preparation and skill development.
-            </p>
-          </div>
+            {/* ── Right: Robo Assistant Panel ── */}
+            <motion.div
+              variants={slideIn}
+              initial="hidden"
+              animate="show"
+              className="w-[310px] flex-shrink-0 hidden lg:block mt-36"
+            >
+              <div className="sticky top-36">
+                <div className="w-full rounded-3xl bg-white/55 dark:bg-gray-800/55 backdrop-blur-xl shadow-xl ring-1 ring-white/30 dark:ring-gray-700/30 overflow-hidden flex flex-col">
+                  {/* Header with greeting + 3-dot menu */}
+                  <div className="px-5 pt-5 pb-2 flex items-start justify-between">
+                    <div className="text-center flex-1">
+                      <p className="text-base font-bold text-aiva-purple leading-relaxed">
+                        Hello {firstName},
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold mt-0.5">
+                        Aiva here to assist you
+                      </p>
+                    </div>
+                    {/* 3-dot chat menu */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setChatMenuOpen(!chatMenuOpen)}
+                        className="h-8 w-8 inline-flex items-center justify-center rounded-xl text-gray-400 hover:text-aiva-purple hover:bg-white/60 dark:hover:bg-gray-800/60 transition-colors"
+                        aria-label="Chat options"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      <AnimatePresence>
+                        {chatMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                            transition={{ duration: 0.12 }}
+                            className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-white/90 dark:bg-gray-900/95 backdrop-blur-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 py-1 z-30"
+                          >
+                            <button
+                              onClick={handleClearChat}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 transition-colors"
+                            >
+                              <Trash2 size={13} className="text-red-400" />
+                              Clear Chat
+                            </button>
+                            <button
+                              onClick={handleDeleteLast}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 transition-colors"
+                            >
+                              <Pencil size={13} className="text-amber-400" />
+                              Delete Last Reply
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <ResourceCard icon={Globe} title="Industry Blogs" desc="Latest insights from industry experts and thought leaders." />
-            <ResourceCard icon={Video} title="YouTube Channels" desc="Educational channels focused on interview preparation." />
-          </div>
-        </GlassCard>
-      </motion.div>
+                  {/* Robo image — centered */}
+                  <div className="flex justify-center px-4 py-2">
+                    <motion.img
+                      src="/Assets/Robo.png"
+                      alt="Aiva AI Assistant"
+                      className="w-36 h-36 object-contain drop-shadow-xl"
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{
+                        duration: 3.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  </div>
 
-      {/* ── FAQ ── */}
-      <motion.div variants={fadeUp}>
-        <GlassCard variant="purple" className="p-6 sm:p-8">
-          <SectionTitle>RESOURCES FAQ</SectionTitle>
-          <div className="mt-4 space-y-2">
-            {[
-              { q: "How often are resources updated?", a: "We update our resources weekly to ensure you have access to the latest and most relevant materials." },
-              { q: "Can I download resources for offline use?", a: "Yes! Most of our resources are available for download to support offline learning." },
-              { q: "Are the resources free to access?", a: "Basic resources are free for all users. Premium content is available for pro members." },
-              { q: "How do I suggest new resources?", a: "You can suggest resources through our community forum or contact form." },
-              { q: "Can I contribute to the resource library?", a: "Absolutely! We welcome community contributions that meet our quality standards." },
-            ].map((faq) => (
-              <FAQItem key={faq.q} question={faq.q} answer={faq.a} />
-            ))}
-          </div>
-        </GlassCard>
-      </motion.div>
-    </motion.div>
-  );
-}
+                  {/* Chat messages */}
+                  {chatMessages.length > 0 && (
+                    <div className="mx-4 mb-2 max-h-40 space-y-2 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-aiva-purple/20 scrollbar-track-transparent">
+                      {chatMessages.slice(-6).map((m) => (
+                        <div
+                          key={m.id}
+                          className={`rounded-2xl px-3 py-2 text-xs leading-5 ring-1 ${
+                            m.role === "user"
+                              ? "ml-auto max-w-[85%] bg-aiva-purple/10 text-gray-800 ring-aiva-purple/15 dark:text-gray-100"
+                              : "mr-auto max-w-[90%] bg-white/70 text-gray-700 ring-white/30 dark:bg-slate-900/35 dark:text-gray-200"
+                          }`}
+                        >
+                          {m.text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-/* ── Helper components ── */
+                  {/* Ask anything input */}
+                  <div className="px-4 pb-5 mt-auto">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={askQuery}
+                        onChange={(e) => setAskQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleAskSend();
+                        }}
+                        placeholder="Ask Anything"
+                        className="w-full pl-4 pr-[76px] py-2.5 rounded-full bg-white/70 dark:bg-gray-900/50 backdrop-blur-sm text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/50 dark:ring-gray-700/50 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 shadow-sm transition-all"
+                      />
+                      <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={handleOpenVoice}
+                          className="h-8 w-8 inline-flex items-center justify-center rounded-full text-gray-400 hover:text-aiva-purple transition-colors"
+                          aria-label="Voice assistant"
+                        >
+                          <Mic size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleAskSend}
+                          className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-aiva-purple text-white shadow-sm hover:opacity-90 transition-opacity"
+                          aria-label="Send"
+                        >
+                          <Send size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-1 h-7 rounded-full bg-gradient-to-b from-aiva-purple to-aiva-indigo" />
-      <h2 className="text-xl font-bold text-gray-900 tracking-tight">{children}</h2>
+            <AnimatePresence>
+              {isVoiceOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+                  role="dialog"
+                  aria-modal="true"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 18, scale: 0.98 }}
+                    transition={{ duration: 0.18 }}
+                    className="w-[min(520px,92vw)] rounded-[1.8rem] border border-white/25 bg-white/80 p-5 shadow-[0_22px_90px_rgba(35,18,90,0.18)] backdrop-blur-xl dark:bg-slate-900/70"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.22em] text-gray-400">Voice Assistant</div>
+                        <div className="mt-1 text-lg font-black tracking-tight text-gray-900 dark:text-white">Talk to Aiva</div>
+                        <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                          {supportsSpeechRecognition ? "Click the mic to start listening." : "Voice recognition not supported in this browser."}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCloseVoice}
+                        className="h-10 w-10 inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/60 text-gray-600 hover:bg-white/80 transition-colors dark:bg-slate-900/40 dark:text-gray-200"
+                        aria-label="Close"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    <div className="mt-5 rounded-3xl border border-white/25 bg-white/60 p-4 dark:bg-slate-900/35">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`h-10 w-10 rounded-2xl flex items-center justify-center ${isListening ? "bg-rose-500" : "bg-aiva-purple"} text-white shadow-sm`}>
+                            <Mic size={18} />
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">
+                              {isListening ? "Listening…" : "Ready"}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {isListening ? "Speak now" : "Tap to start voice input"}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={toggleListening}
+                          className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-colors ${isListening ? "bg-rose-50 text-rose-600 border border-rose-200" : "bg-aiva-purple text-white"}`}
+                        >
+                          {isListening ? "Stop" : "Start"}
+                        </button>
+                      </div>
+
+                      <div className="mt-4 rounded-2xl border border-white/25 bg-white/70 px-4 py-3 text-sm text-gray-700 dark:bg-slate-900/40 dark:text-gray-200">
+                        {voiceTranscript || "Your transcript will appear here…"}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCloseVoice}
+                        className="rounded-2xl border border-white/25 bg-white/60 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-white/80 transition-colors dark:bg-slate-900/40 dark:text-gray-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!voiceTranscript.trim()) return;
+                          setAskQuery(voiceTranscript);
+                          setIsVoiceOpen(false);
+                        }}
+                        className="rounded-2xl bg-aiva-purple px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity"
+                      >
+                        Use Transcript
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+          </motion.div>
+        ) : (
+          /* ═══════════════════════════════════════════════════════
+             VIEW 2 — Category Detail + Topic Chips
+             ═══════════════════════════════════════════════════════ */
+          <motion.div
+            key="detail"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.35 }}
+            className="flex gap-8"
+          >
+            {/* ── Left: Content area ── */}
+            <div className="flex-1 min-w-0">
+              {/* Back button */}
+              <motion.button
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ x: -4 }}
+                onClick={() => setSelectedCategory(null)}
+                className="flex items-center gap-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-aiva-purple dark:hover:text-aiva-purple mb-4 transition-colors"
+              >
+                <ArrowLeft size={16} />
+                Back to Resources
+              </motion.button>
+
+              {/* Content card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="relative rounded-3xl overflow-hidden shadow-xl ring-1 ring-white/20 dark:ring-white/10"
+                style={{ minHeight: "500px" }}
+              >
+                {/* Gradient background */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(145deg, rgba(196,181,253,0.35) 0%, rgba(165,148,249,0.2) 30%, rgba(129,140,248,0.15) 60%, rgba(224,231,255,0.3) 100%)",
+                  }}
+                />
+                <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20" />
+
+                {/* Title */}
+                <div className="relative z-10 p-8">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    {selected?.title}
+                  </h2>
+                  {selected?.subtitle && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {selected.subtitle}
+                    </p>
+                  )}
+
+                  {/* Placeholder content area */}
+                  <div className="mt-8 space-y-4">
+                    <div className="flex items-center gap-3 text-gray-400 dark:text-gray-500">
+                      <Sparkles size={20} className="text-aiva-purple/50" />
+                      <span className="text-sm">
+                        Notes and materials will appear here
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* ── Right: Customize + Topic chips ── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+              className="w-[280px] flex-shrink-0 hidden lg:block pt-10"
+            >
+              <div className="sticky top-28 rounded-3xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl shadow-xl ring-1 ring-white/30 dark:ring-gray-700/30 p-5 space-y-4">
+                {/* Customize input */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="customize notes"
+                    className="w-full pl-4 pr-11 py-2.5 rounded-full bg-white/70 dark:bg-gray-900/50 backdrop-blur-sm text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/50 dark:ring-gray-700/50 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 shadow-sm transition-all"
+                  />
+                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-aiva-purple transition-colors">
+                    <Edit3 size={15} />
+                  </button>
+                </div>
+
+                {/* Topic chips */}
+                <div className="space-y-2.5 pt-1">
+                  {selected?.topics.map((topic) => (
+                    <TopicChip key={topic} label={topic} />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-function ResourceCard({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
-  return (
-    <div className="rounded-xl bg-white/60 backdrop-blur-sm p-4 ring-1 ring-gray-200/40 hover:ring-aiva-purple/20 transition-all group">
-      <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-lg bg-aiva-purple/10 group-hover:bg-aiva-purple/15 flex items-center justify-center text-aiva-purple transition-colors flex-shrink-0">
-          <Icon size={18} />
-        </div>
-        <div>
-          <h4 className="text-sm font-bold text-gray-800">{title}</h4>
-          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* ── Topic Chip ───────────────────────────────────────────── */
+function TopicChip({ label }: { label: string }) {
+  const [active, setActive] = useState(false);
 
-function StatBadge({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-white/60 backdrop-blur-sm p-4 ring-1 ring-gray-200/30 text-center">
-      <Icon size={20} className="text-aiva-purple mx-auto" />
-      <div className="mt-2 text-lg font-bold text-gray-900">{value}</div>
-      <div className="text-xs text-gray-500 font-medium">{label}</div>
-    </div>
-  );
-}
-
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="rounded-xl bg-white/60 backdrop-blur-sm ring-1 ring-gray-200/40 overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left"
-      >
-        <span className="text-sm font-semibold text-gray-800">{question}</span>
-        <ChevronDown
-          size={16}
-          className={`text-gray-400 flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-      {open && (
-        <div className="px-4 pb-4 -mt-1">
-          <p className="text-sm text-gray-600 leading-relaxed">{answer}</p>
-        </div>
-      )}
-    </div>
+    <motion.button
+      whileHover={{ scale: 1.03, x: 4 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => setActive(!active)}
+      className={`block w-max px-5 py-2 rounded-full text-sm font-semibold shadow-sm transition-all duration-200 ${
+        active
+          ? "bg-aiva-purple text-white shadow-aiva-glow ring-1 ring-aiva-purple/40"
+          : "bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-aiva-purple/20 hover:bg-white dark:hover:bg-gray-700/80"
+      }`}
+    >
+      {label}
+    </motion.button>
   );
 }
