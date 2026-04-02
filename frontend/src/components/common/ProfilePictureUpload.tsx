@@ -1,84 +1,87 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Upload, X, Check } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Camera, LoaderCircle, Trash2, Upload } from "lucide-react";
 
 interface ProfilePictureUploadProps {
   currentImage?: string;
   onImageChange: (imageUrl: string) => void;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function ProfilePictureUpload({ 
-  currentImage, 
-  onImageChange, 
-  size = 'md',
-  className = '' 
+const SIZE_CLASSES = {
+  sm: "h-20 w-20",
+  md: "h-28 w-28",
+  lg: "h-36 w-36 sm:h-40 sm:w-40",
+};
+
+export function ProfilePictureUpload({
+  currentImage,
+  onImageChange,
+  size = "md",
+  className = "",
 }: ProfilePictureUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(currentImage || '');
-  const [isHovered, setIsHovered] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(currentImage || "");
+  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync internal preview with prop changes from parent
   useEffect(() => {
-    if (currentImage !== undefined) {
-      setPreviewUrl(currentImage);
-    }
+    setPreviewUrl(currentImage || "");
   }, [currentImage]);
 
-  const sizeClasses = {
-    sm: 'w-16 h-16',
-    md: 'w-24 h-24',
-    lg: 'w-32 h-32'
-  };
+  function triggerFileSelect() {
+    fileInputRef.current?.click();
+  }
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose a valid image file.");
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB');
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Use an image under 2MB for faster loading.");
       return;
     }
 
+    setError("");
     setIsUploading(true);
-    
-    // Create preview
+
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
+    reader.onload = (loadEvent) => {
+      const result = loadEvent.target?.result;
+      if (typeof result !== "string" || result.length === 0) {
+        setError("We could not read that image. Try another file.");
+        setIsUploading(false);
+        return;
+      }
+
       setPreviewUrl(result);
-      
-      // Immediate update
       onImageChange(result);
       setIsUploading(false);
     };
+    reader.onerror = () => {
+      setError("Image upload failed. Try a different image.");
+      setIsUploading(false);
+    };
     reader.readAsDataURL(file);
-  };
+  }
 
-  const handleRemoveImage = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    setPreviewUrl('');
-    onImageChange('');
+  function handleRemoveImage() {
+    setPreviewUrl("");
+    setError("");
+    onImageChange("");
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
-  };
-
-  const triggerFileSelect = () => {
-    fileInputRef.current?.click();
-  };
+  }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       <input
         ref={fileInputRef}
         type="file"
@@ -86,86 +89,73 @@ export function ProfilePictureUpload({
         onChange={handleFileSelect}
         className="hidden"
       />
-      
-      <motion.div
-        className={`${sizeClasses[size]} relative rounded-2xl overflow-hidden cursor-pointer group shadow-xl ring-4 ring-white/10 dark:ring-black/20`}
-        whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" }}
-        whileTap={{ scale: 0.98 }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        onClick={triggerFileSelect}
-        style={{ touchAction: 'manipulation' }}
-      >
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-aiva-purple to-aiva-indigo" />
-        
-        {/* Image or placeholder */}
-        {previewUrl ? (
-          <img 
-            src={previewUrl} 
-            alt="Profile" 
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = ""; // Fallback to placeholder
-              setPreviewUrl("");
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white">
-            <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <Camera size={size === 'sm' ? 24 : size === 'md' ? 32 : 40} />
-            </motion.div>
-          </div>
-        )}
-        
-        {/* Overlay */}
-        <AnimatePresence>
-          {(isHovered || isUploading) && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 flex items-center justify-center"
-            >
-              {isUploading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-8 h-8 border-2 border-white border-t-transparent rounded-full"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-white">
-                  <Upload size={size === 'sm' ? 16 : size === 'md' ? 20 : 24} />
-                  <span className="text-xs font-medium">
-                    {previewUrl ? 'Change' : 'Upload'}
-                  </span>
-                </div>
-              )}
-            </motion.div>
+
+      <div className="relative inline-flex">
+        <motion.button
+          type="button"
+          onClick={triggerFileSelect}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className={`${SIZE_CLASSES[size]} relative overflow-hidden rounded-[1.75rem] border border-white/25 bg-gradient-to-br from-aiva-purple via-aiva-purple-dark to-aiva-indigo shadow-[0_18px_50px_rgba(91,47,163,0.32)]`}
+        >
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Profile preview"
+              className="absolute inset-0 object-cover w-full h-full"
+              onError={() => {
+                setPreviewUrl("");
+                setError("That image could not be displayed.");
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.28),transparent_55%)]" />
           )}
-        </AnimatePresence>
-        
-      </motion.div>
-      
-      {/* Remove button (Show only on hover) */}
-      <AnimatePresence>
-        {previewUrl && isHovered && !isUploading && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            whileHover={{ scale: 1.1, backgroundColor: '#ef4444' }}
-            whileTap={{ scale: 0.9 }}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-white/10" />
+
+          {!previewUrl && (
+            <div className="relative z-10 flex items-center justify-center w-full h-full text-white">
+              <Camera size={size === "sm" ? 26 : size === "md" ? 34 : 42} />
+            </div>
+          )}
+
+          <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between px-3 py-2 text-left text-white bg-slate-950/50 backdrop-blur-sm">
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/70">
+                Profile Photo
+              </div>
+              <div className="text-xs font-semibold">
+                {isUploading ? "Uploading..." : previewUrl ? "Tap to replace" : "Upload image"}
+              </div>
+            </div>
+            <div className="flex items-center justify-center border h-9 w-9 rounded-2xl border-white/20 bg-white/10">
+              {isUploading ? <LoaderCircle size={16} className="animate-spin" /> : <Upload size={16} />}
+            </div>
+          </div>
+        </motion.button>
+
+        {previewUrl && !isUploading && (
+          <button
+            type="button"
             onClick={handleRemoveImage}
-            className="absolute -top-3 -right-3 w-8 h-8 bg-red-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-xl z-20 transition-colors border-2 border-white dark:border-gray-800"
+            className="absolute flex items-center justify-center transition-colors bg-white border rounded-full shadow-lg -right-2 -top-2 h-9 w-9 border-white/60 text-rose-500 hover:bg-rose-50"
+            aria-label="Remove profile picture"
           >
-            <X size={14} strokeWidth={3} />
-          </motion.button>
+            <Trash2 size={14} />
+          </button>
         )}
-      </AnimatePresence>
+      </div>
+
+      <div className="px-3 py-2 text-xs border rounded-2xl border-white/15 bg-slate-900/35 text-white/75 backdrop-blur-sm">
+        Best results: square photo, under 2MB.
+      </div>
+
+      {error && (
+        <div className="px-3 py-2 text-xs font-medium border rounded-2xl border-rose-200/70 bg-rose-50 text-rose-600">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,32 +1,44 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { GlassCard } from "@/components/common/GlassCard";
 import { Button } from "@/components/common/Button";
 import { AnimatedButton } from "@/components/common/AnimatedButton";
-import { InteractiveCard } from "@/components/common/InteractiveCard";
 import { ProfilePictureUpload } from "@/components/common/ProfilePictureUpload";
 import { authService } from "@/services/authService";
 import {
-  User as UserIcon, Briefcase, Settings, Shield,
-  MapPin, Globe, Calendar, Award, Flame, Clock,
-  Plus, X, Linkedin, Github, Camera, Upload, Check,
+  Award,
+  Bell,
+  Briefcase,
+  Calendar,
+  Check,
+  Clock,
+  Flame,
+  Github,
+  Globe,
+  Linkedin,
+  Lock,
+  MapPin,
+  Plus,
+  Shield,
+  Sparkles,
+  User as UserIcon,
+  X,
 } from "lucide-react";
 
 const TABS = [
-  { id: "general", label: "General", icon: UserIcon },
-  { id: "professional", label: "Professional", icon: Briefcase },
-  { id: "preferences", label: "Preferences", icon: Settings },
+  { id: "general", label: "Identity", icon: UserIcon },
+  { id: "professional", label: "Career", icon: Briefcase },
+  { id: "preferences", label: "Preferences", icon: Bell },
   { id: "security", label: "Security", icon: Shield },
-];
+] as const;
 
 export function ProfilePage() {
   const { user, updateProfile, changePassword } = useAuth();
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]["id"]>("general");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [saveTone, setSaveTone] = useState<"success" | "error">("success");
 
-  // General
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [username, setUsername] = useState(user?.username ?? "");
@@ -35,7 +47,6 @@ export function ProfilePage() {
   const [website, setWebsite] = useState(user?.website ?? "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
 
-  // Professional
   const [jobTitle, setJobTitle] = useState(user?.jobTitle ?? "");
   const [company, setCompany] = useState(user?.company ?? "");
   const [experience, setExperience] = useState(user?.experience ?? "");
@@ -44,481 +55,648 @@ export function ProfilePage() {
   const [linkedin, setLinkedin] = useState(user?.linkedin ?? "");
   const [github, setGithub] = useState(user?.github ?? "");
 
-  // Update local state when user context changes (e.g. after save or initial load)
-  useEffect(() => {
-    if (user) {
-      setFirstName(user.firstName ?? "");
-      setLastName(user.lastName ?? "");
-      setUsername(user.username ?? "");
-      setBio(user.bio ?? "");
-      setLocation(user.location ?? "");
-      setWebsite(user.website ?? "");
-      setProfilePicture(user.profilePicture || "");
-      setJobTitle(user.jobTitle ?? "");
-      setCompany(user.company ?? "");
-      setExperience(user.experience ?? "");
-      setSkills(user.skills ?? []);
-      setLinkedin(user.linkedin ?? "");
-      setGithub(user.github ?? "");
-    }
-  }, [user]);
+  const [emailNotifications, setEmailNotifications] = useState(user?.preferences.notifications.email ?? true);
+  const [pushNotifications, setPushNotifications] = useState(user?.preferences.notifications.push ?? true);
+  const [practiceReminders, setPracticeReminders] = useState(user?.preferences.notifications.practice ?? true);
+  const [achievementAlerts, setAchievementAlerts] = useState(user?.preferences.notifications.achievements ?? true);
+  const [publicProfile, setPublicProfile] = useState(user?.preferences.privacy.profileVisibility === "public");
+  const [showProgress, setShowProgress] = useState(user?.preferences.privacy.showProgress ?? true);
+  const [showAchievements, setShowAchievements] = useState(user?.preferences.privacy.showAchievements ?? true);
 
-  // General
-
-  // Security
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
   const [pwdError, setPwdError] = useState("");
   const [pwdSuccess, setPwdSuccess] = useState("");
+  const [sessions, setSessions] = useState(() => (user ? authService.getSessions(user.id) : []));
 
-  const sessions = user ? authService.getSessions(user.id) : [];
-  const initials = `${(user?.firstName ?? "A")[0]}${(user?.lastName ?? "I")[0]}`.toUpperCase();
+  useEffect(() => {
+    if (!user) return;
+    setFirstName(user.firstName ?? "");
+    setLastName(user.lastName ?? "");
+    setUsername(user.username ?? "");
+    setBio(user.bio ?? "");
+    setLocation(user.location ?? "");
+    setWebsite(user.website ?? "");
+    setProfilePicture(user.profilePicture || "");
+    setJobTitle(user.jobTitle ?? "");
+    setCompany(user.company ?? "");
+    setExperience(user.experience ?? "");
+    setSkills(user.skills ?? []);
+    setLinkedin(user.linkedin ?? "");
+    setGithub(user.github ?? "");
+    setEmailNotifications(user.preferences.notifications.email ?? true);
+    setPushNotifications(user.preferences.notifications.push ?? true);
+    setPracticeReminders(user.preferences.notifications.practice ?? true);
+    setAchievementAlerts(user.preferences.notifications.achievements ?? true);
+    setPublicProfile(user.preferences.privacy.profileVisibility === "public");
+    setShowProgress(user.preferences.privacy.showProgress ?? true);
+    setShowAchievements(user.preferences.privacy.showAchievements ?? true);
+    setSessions(authService.getSessions(user.id));
+  }, [user]);
+
+  function showSaveState(tone: "success" | "error", message: string) {
+    setSaveTone(tone);
+    setSaveMsg(message);
+    window.setTimeout(() => setSaveMsg(""), 3200);
+  }
 
   async function saveGeneral() {
     setSaving(true);
-    await updateProfile({ firstName, lastName, username, bio, location, website, profilePicture });
-    setSaveMsg("Changes saved successfully!");
-    setSaving(false);
-    setTimeout(() => setSaveMsg(""), 3000);
+    try {
+      await updateProfile({ firstName, lastName, username, bio, location, website, profilePicture });
+      showSaveState("success", "Profile identity updated.");
+    } catch {
+      showSaveState("error", "Could not save profile changes.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function saveProfessional() {
     setSaving(true);
-    await updateProfile({ jobTitle, company, experience, skills, linkedin, github });
-    setSaveMsg("Professional details updated!");
-    setSaving(false);
-    setTimeout(() => setSaveMsg(""), 3000);
+    try {
+      await updateProfile({ jobTitle, company, experience, skills, linkedin, github });
+      showSaveState("success", "Professional details updated.");
+    } catch {
+      showSaveState("error", "Could not save professional details.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function savePreferences() {
+    if (!user) return;
+    setSaving(true);
+    try {
+      await updateProfile({
+        preferences: {
+          ...user.preferences,
+          notifications: {
+            email: emailNotifications,
+            push: pushNotifications,
+            practice: practiceReminders,
+            achievements: achievementAlerts,
+          },
+          privacy: {
+            profileVisibility: publicProfile ? "public" : "private",
+            showProgress,
+            showAchievements,
+          },
+        },
+      });
+      showSaveState("success", "Preferences updated.");
+    } catch {
+      showSaveState("error", "Could not save preferences.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function addSkill() {
-    const s = skillInput.trim();
-    if (s && !skills.includes(s) && skills.length < 20) {
-      setSkills([...skills, s]);
-      setSkillInput("");
-    }
+    const nextSkill = skillInput.trim();
+    if (!nextSkill || skills.includes(nextSkill) || skills.length >= 20) return;
+    setSkills([...skills, nextSkill]);
+    setSkillInput("");
   }
 
   async function handleChangePassword() {
-    setPwdError(""); setPwdSuccess("");
-    if (newPwd.length < 8) { setPwdError("Minimum 8 characters required"); return; }
-    if (newPwd !== confirmPwd) { setPwdError("Passwords don't match"); return; }
+    setPwdError("");
+    setPwdSuccess("");
+    if (newPwd.length < 8) {
+      setPwdError("Use at least 8 characters.");
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      setPwdError("Passwords do not match.");
+      return;
+    }
     try {
       await changePassword(currentPwd, newPwd);
-      setPwdSuccess("Password updated successfully!");
-      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+      setPwdSuccess("Password updated.");
+      setCurrentPwd("");
+      setNewPwd("");
+      setConfirmPwd("");
     } catch (err) {
-      setPwdError(err instanceof Error ? err.message : "Failed to update password");
+      setPwdError(err instanceof Error ? err.message : "Failed to update password.");
     }
+  }
+
+  function handleRevokeSession(sessionId: string) {
+    if (!user) return;
+    authService.revokeSession(user.id, sessionId);
+    setSessions(authService.getSessions(user.id));
+  }
+
+  function handleRevokeAllSessions() {
+    if (!user) return;
+    authService.revokeAllSessions(user.id);
+    setSessions(authService.getSessions(user.id));
   }
 
   if (!user) return null;
 
+  const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  const profileStrength = Math.min(
+    100,
+    [bio, location, website, jobTitle, company, skills.length ? "skills" : "", profilePicture].filter(Boolean).length * 14 + 16,
+  );
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6 max-w-5xl mx-auto"
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="max-w-6xl mx-auto space-y-6"
     >
-      {/* ── Hero profile header ── */}
-      <div className="relative rounded-3xl overflow-hidden">
-        {/* Gradient banner */}
-        <div className="h-36 bg-gradient-to-r from-aiva-purple via-purple-500 to-aiva-indigo relative">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMwMDAub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-        </div>
-
-        {/* Profile info card overlapping banner */}
-        <InteractiveCard hover={true} scale={true} glow={true} tilt={false}>
-          <div className="relative -mt-16 mx-4 sm:mx-6 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-lg ring-1 ring-white/40 dark:ring-gray-700/40 p-5">
-            <div className="flex flex-col sm:flex-row sm:items-end gap-5">
-              {/* Avatar section */}
-              <motion.div 
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: "spring", damping: 15 }}
-                className="-mt-14 sm:-mt-16 relative"
-              >
-                <ProfilePictureUpload
-                  currentImage={profilePicture}
-                  onImageChange={setProfilePicture}
-                  size="lg"
-                />
-                <div className="absolute bottom-1 right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 z-10 shadow-sm" title="Online" />
-              </motion.div>
-
-              {/* Info section */}
-              <div className="flex-1 min-w-0 pb-1">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                      {user.firstName} {user.lastName}
-                    </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">@{user.username}</p>
-                  </div>
-                  
-                  <div className="flex flex-col items-end gap-1.5 self-start sm:self-center">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-aiva-purple/10 to-aiva-indigo/10 dark:from-aiva-purple/20 dark:to-aiva-indigo/20 px-4 py-1.5 text-sm font-bold text-aiva-purple dark:text-aiva-purple ring-1 ring-aiva-purple/20">
-                      <Award size={14} />
-                      Level {user.level}
-                    </span>
-                    {/* Level Progress Bar */}
-                    <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: "65%" }} 
-                        className="h-full bg-gradient-to-r from-aiva-purple to-aiva-indigo"
-                        transition={{ duration: 1, delay: 0.5 }}
-                      />
-                    </div>
-                    <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Mastery 65%</span>
-                  </div>
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-[linear-gradient(135deg,rgba(107,62,186,0.98),rgba(128,77,222,0.95),rgba(89,99,237,0.94))] shadow-[0_30px_90px_rgba(66,34,127,0.32)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_left,rgba(255,255,255,0.1),transparent_30%)]" />
+        <div className="relative grid gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-8">
+          <div className="space-y-6">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+              <ProfilePictureUpload currentImage={profilePicture} onImageChange={setProfilePicture} size="lg" className="shrink-0" />
+              <div className="min-w-0 text-white">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/80">
+                  <Sparkles size={12} />
+                  Speaker Identity
                 </div>
-
-                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="flex items-center gap-1.5"><Calendar size={12} className="text-aiva-purple" /> Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
-                  {user.location && <span className="flex items-center gap-1.5"><MapPin size={12} className="text-aiva-purple" /> {user.location}</span>}
-                  {user.website && <span className="flex items-center gap-1.5"><Globe size={12} className="text-aiva-purple" /> {user.website}</span>}
+                <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
+                  {firstName || user.firstName} {lastName || user.lastName}
+                </h1>
+                <p className="mt-2 text-sm text-white/75">@{username || user.username}</p>
+                <p className="max-w-2xl mt-4 text-sm leading-7 text-white/78">
+                  {bio || "Shape your presence so judges instantly understand who you are, what you build, and why your product deserves attention."}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-4 text-xs text-white/82">
+                  <MetaBadge icon={Calendar} label={`Joined ${joinedDate}`} />
+                  <MetaBadge icon={MapPin} label={location || "Location not set"} />
+                  <MetaBadge icon={Globe} label={website || "Portfolio pending"} />
                 </div>
               </div>
             </div>
 
-          {/* Stats row */}
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <StatCard 
-              icon={Clock} 
-              label="Practice Hours" 
-              value={user.stats.practiceHours} 
-              color="from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20" 
-              iconColor="text-blue-500" 
-            />
-            <StatCard 
-              icon={Award} 
-              label="Achievements" 
-              value={user.stats.achievements} 
-              color="from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20" 
-              iconColor="text-amber-500" 
-            />
-            <StatCard 
-              icon={Flame} 
-              label="Day Streak" 
-              value={user.stats.streak} 
-              color="from-rose-500/10 to-pink-500/10 dark:from-rose-500/20 dark:to-pink-500/20" 
-              iconColor="text-rose-500" 
-            />
-          </div>
-          </div>
-        </InteractiveCard>
-      </div>
-
-      {/* ── Tab content ── */}
-      <InteractiveCard hover={false} scale={false} glow={true} tilt={false}>
-        <div className="rounded-3xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl shadow-lg ring-1 ring-white/40 dark:ring-gray-700/40 overflow-hidden">
-          {/* Tab bar */}
-          <div className="flex border-b border-gray-200/50 dark:border-gray-700/50 bg-white/30 dark:bg-gray-900/10">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all ${
-                  activeTab === tab.id
-                    ? "text-aiva-purple"
-                    : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-                }`}
-              >
-                <tab.icon size={16} />
-                <span className="hidden sm:inline">{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="profile-tab-indicator"
-                    className="absolute bottom-0 inset-x-6 h-0.5 rounded-full bg-aiva-purple"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <HeroStat icon={Clock} label="Practice Hours" value={String(user.stats.practiceHours)} />
+              <HeroStat icon={Award} label="Achievements" value={String(user.stats.achievements)} />
+              <HeroStat icon={Flame} label="Current Streak" value={`${user.stats.streak} days`} />
+            </div>
           </div>
 
-          <div className="p-5 sm:p-6">
-            {/* Save message */}
-            <AnimatePresence>
-              {saveMsg && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="mb-5 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium flex items-center gap-2"
-                >
-                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span>
-                  {saveMsg}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-          {/* ── General ── */}
-          {activeTab === "general" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GlassField label="First Name" value={firstName} onChange={setFirstName} />
-                <GlassField label="Last Name" value={lastName} onChange={setLastName} />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GlassField label="Username" value={username} onChange={setUsername} />
-                <GlassField label="Email" value={user.email} onChange={() => {}} disabled />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 block uppercase tracking-wider">Bio</label>
-                <textarea
-                  value={bio} onChange={(e) => setBio(e.target.value)}
-                  maxLength={280} rows={3}
-                  className="w-full rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm px-4 py-3 text-sm text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/60 dark:ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 resize-none transition-shadow"
-                  placeholder="Write something about yourself..."
+          <div className="grid self-stretch gap-3">
+            <InfoPanel
+              eyebrow="Profile Strength"
+              title={`${profileStrength}% complete`}
+              description="A fuller profile makes your story feel intentional and credible."
+            >
+              <div className="h-2 overflow-hidden rounded-full bg-white/15">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#f7b3ff_0%,#ffd7b7_50%,#fff3ce_100%)]"
+                  style={{ width: `${profileStrength}%` }}
                 />
-                <div className="text-right text-[10px] text-gray-400 mt-1 font-semibold">{bio.length}/280</div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GlassField label="Location" value={location} onChange={setLocation} placeholder="City, Country" icon={<MapPin size={14} />} />
-                <GlassField label="Website" value={website} onChange={setWebsite} placeholder="https://yoursite.com" icon={<Globe size={14} />} />
+            </InfoPanel>
+            <InfoPanel
+              eyebrow="Current Focus"
+              title={jobTitle || "Position your role"}
+              description={company ? `Currently building at ${company}.` : "Add your role and company to strengthen your pitch."}
+            >
+              <div className="flex flex-wrap gap-2">
+                {(skills.slice(0, 4).length ? skills.slice(0, 4) : ["Communication", "Confidence", "Pitching"]).map((skill) => (
+                  <span key={skill} className="px-3 py-1 text-xs font-semibold border rounded-full border-white/15 bg-white/10 text-white/85">
+                    {skill}
+                  </span>
+                ))}
               </div>
-              <div className="pt-2">
-                <AnimatedButton 
-                  onClick={saveGeneral} 
-                  disabled={saving}
-                  loading={saving}
-                  icon={<Check size={16} />}
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </AnimatedButton>
-              </div>
-            </motion.div>
-          )}
+            </InfoPanel>
+          </div>
+        </div>
+      </section>
 
-          {/* ── Professional ── */}
-          {activeTab === "professional" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GlassField label="Job Title" value={jobTitle} onChange={setJobTitle} placeholder="Software Engineer" icon={<Briefcase size={14} />} />
-                <GlassField label="Company" value={company} onChange={setCompany} placeholder="Acme Corp" />
-              </div>
-              <GlassField label="Experience Level" value={experience} onChange={setExperience} placeholder="e.g. 3+ years" />
-
-              {/* Skills */}
-              <div>
-                <label className="text-xs font-semibold text-gray-600 mb-2 block">Skills</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {skills.map((s) => (
-                    <motion.span
-                      key={s}
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-aiva-purple/10 to-aiva-indigo/10 px-3 py-1.5 text-xs text-aiva-purple font-semibold ring-1 ring-aiva-purple/15"
-                    >
-                      {s}
-                      <button type="button" onClick={() => setSkills(skills.filter((x) => x !== s))}
-                        className="text-aiva-purple/50 hover:text-aiva-purple transition-colors">
-                        <X size={12} />
-                      </button>
-                    </motion.span>
-                  ))}
-                  {skills.length === 0 && <span className="text-xs text-gray-400 italic">No skills added yet</span>}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-                    placeholder="Type a skill and press Enter..."
-                    className="flex-1 rounded-xl bg-white/60 backdrop-blur-sm px-4 py-2.5 text-sm ring-1 ring-gray-200/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-shadow"
-                  />
-                  <Button variant="secondary" size="sm" onClick={addSkill}>
-                    <Plus size={14} /> Add
-                  </Button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GlassField label="LinkedIn" value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/..." icon={<Linkedin size={14} />} />
-                <GlassField label="GitHub" value={github} onChange={setGithub} placeholder="https://github.com/..." icon={<Github size={14} />} />
-              </div>
-
-              <div className="pt-2">
-                <AnimatedButton 
-                  onClick={saveProfessional} 
-                  disabled={saving}
-                  loading={saving}
-                  icon={<Check size={16} />}
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </AnimatedButton>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── Preferences ── */}
-          {activeTab === "preferences" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <SettingsSection title="Notifications" description="Choose how you want to be notified">
-                <ToggleRow label="Email notifications" desc="Receive updates and tips via email" defaultChecked />
-                <ToggleRow label="Push notifications" desc="Get browser push notifications" defaultChecked />
-                <ToggleRow label="Practice reminders" desc="Daily reminders to keep your streak" defaultChecked />
-                <ToggleRow label="Achievement alerts" desc="Celebrate milestones and badges" defaultChecked />
-              </SettingsSection>
-              <SettingsSection title="Privacy" description="Control who sees your information">
-                <ToggleRow label="Public profile" desc="Let others discover your profile" defaultChecked />
-                <ToggleRow label="Show progress" desc="Display learning progress publicly" defaultChecked />
-                <ToggleRow label="Show achievements" desc="Show earned badges on your profile" defaultChecked />
-              </SettingsSection>
-            </motion.div>
-          )}
-
-          {/* ── Security ── */}
-          {activeTab === "security" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-              {/* Change password */}
-              <SettingsSection title="Change Password" description="Update your password regularly for security">
-                <AnimatePresence>
-                  {pwdError && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-sm text-red-600">{pwdError}</motion.div>
-                  )}
-                  {pwdSuccess && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-600">✓ {pwdSuccess}</motion.div>
-                  )}
-                </AnimatePresence>
-                <GlassField label="Current Password" value={currentPwd} onChange={setCurrentPwd} type="password" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <GlassField label="New Password" value={newPwd} onChange={setNewPwd} type="password" />
-                  <GlassField label="Confirm New Password" value={confirmPwd} onChange={setConfirmPwd} type="password" />
+      <section className="rounded-[2rem] border border-white/20 bg-white/60 p-3 shadow-[0_20px_70px_rgba(108,72,167,0.08)] backdrop-blur-xl dark:bg-slate-900/50">
+        <div className="grid gap-2 sm:grid-cols-4">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`rounded-[1.25rem] px-4 py-3 text-left transition-all ${
+                activeTab === tab.id
+                  ? "bg-[linear-gradient(135deg,rgba(124,58,237,0.16),rgba(99,102,241,0.12))] text-aiva-purple shadow-[inset_0_0_0_1px_rgba(124,58,237,0.18)]"
+                  : "text-gray-500 hover:bg-white/70 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-slate-800/55 dark:hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${activeTab === tab.id ? "bg-white/80 text-aiva-purple" : "bg-white/50 text-gray-400 dark:bg-slate-800/60"}`}>
+                  <tab.icon size={17} />
                 </div>
                 <div>
-                  <AnimatedButton onClick={handleChangePassword} icon={<Shield size={16} />}>
-                    Update Password
-                  </AnimatedButton>
+                  <div className="text-sm font-bold">{tab.label}</div>
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-current/60">
+                    {tab.id === "general" && "Core"}
+                    {tab.id === "professional" && "Growth"}
+                    {tab.id === "preferences" && "Signals"}
+                    {tab.id === "security" && "Trust"}
+                  </div>
                 </div>
-              </SettingsSection>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
 
-              {/* Sessions */}
-              <SettingsSection title="Active Sessions" description="Manage your login sessions across devices">
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.24 }}
+          className="space-y-5"
+        >
+          {saveMsg && (
+            <div className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+              saveTone === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-rose-200 bg-rose-50 text-rose-700"
+            }`}>
+              {saveMsg}
+            </div>
+          )}
+
+          {activeTab === "general" && (
+            <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+              <SurfaceCard title="Profile Identity" description="Tight, clear, and presentation-ready information for judges and teammates.">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <GlassField label="First Name" value={firstName} onChange={setFirstName} />
+                  <GlassField label="Last Name" value={lastName} onChange={setLastName} />
+                  <GlassField label="Username" value={username} onChange={setUsername} />
+                  <GlassField label="Email" value={user.email} onChange={() => {}} disabled />
+                </div>
+                <TextAreaField label="Bio" value={bio} onChange={setBio} placeholder="Tell judges what you build, your angle, and the confidence you bring." />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <GlassField label="Location" value={location} onChange={setLocation} placeholder="City, Country" icon={<MapPin size={14} />} />
+                  <GlassField label="Website" value={website} onChange={setWebsite} placeholder="https://portfolio.com" icon={<Globe size={14} />} />
+                </div>
+                <AnimatedButton onClick={saveGeneral} disabled={saving} loading={saving} icon={<Check size={16} />}>
+                  {saving ? "Saving..." : "Save Identity"}
+                </AnimatedButton>
+              </SurfaceCard>
+
+              <SurfaceCard title="Judge Snapshot" description="The first-glance summary that makes your profile feel intentional.">
+                <SpotlightRow label="Profile Visibility" value={publicProfile ? "Public" : "Private"} />
+                <SpotlightRow label="Current Role" value={jobTitle || "Not added yet"} />
+                <SpotlightRow label="Company" value={company || "Independent builder"} />
+                <SpotlightRow label="Top Skills" value={skills.length ? skills.slice(0, 3).join(", ") : "Add your strongest stack"} />
+              </SurfaceCard>
+            </div>
+          )}
+
+          {activeTab === "professional" && (
+            <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+              <SurfaceCard title="Professional Story" description="Give your experience a crisp, pitch-ready structure.">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <GlassField label="Job Title" value={jobTitle} onChange={setJobTitle} placeholder="Founding Engineer" icon={<Briefcase size={14} />} />
+                  <GlassField label="Company" value={company} onChange={setCompany} placeholder="Aiva Labs" />
+                </div>
+                <GlassField label="Experience Level" value={experience} onChange={setExperience} placeholder="3+ years in product and frontend" />
+                <SkillEditor
+                  skills={skills}
+                  skillInput={skillInput}
+                  onSkillInputChange={setSkillInput}
+                  onAddSkill={addSkill}
+                  onRemoveSkill={(skill) => setSkills(skills.filter((item) => item !== skill))}
+                />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <GlassField label="LinkedIn" value={linkedin} onChange={setLinkedin} placeholder="https://linkedin.com/in/..." icon={<Linkedin size={14} />} />
+                  <GlassField label="GitHub" value={github} onChange={setGithub} placeholder="https://github.com/..." icon={<Github size={14} />} />
+                </div>
+                <AnimatedButton onClick={saveProfessional} disabled={saving} loading={saving} icon={<Check size={16} />}>
+                  {saving ? "Saving..." : "Save Career Story"}
+                </AnimatedButton>
+              </SurfaceCard>
+
+              <SurfaceCard title="Presentation Notes" description="What makes this section feel stronger to a hackathon judge.">
+                <BulletPoint text="Lead with the role you want to be remembered for." />
+                <BulletPoint text="Keep only the skills that support your product story." />
+                <BulletPoint text="Link to a portfolio, GitHub, or case study if you have one." />
+              </SurfaceCard>
+            </div>
+          )}
+
+          {activeTab === "preferences" && (
+            <div className="grid gap-5 lg:grid-cols-2">
+              <SurfaceCard title="Notification Design" description="Keep signal high and noise low.">
+                <ToggleRow label="Email notifications" desc="Receive progress updates and tips by email." checked={emailNotifications} onChange={setEmailNotifications} />
+                <ToggleRow label="Push notifications" desc="Enable quick reminders inside the browser." checked={pushNotifications} onChange={setPushNotifications} />
+                <ToggleRow label="Practice reminders" desc="Daily nudges to keep your speaking streak active." checked={practiceReminders} onChange={setPracticeReminders} />
+                <ToggleRow label="Achievement alerts" desc="Celebrate milestones and score improvements." checked={achievementAlerts} onChange={setAchievementAlerts} />
+              </SurfaceCard>
+
+              <SurfaceCard title="Privacy Controls" description="Show only what strengthens your public presence.">
+                <ToggleRow label="Public profile" desc="Allow others to discover your profile page." checked={publicProfile} onChange={setPublicProfile} />
+                <ToggleRow label="Show progress" desc="Display your measurable learning journey." checked={showProgress} onChange={setShowProgress} />
+                <ToggleRow label="Show achievements" desc="Surface badges and milestone wins." checked={showAchievements} onChange={setShowAchievements} />
+                <AnimatedButton onClick={savePreferences} disabled={saving} loading={saving} icon={<Check size={16} />}>
+                  {saving ? "Saving..." : "Save Preferences"}
+                </AnimatedButton>
+              </SurfaceCard>
+            </div>
+          )}
+
+          {activeTab === "security" && (
+            <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+              <SurfaceCard title="Password Security" description="Keep your account protected without clutter.">
+                <AnimatePresence>
+                  {pwdError && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-4 py-3 text-sm font-medium border rounded-2xl border-rose-200 bg-rose-50 text-rose-600">
+                      {pwdError}
+                    </motion.div>
+                  )}
+                  {pwdSuccess && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-4 py-3 text-sm font-medium border rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-600">
+                      {pwdSuccess}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <GlassField label="Current Password" value={currentPwd} onChange={setCurrentPwd} type="password" icon={<Lock size={14} />} />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <GlassField label="New Password" value={newPwd} onChange={setNewPwd} type="password" icon={<Shield size={14} />} />
+                  <GlassField label="Confirm Password" value={confirmPwd} onChange={setConfirmPwd} type="password" icon={<Shield size={14} />} />
+                </div>
+                <AnimatedButton onClick={handleChangePassword} icon={<Shield size={16} />}>
+                  Update Password
+                </AnimatedButton>
+              </SurfaceCard>
+
+              <SurfaceCard title="Active Sessions" description="Clean, readable device management with immediate actions.">
                 {sessions.length > 1 && (
-                  <div className="flex justify-end -mt-2">
-                    <button onClick={() => authService.revokeAllSessions(user.id)}
-                      className="text-xs text-red-500 hover:text-red-600 font-semibold transition-colors">
+                  <div className="flex justify-end">
+                    <button type="button" onClick={handleRevokeAllSessions} className="text-sm font-semibold transition-colors text-rose-500 hover:text-rose-600">
                       Revoke all others
                     </button>
                   </div>
                 )}
                 {sessions.length === 0 ? (
-                  <p className="text-sm text-gray-400 italic">No active sessions found</p>
+                  <div className="px-4 py-6 text-sm text-gray-500 border border-gray-200 border-dashed rounded-2xl bg-white/40">
+                    No active sessions found.
+                  </div>
                 ) : (
-                  <div className="space-y-2">
-                    {sessions.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between rounded-xl bg-white/60 backdrop-blur-sm p-4 ring-1 ring-gray-200/50">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${s.isCurrent ? "bg-emerald-500" : "bg-gray-300"}`} />
+                  <div className="space-y-3">
+                    {sessions.map((session) => (
+                      <div key={session.id} className="flex flex-col gap-3 rounded-[1.4rem] border border-white/30 bg-white/55 p-4 shadow-[0_12px_35px_rgba(107,62,186,0.06)] backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between dark:bg-slate-900/35">
+                        <div className="flex items-start gap-3">
+                          <div className={`mt-1 h-2.5 w-2.5 rounded-full ${session.isCurrent ? "bg-emerald-500" : "bg-gray-300"}`} />
                           <div>
-                            <div className="text-sm font-semibold text-gray-800">{s.browser} · {s.device}</div>
-                            <div className="text-xs text-gray-500">{s.ip} · Last active {new Date(s.lastActive).toLocaleDateString()}</div>
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">
+                              {session.browser} � {session.device}
+                            </div>
+                            <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                              {session.ip} � Last active {new Date(session.lastActive).toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
-                        {s.isCurrent ? (
-                          <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full">This device</span>
+                        {session.isCurrent ? (
+                          <span className="inline-flex items-center px-3 py-1 text-xs font-bold border rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
+                            This device
+                          </span>
                         ) : (
-                          <button onClick={() => authService.revokeSession(user.id, s.id)}
-                            className="text-xs text-red-500 hover:text-red-600 font-semibold transition-colors">Revoke</button>
+                          <button type="button" onClick={() => handleRevokeSession(session.id)} className="text-sm font-semibold transition-colors text-rose-500 hover:text-rose-600">
+                            Revoke
+                          </button>
                         )}
                       </div>
                     ))}
                   </div>
                 )}
-              </SettingsSection>
-            </motion.div>
+              </SurfaceCard>
+            </div>
           )}
-        </div>
-      </div>
-    </InteractiveCard>
+        </motion.section>
+      </AnimatePresence>
     </motion.div>
   );
 }
 
-/* ── Helper components ── */
-
-function StatCard({ icon: Icon, label, value, color, iconColor }: {
-  icon: React.ElementType; label: string; value: number; color: string; iconColor: string;
-}) {
+function MetaBadge({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      className={`rounded-2xl bg-gradient-to-br ${color} p-4 ring-1 ring-gray-200/30 dark:ring-white/10 shadow-sm`}
-    >
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl bg-white/90 dark:bg-gray-800/90 flex items-center justify-center ${iconColor} shadow-sm`}>
-          <Icon size={20} strokeWidth={2.5} />
-        </div>
-        <div>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-2xl font-black text-gray-900 dark:text-white leading-none"
-          >
-            {value}
-          </motion.div>
-          <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-tight">{label}</div>
-        </div>
-      </div>
-    </motion.div>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5">
+      <Icon size={12} />
+      {label}
+    </span>
   );
 }
 
-function GlassField({ label, type = "text", value, onChange, placeholder, disabled = false, icon }: {
-  label: string; type?: string; value: string; onChange: (v: string) => void;
-  placeholder?: string; disabled?: boolean; icon?: React.ReactNode;
+function HeroStat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="rounded-[1.5rem] border border-white/15 bg-white/10 px-4 py-4 text-white backdrop-blur-sm">
+      <div className="flex items-center justify-center w-10 h-10 mb-3 rounded-2xl bg-white/14">
+        <Icon size={18} />
+      </div>
+      <div className="text-2xl font-black tracking-tight">{value}</div>
+      <div className="mt-1 text-xs uppercase tracking-[0.22em] text-white/62">{label}</div>
+    </div>
+  );
+}
+
+function InfoPanel({
+  eyebrow,
+  title,
+  description,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
 }) {
   return (
-    <div>
-      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1.5 block uppercase tracking-wider">{label}</label>
-      <div className="relative">
-        {icon && <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">{icon}</span>}
+    <div className="rounded-[1.6rem] border border-white/15 bg-slate-950/18 p-4 text-white backdrop-blur-md">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/62">{eyebrow}</div>
+      <div className="mt-2 text-xl font-black tracking-tight">{title}</div>
+      <div className="mt-1 text-sm leading-6 text-white/72">{description}</div>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+function SurfaceCard({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-[1.8rem] border border-white/25 bg-white/65 p-5 shadow-[0_20px_60px_rgba(107,62,186,0.08)] backdrop-blur-xl dark:bg-slate-900/45">
+      <div className="flex flex-col gap-2 pb-4 mb-5 border-b border-gray-100/80 dark:border-white/10">
+        <h3 className="text-lg font-black tracking-tight text-gray-900 dark:text-white">{title}</h3>
+        <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">{description}</p>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
+
+function SpotlightRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3 text-sm border rounded-2xl border-white/20 bg-white/55 dark:bg-slate-900/25">
+      <span className="font-semibold text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="font-bold text-right text-gray-900 dark:text-white">{value}</span>
+    </div>
+  );
+}
+
+function SkillEditor({
+  skills,
+  skillInput,
+  onSkillInputChange,
+  onAddSkill,
+  onRemoveSkill,
+}: {
+  skills: string[];
+  skillInput: string;
+  onSkillInputChange: (value: string) => void;
+  onAddSkill: () => void;
+  onRemoveSkill: (skill: string) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="block text-xs font-bold uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400">
+        Key Skills
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {skills.length === 0 && (
+          <span className="px-3 py-2 text-xs text-gray-400 border border-gray-200 border-dashed rounded-full dark:border-white/10">
+            No skills added yet
+          </span>
+        )}
+        {skills.map((skill) => (
+          <span key={skill} className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,rgba(124,58,237,0.13),rgba(99,102,241,0.11))] px-3 py-2 text-xs font-semibold text-aiva-purple ring-1 ring-aiva-purple/15">
+            {skill}
+            <button type="button" onClick={() => onRemoveSkill(skill)} className="transition-colors text-aiva-purple/60 hover:text-aiva-purple">
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-2">
         <input
-          type={type} value={value} onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder} disabled={disabled}
-          className={`w-full rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm ${icon ? "pl-11" : "px-4"} pr-4 py-3 text-sm text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/60 dark:ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
+          value={skillInput}
+          onChange={(e) => onSkillInputChange(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), onAddSkill())}
+          placeholder="Add skill and press Enter"
+          className="flex-1 px-4 py-3 text-sm text-gray-800 transition-colors border outline-none rounded-2xl border-gray-200/70 bg-white/80 focus:border-aiva-purple/35 dark:border-white/10 dark:bg-slate-950/30 dark:text-white"
+        />
+        <Button variant="secondary" size="sm" onClick={onAddSkill}>
+          <Plus size={14} /> Add
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function BulletPoint({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3 px-4 py-3 text-sm border rounded-2xl border-white/20 bg-white/55 dark:bg-slate-900/25">
+      <div className="mt-0.5 h-2.5 w-2.5 rounded-full bg-aiva-purple" />
+      <p className="leading-6 text-gray-600 dark:text-gray-300">{text}</p>
+    </div>
+  );
+}
+
+function GlassField({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+  icon,
+}: {
+  label: string;
+  type?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="block text-xs font-bold uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400">{label}</label>
+      <div className="relative">
+        {icon && <span className="absolute text-gray-400 -translate-y-1/2 pointer-events-none left-4 top-1/2">{icon}</span>}
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`w-full rounded-2xl border border-gray-200/70 bg-white/80 py-3 text-sm text-gray-800 outline-none transition-colors focus:border-aiva-purple/35 dark:border-white/10 dark:bg-slate-950/30 dark:text-white ${
+            icon ? "pl-11 pr-4" : "px-4"
+          } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         />
       </div>
     </div>
   );
 }
 
-function SettingsSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function TextAreaField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) {
   return (
-    <div className="space-y-4">
-      <div>
-        <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">{title}</h4>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <label className="block text-xs font-bold uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400">{label}</label>
+        <span className="text-[11px] font-semibold text-gray-400">{value.length}/280</span>
       </div>
-      <div className="space-y-3">{children}</div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        maxLength={280}
+        rows={4}
+        placeholder={placeholder}
+        className="w-full px-4 py-3 text-sm text-gray-800 transition-colors border outline-none resize-none rounded-2xl border-gray-200/70 bg-white/80 focus:border-aiva-purple/35 dark:border-white/10 dark:bg-slate-950/30 dark:text-white"
+      />
     </div>
   );
 }
 
-function ToggleRow({ label, desc, defaultChecked = false }: { label: string; desc: string; defaultChecked?: boolean }) {
-  const [checked, setChecked] = useState(defaultChecked);
+function ToggleRow({
+  label,
+  desc,
+  checked,
+  onChange,
+}: {
+  label: string;
+  desc: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm p-4 ring-1 ring-gray-200/40 dark:ring-gray-700/40 hover:ring-gray-200/60 dark:hover:ring-gray-700/60 transition-all">
-      <div>
-        <div className="text-sm font-bold text-gray-800 dark:text-gray-200">{label}</div>
-        <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">{desc}</div>
+    <div className="flex items-center justify-between gap-4 rounded-[1.3rem] border border-white/25 bg-white/55 px-4 py-4 dark:bg-slate-900/25">
+      <div className="max-w-[75%]">
+        <div className="text-sm font-bold text-gray-900 dark:text-white">{label}</div>
+        <div className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{desc}</div>
       </div>
       <button
-        type="button" role="switch" aria-checked={checked}
-        onClick={() => setChecked(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
-          checked ? "bg-aiva-purple" : "bg-gray-300 dark:bg-gray-700"
-        }`}
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${checked ? "bg-aiva-purple" : "bg-gray-300 dark:bg-slate-700"}`}
       >
-        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
-          checked ? "translate-x-6" : "translate-x-1"
-        }`} />
+        <span className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
       </button>
     </div>
   );

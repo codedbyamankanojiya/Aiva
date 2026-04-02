@@ -7,7 +7,7 @@ import { GlitchReveal } from "@/components/animations/GlitchReveal";
 /* ── Custom SVG for the Analytics mini-card to match screenshot ────── */
 function MiniChart() {
   return (
-    <svg viewBox="0 0 400 160" className="w-full h-auto mt-4 drop-shadow-md z-10 relative">
+    <svg viewBox="0 0 400 160" className="relative z-10 w-full h-auto mt-4 drop-shadow-md">
       <defs>
         <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#6755a5" stopOpacity="1" />
@@ -53,12 +53,12 @@ export function Dashboard() {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.95fr] gap-4 max-w-6xl mx-auto px-2"
+      className="grid grid-cols-1 lg:grid-cols-[0.9fr_2.1fr] gap-4 max-w-6xl mx-auto px-2"
     >
       {/* ── Left column: Unified Tall Card ────────────────────────────────────── */}
       <motion.div variants={fadeUp} className="flex flex-col h-full">
         <GlitchReveal delay={0.1} variant="both">
-          <GlassCard variant="blue" className="flex flex-col h-full relative overflow-hidden p-0 pt-4">
+          <GlassCard variant="blue" className="relative flex flex-col h-full p-0 pt-4 overflow-hidden">
             
             {/* Top Analytics Section */}
             <div className="px-4">
@@ -68,7 +68,7 @@ export function Dashboard() {
                   <p className="text-xs text-gray-600 mt-0.5">Last 7 days performance</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-semibold text-gray-700 block">Mar 16</span>
+                  <span className="block text-xs font-semibold text-gray-700">Mar 16</span>
                   <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-[#a28dc7] to-[#bdaadf]">
                     100
                   </span>
@@ -76,25 +76,25 @@ export function Dashboard() {
               </div>
 
               <div className="grid grid-cols-3 gap-2 mt-3">
-                <div className="rounded-xl bg-white/35 border border-white/25 px-3 py-2">
+                <div className="px-3 py-2 border rounded-xl bg-white/35 border-white/25">
                   <p className="text-[11px] font-semibold text-gray-700">Streak</p>
-                  <p className="text-base font-bold text-gray-900 leading-tight">6 days</p>
+                  <p className="text-base font-bold leading-tight text-gray-900">6 days</p>
                 </div>
-                <div className="rounded-xl bg-white/35 border border-white/25 px-3 py-2">
+                <div className="px-3 py-2 border rounded-xl bg-white/35 border-white/25">
                   <p className="text-[11px] font-semibold text-gray-700">This week</p>
-                  <p className="text-base font-bold text-gray-900 leading-tight">+24%</p>
+                  <p className="text-base font-bold leading-tight text-gray-900">+24%</p>
                 </div>
-                <div className="rounded-xl bg-white/35 border border-white/25 px-3 py-2">
+                <div className="px-3 py-2 border rounded-xl bg-white/35 border-white/25">
                   <p className="text-[11px] font-semibold text-gray-700">Practice</p>
-                  <p className="text-base font-bold text-gray-900 leading-tight">48h</p>
+                  <p className="text-base font-bold leading-tight text-gray-900">48h</p>
                 </div>
               </div>
             </div>
 
-            <div className="relative mt-3 px-4">
+            <div className="relative px-4 mt-3">
               <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
                 <span>Mar 12</span>
-                <span className="text-gray-500 font-medium">Trend</span>
+                <span className="font-medium text-gray-500">Trend</span>
               </div>
               <div className="mt-2 h-[145px] rounded-2xl bg-white/20 border border-white/20 overflow-hidden flex items-center">
                 <div className="w-full -mx-2">
@@ -104,32 +104,32 @@ export function Dashboard() {
             </div>
 
             {/* Bottom Tasks Section */}
-            <div className="px-4 flex-1 flex flex-col justify-end pb-5 pt-5">
+            <div className="flex flex-col justify-end flex-1 px-4 pt-5 pb-5">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-[17px] font-bold text-gray-800">Daily tasks</h3>
                 <span className="text-xs font-semibold text-gray-600">2 active</span>
               </div>
 
-              <div className="space-y-5 w-full">
-                <div className="rounded-2xl bg-white/25 border border-white/20 px-4 py-3">
+              <div className="w-full space-y-5">
+                <div className="px-4 py-3 border rounded-2xl bg-white/25 border-white/20">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-gray-800 leading-tight">Communication</p>
+                      <p className="text-sm font-semibold leading-tight text-gray-800">Communication</p>
                       <p className="text-xs font-medium text-gray-700 mt-0.5">in any language</p>
                     </div>
                     <span className="text-sm font-bold text-gray-800">10/25</span>
                   </div>
-                  <div className="mt-3 h-2 rounded-full bg-white/40 overflow-hidden">
+                  <div className="h-2 mt-3 overflow-hidden rounded-full bg-white/40">
                     <div className="h-full w-[40%] rounded-full bg-gradient-to-r from-[#6d28d9] to-[#8b5cf6]" />
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-white/25 border border-white/20 px-4 py-3">
+                <div className="px-4 py-3 border rounded-2xl bg-white/25 border-white/20">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold text-gray-800">Mock test</p>
                     <span className="text-sm font-bold text-gray-800">10/25</span>
                   </div>
-                  <div className="mt-3 h-2 rounded-full bg-white/40 overflow-hidden">
+                  <div className="h-2 mt-3 overflow-hidden rounded-full bg-white/40">
                     <div className="h-full w-[40%] rounded-full bg-gradient-to-r from-[#6d28d9] to-[#8b5cf6]" />
                   </div>
                 </div>
@@ -159,7 +159,7 @@ export function Dashboard() {
         <GlitchReveal delay={0.2} variant="chromatic">
           <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden h-full min-h-[210px]">
             {/* Text Content */}
-            <div className="flex-1 space-y-2 pr-4 sm:pr-[205px] lg:pr-[230px] z-10 w-full">
+            <div className="flex-1 space-y-2 pr-4 sm:pr-[180px] lg:pr-[200px] z-10 w-full">
               <h2 className="text-[22px] font-bold text-gray-800 flex items-center gap-2">
                 Hello! im{" "}
                 <span className="text-[#967abc] text-3xl">
@@ -183,7 +183,7 @@ export function Dashboard() {
             </div>
             
             {/* Jumbo Image Right */}
-            <div className="absolute right-0 bottom-0 sm:right-0 h-full w-full sm:w-[42%] lg:w-[42%] flex items-end justify-end pointer-events-none z-0 pr-2 pb-2">
+            <div className="absolute right-0 bottom-0 sm:right-0 h-full w-full sm:w-[38%] lg:w-[38%] flex items-end justify-end pointer-events-none z-0 pr-2 pb-2">
               <img
                 src="/Assets/Interview-amico.png"
                 alt="Aiva introduction"
@@ -197,7 +197,7 @@ export function Dashboard() {
         <GlitchReveal delay={0.35} variant="chromatic">
           <GlassCard variant="blue" className="relative flex flex-col sm:flex-row items-center overflow-hidden h-full min-h-[210px]" data-cursor="ai">
             {/* Text Content */}
-            <div className="flex-1 space-y-2 pr-4 sm:pr-[205px] lg:pr-[230px] z-10 w-full">
+            <div className="flex-1 space-y-2 pr-4 sm:pr-[180px] lg:pr-[200px] z-10 w-full">
               <h2 className="text-[22px] font-bold text-gray-800 flex items-center gap-2">
                 Hello! im{" "}
                 <span className="text-[#967abc] text-3xl">
@@ -211,6 +211,7 @@ export function Dashboard() {
                 <Button 
                   variant="primary" 
                   className="rounded-full px-5 py-2 w-36 font-semibold bg-[#674bb1] hover:bg-[#7a5bc9]"
+                  onClick={() => navigate("/resources")}
                   data-cursor="ai"
                 >
                   Chat with Aiva
@@ -219,7 +220,7 @@ export function Dashboard() {
             </div>
             
             {/* Jumbo Image Right */}
-            <div className="absolute right-0 bottom-0 h-full w-full sm:w-[40%] lg:w-[40%] flex items-end justify-end pointer-events-none z-0">
+            <div className="absolute right-0 bottom-0 h-full w-full sm:w-[36%] lg:w-[36%] flex items-end justify-end pointer-events-none z-0">
               <img
                 src="/Assets/DashChat.png"
                 alt="Chat with Aiva"

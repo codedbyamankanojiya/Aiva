@@ -21,11 +21,6 @@ const iconNavItems = [
     label: "Resources", 
     id: "resources", 
     path: "/resources",
-    subItems: [
-      { label: "Learning Materials", path: "/resources" },
-      { label: "Practice Tools", path: "/resources" },
-      { label: "Downloads", path: "/resources" },
-    ]
   },
   {
     icon: Users,
