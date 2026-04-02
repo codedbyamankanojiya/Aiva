@@ -419,9 +419,9 @@ export function Resources() {
               variants={slideIn}
               initial="hidden"
               animate="show"
-              className="w-[310px] flex-shrink-0 hidden lg:block mt-36"
+              className="w-[360px] flex-shrink-0 hidden lg:block mt-40"
             >
-              <div className="sticky top-36">
+              <div className="sticky top-40">
                 <div className="w-full rounded-3xl bg-white/55 dark:bg-gray-800/55 backdrop-blur-xl shadow-xl ring-1 ring-white/30 dark:ring-gray-700/30 overflow-hidden flex flex-col">
                   {/* Header with greeting + 3-dot menu */}
                   <div className="px-5 pt-5 pb-2 flex items-start justify-between">
