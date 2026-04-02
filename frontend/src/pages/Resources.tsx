@@ -1,138 +1,160 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { Search, Mic, ArrowLeft, Edit3, Sparkles, Send, X, MoreVertical, Trash2, Pencil } from "lucide-react";
+import { 
+  Search, Mic, ArrowLeft, Edit3, Sparkles, Send, X, 
+  MoreVertical, Trash2, Pencil, FileText, Video, Link as LinkIcon, 
+  Download, ExternalLink, Bookmark
+} from "lucide-react";
 
 /* ── Resource categories data ─────────────────────────────── */
 const CATEGORIES = [
-  // Tech Roles from Practice Section
+  // Tech Roles
   {
     id: "software-engineer",
     title: "Software Engineering",
     subtitle: "Interview prep & coding questions",
     topics: ["DSA", "System Design", "OOP", "Design Patterns", "Testing", "Algorithms"],
-    type: "tech"
+    type: "tech",
+    icon: "💻"
   },
   {
     id: "web-developer",
     title: "Web Development",
     subtitle: "Frontend & backend development",
     topics: ["React", "Node.js", "HTML/CSS", "JavaScript", "APIs"],
-    type: "tech"
+    type: "tech",
+    icon: "🌐"
   },
   {
     id: "backend-developer",
     title: "Backend Developer",
     subtitle: "Server-side development",
     topics: ["APIs", "Databases", "Authentication", "Microservices", "Caching"],
-    type: "tech"
+    type: "tech",
+    icon: "⚙️"
   },
   {
     id: "ui-ux-designer",
     title: "UI/UX Designer",
     subtitle: "Design principles & tools",
     topics: ["Figma", "User Research", "Prototyping", "Wireframing", "Design Systems"],
-    type: "tech"
+    type: "tech",
+    icon: "🎨"
   },
   {
     id: "app-developer",
     title: "App Development",
     subtitle: "Mobile app development",
     topics: ["React Native", "Flutter", "iOS", "Android", "Mobile UI"],
-    type: "tech"
+    type: "tech",
+    icon: "📱"
   },
   {
     id: "devops-engineer",
     title: "DevOps Engineer",
     subtitle: "Deployment & operations",
     topics: ["Docker", "Kubernetes", "CI/CD", "Cloud Services", "Monitoring"],
-    type: "tech"
+    type: "tech",
+    icon: "🚀"
   },
   {
     id: "data-scientist",
     title: "Data Scientist",
     subtitle: "Data analysis & machine learning",
     topics: ["Statistics", "ML Models", "Python", "Data Viz", "NLP"],
-    type: "tech"
+    type: "tech",
+    icon: "📊"
   },
   {
     id: "product-manager",
     title: "Product Manager",
     subtitle: "Product strategy & management",
     topics: ["Product Strategy", "Roadmapping", "User Stories", "Analytics", "Stakeholder Management"],
-    type: "tech"
+    type: "tech",
+    icon: "📋"
   },
   {
     id: "hr-recruiter",
     title: "HR Recruiter",
     subtitle: "Recruitment & talent management",
     topics: ["Sourcing", "Interviewing", "Onboarding", "Compensation", "Employer Branding"],
-    type: "tech"
+    type: "tech",
+    icon: "👔"
   },
   
-  // Skill Development from Practice Section
+  // Skill Development
   {
     id: "behavioral-upskilling",
     title: "Behavioral Skills",
     subtitle: "Professional behavior development",
     topics: ["Leadership", "Teamwork", "Problem Solving", "Adaptability", "Communication"],
-    type: "skill"
+    type: "skill",
+    icon: "🤝"
   },
   {
     id: "presentation-skills",
     title: "Presentation Skills",
     subtitle: "Public speaking & presentations",
     topics: ["Public Speaking", "Slide Design", "Body Language", "Storytelling", "Q&A Handling"],
-    type: "skill"
+    type: "skill",
+    icon: "🎤"
   },
   {
     id: "communication-boost",
     title: "Communication",
     subtitle: "Effective communication techniques",
     topics: ["Active Listening", "Written Communication", "Verbal Skills", "Non-verbal Cues", "Empathy"],
-    type: "skill"
+    type: "skill",
+    icon: "💬"
   },
   {
     id: "leadership-skills",
     title: "Leadership",
     subtitle: "Leadership development",
     topics: ["Team Management", "Decision Making", "Strategic Thinking", "Motivation", "Conflict Resolution"],
-    type: "skill"
+    type: "skill",
+    icon: "👑"
   },
   {
     id: "negotiation-skills",
     title: "Negotiation Skills",
     subtitle: "Negotiation techniques",
     topics: ["Salary Negotiation", "Contract Terms", "Win-Win Solutions", "Persuasion", "BATNA"],
-    type: "skill"
+    type: "skill",
+    icon: "🤝"
   },
   {
     id: "time-management",
     title: "Time Management",
     subtitle: "Productivity & time optimization",
     topics: ["Prioritization", "Goal Setting", "Delegation", "Focus Techniques", "Work-Life Balance"],
-    type: "skill"
+    type: "skill",
+    icon: "⏰"
   },
   {
     id: "stress-management",
     title: "Stress Management",
     subtitle: "Stress reduction techniques",
     topics: ["Mindfulness", "Work-Life Balance", "Coping Strategies", "Relaxation Techniques", "Resilience"],
-    type: "skill"
+    type: "skill",
+    icon: "🧘"
   },
   {
     id: "networking-skills",
     title: "Networking Skills",
     subtitle: "Professional networking",
     topics: ["Building Connections", "LinkedIn", "Informational Interviews", "Follow-up", "Personal Branding"],
-    type: "skill"
+    type: "skill",
+    icon: "🕸️"
   },
   {
     id: "critical-thinking",
     title: "Critical Thinking",
     subtitle: "Analytical thinking skills",
     topics: ["Logical Reasoning", "Problem Analysis", "Decision Making", "Creative Thinking", "Evaluation"],
-    type: "skill"
+    type: "skill",
+    icon: "🧠"
   },
   
   // Academic Subjects
@@ -141,93 +163,155 @@ const CATEGORIES = [
     title: "Chemistry",
     subtitle: "Periodic table & chemical reactions",
     topics: ["Organic", "Inorganic", "Physical", "Analytical"],
-    type: "academic"
+    type: "academic",
+    icon: "🧪"
   },
   {
     id: "biology",
     title: "Biology",
     subtitle: "Life sciences & organisms",
     topics: ["Cell Biology", "Genetics", "Ecology", "Microbiology"],
-    type: "academic"
+    type: "academic",
+    icon: "🧬"
   },
   {
     id: "physics",
     title: "Physics",
     subtitle: "Laws of nature & matter",
     topics: ["Mechanics", "Thermodynamics", "Electromagnetism", "Quantum Physics"],
-    type: "academic"
+    type: "academic",
+    icon: "⚛️"
   },
   {
     id: "mathematics",
     title: "Mathematics",
     subtitle: "Mathematical concepts & problems",
     topics: ["Calculus", "Algebra", "Geometry", "Statistics", "Probability"],
-    type: "academic"
+    type: "academic",
+    icon: "📐"
   },
   {
     id: "commerce",
     title: "Commerce",
     subtitle: "Business studies & economics",
     topics: ["Accounting", "Business Studies", "Economics", "Finance", "Marketing", "Entrepreneurship"],
-    type: "academic"
+    type: "academic",
+    icon: "💹"
   },
   {
     id: "accounting",
     title: "Accounting",
     subtitle: "Financial accounting & bookkeeping",
     topics: ["Financial Accounting", "Cost Accounting", "Taxation", "Auditing", "Bookkeeping"],
-    type: "academic"
+    type: "academic",
+    icon: "📖"
   },
   {
     id: "economics",
     title: "Economics",
     subtitle: "Economic principles & theories",
     topics: ["Microeconomics", "Macroeconomics", "International Trade", "Monetary Policy", "Market Analysis"],
-    type: "academic"
+    type: "academic",
+    icon: "📉"
   },
   {
     id: "business-studies",
     title: "Business Studies",
     subtitle: "Business management & organization",
     topics: ["Business Management", "Organizational Behavior", "Strategic Planning", "Operations Management", "Business Ethics"],
-    type: "academic"
+    type: "academic",
+    icon: "🏢"
   },
   {
     id: "finance",
     title: "Finance",
     subtitle: "Financial management & investment",
     topics: ["Corporate Finance", "Investment Analysis", "Financial Markets", "Risk Management", "Portfolio Management"],
-    type: "academic"
+    type: "academic",
+    icon: "💰"
   },
   {
     id: "marketing",
     title: "Marketing",
     subtitle: "Marketing strategies & branding",
     topics: ["Digital Marketing", "Brand Management", "Market Research", "Consumer Behavior", "Advertising"],
-    type: "academic"
+    type: "academic",
+    icon: "📢"
   },
   {
     id: "entrepreneurship",
     title: "Entrepreneurship",
     subtitle: "Starting & running businesses",
     topics: ["Business Planning", "Startup Funding", "Business Models", "Innovation", "Venture Capital"],
-    type: "academic"
+    type: "academic",
+    icon: "💡"
   },
 ];
 
 /* ── Animations ───────────────────────────────────────────── */
 const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07 } },
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
+    }
+  },
 };
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] as const } },
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      mass: 1
+    } 
+  },
 };
+
 const slideIn = {
-  hidden: { opacity: 0, x: 30 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const } },
+  hidden: { opacity: 0, x: 40, scale: 0.95 },
+  show: { 
+    opacity: 1, 
+    x: 0, 
+    scale: 1,
+    transition: { 
+      type: "spring",
+      stiffness: 80,
+      damping: 20,
+      duration: 0.6
+    } 
+  },
 };
+
+const categoryCardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    } 
+  },
+  hover: { 
+    scale: 1.02, 
+    y: -4,
+    transition: { 
+      type: "spring",
+      stiffness: 400,
+      damping: 25
+    }
+  },
+  tap: { scale: 0.98 }
+};
+
 
 /* ── Main Component ───────────────────────────────────────── */
 export function Resources() {
@@ -241,6 +325,7 @@ export function Resources() {
   const [voiceTranscript, setVoiceTranscript] = useState("");
   const [chatMessages, setChatMessages] = useState<{ id: string; role: "user" | "aiva"; text: string }[]>([]);
   const [chatMenuOpen, setChatMenuOpen] = useState(false);
+  const [isAivaThinking, setIsAivaThinking] = useState(false);
 
   const supportsSpeechRecognition = useMemo(() => {
     const w = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
@@ -271,13 +356,22 @@ export function Resources() {
     setChatMessages((prev) => [
       ...prev,
       { id, role: "user", text: trimmed },
-      {
-        id: `${id}-aiva`,
-        role: "aiva",
-        text: "Got it. Pick a subject on the left or search for a topic — I’ll help you navigate resources.",
-      },
     ]);
     setAskQuery("");
+    setIsAivaThinking(true);
+
+    // Simulate AI response delay
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `${id}-aiva`,
+          role: "aiva",
+          text: "Got it. Pick a subject on the left or search for a topic — I’ll help you navigate resources.",
+        },
+      ]);
+      setIsAivaThinking(false);
+    }, 1500);
   }
 
   function handleOpenVoice() {
@@ -307,7 +401,7 @@ export function Resources() {
   }
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto pb-12">
+    <div className="w-full max-w-[1450px] mx-auto pb-20 px-6 lg:px-12">
       <AnimatePresence mode="wait">
         {!selectedCategory ? (
           /* ═══════════════════════════════════════════════════════
@@ -317,100 +411,134 @@ export function Resources() {
             key="listing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.3 }}
-            className="flex gap-8"
+            exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
           >
             {/* ── Left: Filter + Search + Category List ── */}
             <motion.div
               variants={stagger}
               initial="hidden"
               animate="show"
-              className="flex-1 min-w-0 space-y-4"
+              className="flex-1 min-w-0 space-y-8"
             >
-              {/* Filter buttons */}
-              <motion.div variants={fadeUp} className="flex gap-2 flex-wrap">
-                {([
-                  { key: "all" as const, label: "All Subjects", activeClass: "bg-aiva-purple" },
-                  { key: "tech" as const, label: "Tech Roles", activeClass: "bg-blue-500" },
-                  { key: "skill" as const, label: "Skill Development", activeClass: "bg-green-500" },
-                  { key: "academic" as const, label: "Academic", activeClass: "bg-orange-500" },
-                ] as const).map((f) => (
-                  <button
-                    key={f.key}
-                    onClick={() => setActiveFilter(f.key)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                      activeFilter === f.key
-                        ? `${f.activeClass} text-white shadow-lg`
-                        : "bg-white/50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-700/70 ring-1 ring-gray-200/30 dark:ring-gray-700/30"
-                    }`}
+              <div className="space-y-6">
+                {/* Header & Filter buttons */}
+                <div className="space-y-4">
+                  <motion.div variants={fadeUp} className="flex gap-2 flex-wrap">
+                    {([
+                      { key: "all" as const, label: "All Subjects", activeClass: "bg-aiva-purple" },
+                      { key: "tech" as const, label: "Tech Roles", activeClass: "bg-blue-500" },
+                      { key: "skill" as const, label: "Skill Development", activeClass: "bg-emerald-500" },
+                      { key: "academic" as const, label: "Academic", activeClass: "bg-orange-500" },
+                    ] as const).map((f) => (
+                      <button
+                        key={f.key}
+                        onClick={() => setActiveFilter(f.key)}
+                        className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                          activeFilter === f.key
+                            ? `${f.activeClass} text-white shadow-[0_10px_20px_-5px_rgba(139,92,246,0.3)] scale-105`
+                            : "bg-white/40 dark:bg-gray-800/40 text-gray-600 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/60 ring-1 ring-black/5 dark:ring-white/5"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </motion.div>
+
+                  {/* Search bar */}
+                  <motion.div variants={fadeUp} className="relative group max-w-md">
+                    <div className="absolute inset-0 bg-aiva-purple/20 blur-xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search resources, topics, or skills..."
+                        className="w-full pl-12 pr-12 py-4 rounded-[2rem] bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 border border-white/20 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-all shadow-sm group-hover:shadow-md"
+                      />
+                      <Search
+                        size={20}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-aiva-purple group-focus-within:scale-110 transition-transform"
+                      />
+                      {searchQuery && (
+                        <button 
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Results counter */}
+                {filteredCategories.length !== CATEGORIES.length && (
+                  <motion.div variants={fadeUp} className="text-sm font-medium text-gray-500 dark:text-gray-400 pl-2">
+                    Found {filteredCategories.length} matching subjects
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Category List Stack */}
+              <motion.div 
+                layout
+                className="flex flex-col gap-5 w-full max-w-2xl"
+              >
+                {filteredCategories.map((cat, i) => (
+                  <motion.button
+                    key={cat.id}
+                    layout
+                    variants={categoryCardVariants}
+                    initial="hidden"
+                    animate="show"
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className="w-full text-left group"
                   >
-                    {f.label}
-                  </button>
+                    <div
+                      className="relative overflow-hidden rounded-[3.5rem] px-10 py-8 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-white/40 dark:border-white/5 transition-all duration-500 group-hover:border-aiva-purple/30 group-hover:shadow-[0_15px_35px_-10px_rgba(139,92,246,0.1)]"
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          rgba(165, 148, 249, ${0.25 + (i % 3) * 0.05}) 0%, 
+                          rgba(129, 140, 248, ${0.15 + (i % 3) * 0.03}) 50%, 
+                          rgba(196, 181, 253, ${0.2 + (i % 3) * 0.04}) 100%)`,
+                      }}
+                    >
+                      {/* Decorative background element */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      
+                      <div className="relative z-10">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors">
+                          {cat.title}
+                        </h3>
+                        {cat.subtitle && (
+                          <p className="text-sm text-gray-500/80 dark:text-gray-400/80 font-medium mt-1 leading-relaxed">
+                            {cat.subtitle}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.button>
                 ))}
               </motion.div>
 
-              {/* Search bar */}
-              <motion.div variants={fadeUp} className="relative max-w-sm">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="search notes"
-                  className="w-full pl-5 pr-12 py-3 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/40 dark:ring-gray-700/40 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-all shadow-sm"
-                />
-                <Search
-                  size={18}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-aiva-purple"
-                />
-              </motion.div>
-
-              {/* Results counter */}
-              {filteredCategories.length !== CATEGORIES.length && (
-                <motion.div variants={fadeUp} className="text-xs font-medium text-gray-500 dark:text-gray-400 -mt-1">
-                  Showing {filteredCategories.length} of {CATEGORIES.length} subjects
-                </motion.div>
-              )}
-
-              {/* Category cards */}
-              {filteredCategories.map((cat, i) => (
-                <motion.button
-                  key={cat.id}
-                  variants={fadeUp}
-                  whileHover={{ scale: 1.012, x: 4 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className="w-full text-left group"
-                >
-                  <div
-                    className="relative overflow-hidden rounded-2xl px-6 py-4 backdrop-blur-xl shadow-md ring-1 ring-white/20 dark:ring-white/10 transition-all duration-300 group-hover:shadow-lg group-hover:ring-aiva-purple/20"
-                    style={{
-                      background: `linear-gradient(135deg, 
-                        rgba(165, 148, 249, ${0.18 + (i % 8) * 0.03}) 0%, 
-                        rgba(129, 140, 248, ${0.12 + (i % 8) * 0.02}) 50%, 
-                        rgba(196, 181, 253, ${0.15 + (i % 8) * 0.02}) 100%)`,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -skew-x-12" />
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white relative z-10">
-                      {cat.title}
-                    </h3>
-                    {cat.subtitle && (
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 relative z-10">
-                        {cat.subtitle}
-                      </p>
-                    )}
-                  </div>
-                </motion.button>
-              ))}
-
               {filteredCategories.length === 0 && (
-                <motion.p
-                  variants={fadeUp}
-                  className="text-sm text-gray-400 dark:text-gray-500 text-center py-8"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center py-20 text-center"
                 >
-                  No categories match "{searchQuery}"
-                </motion.p>
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                    <Search size={32} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">No resources found</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xs">
+                    We couldn't find any categories matching "{searchQuery}". Try a different search term.
+                  </p>
+                </motion.div>
               )}
             </motion.div>
 
@@ -419,94 +547,149 @@ export function Resources() {
               variants={slideIn}
               initial="hidden"
               animate="show"
-              className="w-[360px] flex-shrink-0 hidden lg:block mt-40"
+              className="w-full lg:w-[380px] lg:sticky lg:top-48 flex-shrink-0"
             >
-              <div className="sticky top-40">
-                <div className="w-full rounded-3xl bg-white/55 dark:bg-gray-800/55 backdrop-blur-xl shadow-xl ring-1 ring-white/30 dark:ring-gray-700/30 overflow-hidden flex flex-col">
-                  {/* Header with greeting + 3-dot menu */}
-                  <div className="px-5 pt-5 pb-2 flex items-start justify-between">
-                    <div className="text-center flex-1">
-                      <p className="text-base font-bold text-aiva-purple leading-relaxed">
-                        Hello {firstName},
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 font-semibold mt-0.5">
-                        Aiva here to assist you
-                      </p>
-                    </div>
-                    {/* 3-dot chat menu */}
-                    <div className="relative">
-                      <button
-                        onClick={() => setChatMenuOpen(!chatMenuOpen)}
-                        className="h-8 w-8 inline-flex items-center justify-center rounded-xl text-gray-400 hover:text-aiva-purple hover:bg-white/60 dark:hover:bg-gray-800/60 transition-colors"
-                        aria-label="Chat options"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-                      <AnimatePresence>
-                        {chatMenuOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                            transition={{ duration: 0.12 }}
-                            className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-white/90 dark:bg-gray-900/95 backdrop-blur-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 py-1 z-30"
-                          >
-                            <button
-                              onClick={handleClearChat}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 transition-colors"
-                            >
-                              <Trash2 size={13} className="text-red-400" />
-                              Clear Chat
-                            </button>
-                            <button
-                              onClick={handleDeleteLast}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 transition-colors"
-                            >
-                              <Pencil size={13} className="text-amber-400" />
-                              Delete Last Reply
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
+              <div className="w-full rounded-[2.5rem] bg-white/40 dark:bg-gray-800/40 backdrop-blur-2xl shadow-2xl border border-white/40 dark:border-white/5 overflow-hidden flex flex-col group/panel">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-aiva-purple/10 to-transparent opacity-0 group-hover/panel:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                  {/* Robo image — centered */}
-                  <div className="flex justify-center px-4 py-2">
+                {/* Header with greeting + 3-dot menu */}
+                <div className="px-6 pt-8 pb-2 flex items-start justify-between relative z-10">
+                  <div className="text-left">
+                    <motion.p 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="text-lg font-black text-aiva-purple tracking-tight"
+                    >
+                      Hello {firstName},
+                    </motion.p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-0.5">
+                      I'm here to help you learn
+                    </p>
+                  </div>
+                  
+                  <div className="relative">
+                    <button
+                      onClick={() => setChatMenuOpen(!chatMenuOpen)}
+                      className="h-10 w-10 inline-flex items-center justify-center rounded-2xl text-gray-400 hover:text-aiva-purple hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all"
+                    >
+                      <MoreVertical size={20} />
+                    </button>
+                    <AnimatePresence>
+                      {chatMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                          className="absolute right-0 top-full mt-2 w-44 rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl border border-black/5 dark:border-white/10 py-2 z-30"
+                        >
+                          <button
+                            onClick={handleClearChat}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                            Clear History
+                          </button>
+                          <button
+                            onClick={handleDeleteLast}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 transition-colors"
+                          >
+                            <Pencil size={14} />
+                            Undo Last Message
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                {/* Robo image */}
+                <div className="flex justify-center px-4 py-4 relative z-10">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-aiva-purple/20 blur-3xl rounded-full scale-75 animate-pulse" />
                     <motion.img
                       src="/Assets/Robo.png"
                       alt="Aiva AI Assistant"
-                      className="w-36 h-36 object-contain drop-shadow-xl"
-                      animate={{ y: [0, -8, 0] }}
+                      className="w-44 h-44 object-contain drop-shadow-2xl relative z-10"
+                      animate={{ 
+                        y: [0, -12, 0],
+                        rotate: [0, 2, -2, 0]
+                      }}
                       transition={{
-                        duration: 3.5,
+                        duration: 5,
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
                     />
                   </div>
+                </div>
 
-                  {/* Chat messages */}
-                  {chatMessages.length > 0 && (
-                    <div className="mx-4 mb-2 max-h-40 space-y-2 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-aiva-purple/20 scrollbar-track-transparent">
-                      {chatMessages.slice(-6).map((m) => (
-                        <div
-                          key={m.id}
-                          className={`rounded-2xl px-3 py-2 text-xs leading-5 ring-1 ${
-                            m.role === "user"
-                              ? "ml-auto max-w-[85%] bg-aiva-purple/10 text-gray-800 ring-aiva-purple/15 dark:text-gray-100"
-                              : "mr-auto max-w-[90%] bg-white/70 text-gray-700 ring-white/30 dark:bg-slate-900/35 dark:text-gray-200"
-                          }`}
-                        >
-                          {m.text}
+                {/* Chat area */}
+                <div className="flex-1 flex flex-col min-h-[300px] max-h-[450px] px-4 relative z-10">
+                  <div className="flex-1 overflow-y-auto space-y-4 pb-4 px-2 scrollbar-thin scrollbar-thumb-aiva-purple/20 scrollbar-track-transparent">
+                    {chatMessages.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-50">
+                        <div className="w-12 h-12 rounded-2xl bg-aiva-purple/10 flex items-center justify-center">
+                          <Sparkles size={20} className="text-aiva-purple" />
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <p className="text-xs font-medium text-gray-500 max-w-[200px]">
+                          Ask me anything about subjects or career paths!
+                        </p>
+                      </div>
+                    ) : (
+                      chatMessages.map((m) => (
+                        <motion.div
+                          key={m.id}
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                        >
+                          <div
+                            className={`rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[85%] shadow-sm ${
+                              m.role === "user"
+                                ? "bg-aiva-purple text-white rounded-tr-none"
+                                : "bg-white/80 dark:bg-gray-900/80 text-gray-800 dark:text-gray-100 border border-white/20 dark:border-white/5 rounded-tl-none"
+                            }`}
+                          >
+                            {m.text}
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                    
+                    {isAivaThinking && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex justify-start"
+                      >
+                        <div className="bg-white/80 dark:bg-gray-900/80 rounded-2xl rounded-tl-none px-4 py-3 border border-white/20 dark:border-white/5">
+                          <div className="flex gap-1">
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
+                              className="w-1.5 h-1.5 rounded-full bg-aiva-purple"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
+                              className="w-1.5 h-1.5 rounded-full bg-aiva-purple"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
+                              className="w-1.5 h-1.5 rounded-full bg-aiva-purple"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
 
-                  {/* Ask anything input */}
-                  <div className="px-4 pb-5 mt-auto">
-                    <div className="relative">
+                  {/* Input area */}
+                  <div className="pt-2 pb-6">
+                    <div className="relative group/input">
+                      <div className="absolute inset-0 bg-aiva-purple/10 blur-lg rounded-full opacity-0 group-focus-within/input:opacity-100 transition-opacity" />
                       <input
                         type="text"
                         value={askQuery}
@@ -514,25 +697,24 @@ export function Resources() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleAskSend();
                         }}
-                        placeholder="Ask Anything"
-                        className="w-full pl-4 pr-[76px] py-2.5 rounded-full bg-white/70 dark:bg-gray-900/50 backdrop-blur-sm text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/50 dark:ring-gray-700/50 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 shadow-sm transition-all"
+                        placeholder="Ask Aiva..."
+                        className="w-full pl-5 pr-20 py-3.5 rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 border border-white/20 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 shadow-inner relative z-10"
                       />
-                      <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 z-20">
                         <button
                           type="button"
                           onClick={handleOpenVoice}
-                          className="h-8 w-8 inline-flex items-center justify-center rounded-full text-gray-400 hover:text-aiva-purple transition-colors"
-                          aria-label="Voice assistant"
+                          className="h-9 w-9 inline-flex items-center justify-center rounded-xl text-gray-400 hover:text-aiva-purple hover:bg-aiva-purple/10 transition-all"
                         >
-                          <Mic size={16} />
+                          <Mic size={18} />
                         </button>
                         <button
                           type="button"
                           onClick={handleAskSend}
-                          className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-aiva-purple text-white shadow-sm hover:opacity-90 transition-opacity"
-                          aria-label="Send"
+                          disabled={!askQuery.trim()}
+                          className="h-9 w-9 inline-flex items-center justify-center rounded-xl bg-aiva-purple text-white shadow-lg shadow-aiva-purple/20 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 transition-all"
                         >
-                          <Send size={14} />
+                          <Send size={16} />
                         </button>
                       </div>
                     </div>
@@ -637,93 +819,157 @@ export function Resources() {
              ═══════════════════════════════════════════════════════ */
           <motion.div
             key="detail"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 40 }}
-            transition={{ duration: 0.35 }}
-            className="flex gap-8"
+            initial={{ opacity: 0, x: 40, filter: "blur(10px)" }}
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, x: 40, filter: "blur(10px)" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start"
           >
             {/* ── Left: Content area ── */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 w-full pt-10">
               {/* Back button */}
               <motion.button
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 whileHover={{ x: -4 }}
                 onClick={() => setSelectedCategory(null)}
-                className="flex items-center gap-2 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-aiva-purple dark:hover:text-aiva-purple mb-4 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold text-gray-500/80 dark:text-gray-400/80 hover:text-aiva-purple dark:hover:text-aiva-purple mb-10 transition-all ml-4"
               >
-                <ArrowLeft size={16} />
+                <div className="w-8 h-8 rounded-full bg-white/40 dark:bg-gray-800/40 flex items-center justify-center ring-1 ring-black/5 dark:ring-white/5 group-hover:bg-aiva-purple/10 transition-all">
+                  <ArrowLeft size={14} />
+                </div>
                 Back to Resources
               </motion.button>
 
-              {/* Content card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="relative rounded-3xl overflow-hidden shadow-xl ring-1 ring-white/20 dark:ring-white/10"
-                style={{ minHeight: "500px" }}
-              >
-                {/* Gradient background */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(145deg, rgba(196,181,253,0.35) 0%, rgba(165,148,249,0.2) 30%, rgba(129,140,248,0.15) 60%, rgba(224,231,255,0.3) 100%)",
-                  }}
-                />
-                <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20" />
-
-                {/* Title */}
-                <div className="relative z-10 p-8">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {selected?.title}
-                  </h2>
-                  {selected?.subtitle && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {selected.subtitle}
-                    </p>
-                  )}
-
-                  {/* Placeholder content area */}
-                  <div className="mt-8 space-y-4">
-                    <div className="flex items-center gap-3 text-gray-400 dark:text-gray-500">
-                      <Sparkles size={20} className="text-aiva-purple/50" />
-                      <span className="text-sm">
-                        Notes and materials will appear here
-                      </span>
-                    </div>
+              {/* Header Info */}
+              <div className="mb-12 ml-4">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-6"
+                >
+                  <div className="w-20 h-20 rounded-[2rem] bg-white/30 dark:bg-gray-800/30 backdrop-blur-md flex items-center justify-center text-5xl shadow-sm ring-1 ring-white/20">
+                    {selected?.icon}
                   </div>
+                  <div>
+                    <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                      {selected?.title}
+                    </h2>
+                    <p className="text-base text-gray-500/80 dark:text-gray-400/80 font-medium mt-1">
+                      {selected?.subtitle}
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Content Grid with Purple Layer */}
+              <div className="relative ml-4 mt-8">
+                {/* Purple glassmorphic layer behind boxes */}
+                <div className="absolute inset-0 -m-6 rounded-[3rem] bg-gradient-to-br from-aiva-purple/15 to-blue-500/10 backdrop-blur-3xl ring-1 ring-white/10 pointer-events-none" />
+                
+                <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { title: "Introduction Guide", type: "pdf", size: "2.4 MB", description: "Core concepts and fundamentals." },
+                    { title: "Advanced Techniques", type: "video", duration: "12:45", description: "Deep dive into complex patterns." },
+                    { title: "Interactive Roadmap", type: "link", site: "ROADMAP.SH", description: "Step-by-step path to master." },
+                    { title: "Cheat Sheet v2.0", type: "pdf", size: "1.1 MB", description: "Quick reference for all syntax." },
+                    { title: "Community Resources", type: "link", site: "GITHUB.COM", description: "Curated list of learning materials." },
+                    { title: "Practice Assessment", type: "video", duration: "08:20", description: "Watch common interview problems." }
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.title}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.04 + 0.2 }}
+                      whileHover={{ scale: 1.01, y: -1 }}
+                      className="group relative rounded-[2rem] p-5 bg-white/50 dark:bg-gray-900/40 backdrop-blur-xl border border-white/40 dark:border-white/5 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
+                          item.type === 'pdf' ? 'bg-rose-500/10 text-rose-500' :
+                          item.type === 'video' ? 'bg-blue-500/10 text-blue-500' :
+                          'bg-emerald-500/10 text-emerald-500'
+                        }`}>
+                          {item.type === 'pdf' ? <FileText size={20} /> :
+                           item.type === 'video' ? <Video size={20} /> :
+                           <LinkIcon size={20} />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors truncate">
+                            {item.title}
+                          </h4>
+                          <p className="text-[11px] text-gray-500/80 dark:text-gray-400/80 mt-0.5 line-clamp-1">
+                            {item.description}
+                          </p>
+                          <div className="mt-1 text-[9px] font-bold tracking-widest text-gray-400 uppercase">
+                            {item.type === 'pdf' ? item.size : 
+                             item.type === 'video' ? item.duration : 
+                             item.site}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                            {item.type === 'link' ? <ExternalLink size={14} /> : <Download size={14} />}
+                          </button>
+                          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                            <Bookmark size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {/* ── Right: Customize + Topic chips ── */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15 }}
-              className="w-[280px] flex-shrink-0 hidden lg:block pt-10"
+              transition={{ delay: 0.3 }}
+              className="w-full lg:w-[320px] lg:sticky lg:top-48 flex-shrink-0"
             >
-              <div className="sticky top-28 rounded-3xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl shadow-xl ring-1 ring-white/30 dark:ring-gray-700/30 p-5 space-y-4">
+              <div className="rounded-[2.5rem] bg-white/40 dark:bg-gray-800/40 backdrop-blur-2xl shadow-xl border border-white/40 dark:border-white/5 p-6 space-y-8">
                 {/* Customize input */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="customize notes"
-                    className="w-full pl-4 pr-11 py-2.5 rounded-full bg-white/70 dark:bg-gray-900/50 backdrop-blur-sm text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 dark:placeholder:text-gray-500 ring-1 ring-gray-200/50 dark:ring-gray-700/50 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 shadow-sm transition-all"
-                  />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-aiva-purple transition-colors">
-                    <Edit3 size={15} />
-                  </button>
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Personalize</h4>
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      placeholder="Customize your notes..."
+                      className="w-full pl-5 pr-12 py-3.5 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 border border-white/20 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-all"
+                    />
+                    <button className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-xl bg-aiva-purple/10 text-aiva-purple hover:bg-aiva-purple hover:text-white transition-all">
+                      <Edit3 size={15} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Topic chips */}
-                <div className="space-y-2.5 pt-1">
-                  {selected?.topics.map((topic) => (
-                    <TopicChip key={topic} label={topic} />
-                  ))}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Quick Filters</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selected?.topics.map((topic, i) => (
+                      <TopicChip key={topic} label={topic} index={i} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action card */}
+                <div className="p-5 rounded-[2rem] bg-aiva-purple/5 border border-aiva-purple/10">
+                  <h5 className="text-sm font-bold text-gray-900 dark:text-white mb-2">Want a custom plan?</h5>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+                    Ask Aiva to create a personalized learning schedule for {selected?.title}.
+                  </p>
+                  <button 
+                    onClick={() => {
+                      setSelectedCategory(null);
+                      // In a real app we'd set the chat query here
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-aiva-purple text-white text-xs font-bold shadow-lg shadow-aiva-purple/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    Ask Aiva
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -735,18 +981,21 @@ export function Resources() {
 }
 
 /* ── Topic Chip ───────────────────────────────────────────── */
-function TopicChip({ label }: { label: string }) {
+function TopicChip({ label, index }: { label: string; index: number }) {
   const [active, setActive] = useState(false);
 
   return (
     <motion.button
-      whileHover={{ scale: 1.03, x: 4 }}
-      whileTap={{ scale: 0.97 }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.03 + 0.4 }}
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
       onClick={() => setActive(!active)}
-      className={`block w-max px-5 py-2 rounded-full text-sm font-semibold shadow-sm transition-all duration-200 ${
+      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
         active
-          ? "bg-aiva-purple text-white shadow-aiva-glow ring-1 ring-aiva-purple/40"
-          : "bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-aiva-purple/20 hover:bg-white dark:hover:bg-gray-700/80"
+          ? "bg-aiva-purple text-white shadow-[0_8px_20px_-5px_rgba(139,92,246,0.4)] ring-2 ring-aiva-purple/20"
+          : "bg-white/60 dark:bg-gray-900/60 text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 ring-1 ring-black/5 dark:ring-white/5"
       }`}
     >
       {label}
