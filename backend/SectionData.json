@@ -2,79 +2,39 @@
   "sections": [
     {
       "role": "Software Engineer",
-      "level": "Intermediate",
-      "questionsAnswered": 1,
-      "totalQuestions": 2,
-      "timeSpent": "00:01",
-      "completedAt": "2026-03-31T21:17:58.898Z",
-      "sectionCode": "NUIYPI6W",
-      "sessionStartTime": "2026-03-31T21:17:57.280Z",
-      "sessionEndTime": "2026-03-31T21:17:58.898Z",
-      "totalAttendanceTime": "0m 1s",
-      "averageTimePerQuestion": "0s"
-    },
-    {
-      "role": "Backend Developer",
-      "level": "Intermediate",
+      "level": "Beginner",
       "questionsAnswered": 2,
       "totalQuestions": 2,
-      "timeSpent": "00:23",
-      "completedAt": "2026-04-01T16:14:28.432Z",
-      "sectionCode": "KDTW2JD3",
-      "sessionStartTime": "2026-04-01T16:13:57.646Z",
-      "sessionEndTime": "2026-04-01T16:14:28.432Z",
-      "totalAttendanceTime": "0m 30s",
-      "averageTimePerQuestion": "15s"
-    },
-    {
-      "role": "Backend Developer",
-      "level": "Intermediate",
-      "questionsAnswered": 2,
-      "totalQuestions": 2,
-      "timeSpent": "00:23",
-      "completedAt": "2026-04-01T16:14:31.782Z",
-      "sectionCode": "KDTW2JD3",
-      "sessionStartTime": "2026-04-01T16:13:57.646Z",
-      "sessionEndTime": "2026-04-01T16:14:31.782Z",
-      "totalAttendanceTime": "0m 34s",
-      "averageTimePerQuestion": "17s"
-    },
-    {
-      "role": "",
-      "level": "",
-      "questionsAnswered": 4,
-      "totalQuestions": 0,
       "timeSpent": "",
-      "completedAt": "2026-04-01T16:44:59.818Z",
-      "sectionCode": "12BL9OER",
-      "sessionStartTime": "2026-04-01T16:44:59.818Z",
-      "sessionEndTime": "2026-04-01T16:44:59.818Z",
-      "totalAttendanceTime": "",
+      "completedAt": "2026-04-02T09:23:53.446Z",
+      "sectionCode": "T09YHGPT",
       "averageTimePerQuestion": "",
       "questionTranscripts": [
         {
-          "questionId": "se-3",
-          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
-          "transcript": "Project you worked on and how you overcame obstacles.",
-          "timestamp": "2026-04-01T16:44:59.818Z"
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "Introduction about myself. In my work, experience overview, in my field of view, I can say that it is not a full thing to do.",
+          "timestamp": "2026-04-02T09:23:53.446Z",
+          "mentioned": [
+            "Experience overview"
+          ],
+          "notMentioned": [
+            "Professional introduction",
+            "Career highlights"
+          ]
         },
         {
-          "questionId": "se-4",
-          "question": "How do you approach debugging complex issues in your code?",
-          "transcript": "Hello? Hello?",
-          "timestamp": "2026-04-01T16:45:19.166Z"
-        },
-        {
-          "questionId": "se-3",
-          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
-          "transcript": "This test is for audio handling, assist you for five seconds. And user response will stop in thirty seconds. Are they With that, you can go to the next I know, call my analysis.",
-          "timestamp": "2026-04-01T16:47:01.272Z"
-        },
-        {
-          "questionId": "se-4",
-          "question": "How do you approach debugging complex issues in your code?",
-          "transcript": "Hello?",
-          "timestamp": "2026-04-01T16:48:13.078Z"
+          "questionId": "se-2",
+          "question": "What programming languages are you most comfortable with and why?",
+          "transcript": "You know, preferences, I use the reasoning skills so I can do my work properly.",
+          "timestamp": "2026-04-02T09:24:46.796Z",
+          "mentioned": [
+            "Reasoning skills"
+          ],
+          "notMentioned": [
+            "Language proficiency",
+            "Technical preferences"
+          ]
         }
       ]
     }

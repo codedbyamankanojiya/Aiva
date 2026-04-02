@@ -10,37 +10,43 @@
           "id": "se-1",
           "question": "Tell me about yourself and your experience in software development.",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Professional introduction", "Experience overview", "Career highlights"]
         },
         {
           "id": "se-2",
           "question": "What programming languages are you most comfortable with and why?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Language proficiency", "Technical preferences", "Reasoning skills"]
         },
         {
           "id": "se-3",
           "question": "Describe a challenging project you worked on and how you overcame obstacles.",
           "level": "Intermediate",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Problem-solving", "Project management", "Technical challenges", "Solutions implemented"]
         },
         {
           "id": "se-4",
           "question": "How do you approach debugging complex issues in your code?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Debugging methodology", "Systematic approach", "Tools and techniques", "Code review process"]
         },
         {
           "id": "se-5",
           "question": "What strategies do you use for staying current with new technologies?",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Continuous learning", "Technology trends", "Skill development", "Industry engagement"]
         },
         {
           "id": "se-6",
           "question": "Explain your experience with system design and architecture.",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["System architecture", "Scalability", "Design patterns", "Performance optimization"]
         }
       ]
     },
@@ -54,37 +60,43 @@
           "id": "wd-1",
           "question": "What's the difference between frontend and backend development?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Frontend vs backend", "Client-server architecture", "API concepts", "Development roles"]
         },
         {
           "id": "wd-2",
           "question": "How do you ensure web accessibility in your projects?",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Accessibility standards", "WCAG compliance", "Inclusive design", "Testing methods"]
         },
         {
           "id": "wd-3",
           "question": "Explain the box model in CSS and how it works.",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["CSS box model", "Layout properties", "Positioning", "Margin and padding"]
         },
         {
           "id": "wd-4",
           "question": "How do you optimize web application performance?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Performance metrics", "Optimization techniques", "Caching strategies", "Code splitting"]
         },
         {
           "id": "wd-5",
           "question": "What are your thoughts on modern JavaScript frameworks?",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Framework comparison", "React/Vue/Angular", "State management", "Build tools"]
         },
         {
           "id": "wd-6",
           "question": "Describe your experience with responsive design and mobile-first approach.",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Responsive design", "Mobile optimization", "Progressive enhancement", "Cross-browser compatibility"]
         }
       ]
     },
@@ -98,37 +110,43 @@
           "id": "bd-1",
           "question": "What's the difference between SQL and NoSQL databases?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Database types", "Query languages", "Data modeling", "Use cases"]
         },
         {
           "id": "bd-2",
           "question": "How do you handle API authentication and authorization?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Authentication methods", "Security practices", "Token management", "OAuth/JWT"]
         },
         {
           "id": "bd-3",
           "question": "Explain RESTful API principles and best practices.",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["REST principles", "HTTP methods", "API design", "Error handling"]
         },
         {
           "id": "bd-4",
           "question": "How do you ensure database security and prevent SQL injection?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Security practices", "SQL injection prevention", "Input validation", "Encryption", "Access control"]
         },
         {
           "id": "bd-5",
           "question": "Describe your experience with microservices architecture.",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Service decomposition", "Inter-service communication", "Scalability", "Distributed systems"]
         },
         {
           "id": "bd-6",
           "question": "How do you handle database migrations and schema changes?",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Migration strategies", "Version control", "Data integrity", "Rollback procedures"]
         }
       ]
     },
@@ -142,37 +160,43 @@
           "id": "ux-1",
           "question": "What's the difference between UI and UX design?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["UI vs UX", "User interface", "User experience", "Design principles"]
         },
         {
           "id": "ux-2",
           "question": "How do you conduct user research and gather feedback?",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["User research methods", "Feedback collection", "User interviews", "Usability testing"]
         },
         {
           "id": "ux-3",
           "question": "Explain the importance of design systems and component libraries.",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Design systems", "Component architecture", "Consistency", "Scalability"]
         },
         {
           "id": "ux-4",
           "question": "How do you balance aesthetics with functionality in design?",
           "level": "Intermediate",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Design trade-offs", "User needs", "Business requirements", "Technical constraints"]
         },
         {
           "id": "ux-5",
           "question": "Describe your experience with accessibility standards (WCAG).",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["WCAG compliance", "Accessibility guidelines", "Inclusive design", "Screen readers", "Color contrast"]
         },
         {
           "id": "ux-6",
           "question": "How do you approach creating design prototypes and user testing?",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Prototyping methods", "User testing approaches", "Iterative design", "Feedback integration"]
         }
       ]
     },
@@ -186,37 +210,43 @@
           "id": "ad-1",
           "question": "What's the difference between native and cross-platform development?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Native vs cross-platform", "Performance considerations", "Platform APIs", "Development trade-offs"]
         },
         {
           "id": "ad-2",
           "question": "How do you handle mobile app performance optimization?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Performance monitoring", "Memory management", "Battery optimization", "Network efficiency"]
         },
         {
           "id": "ad-3",
           "question": "Explain mobile app lifecycle and state management.",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["App lifecycle", "State management", "Component lifecycle", "Data persistence"]
         },
         {
           "id": "ad-4",
           "question": "How do you handle offline functionality in mobile apps?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Offline storage", "Data synchronization", "Cache strategies", "Network resilience"]
         },
         {
           "id": "ad-5",
           "question": "Describe your experience with mobile app security best practices.",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Security practices", "Data protection", "Authentication", "Code obfuscation"]
         },
         {
           "id": "ad-6",
           "question": "How do you approach mobile app testing and quality assurance?",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Testing strategies", "QA methodologies", "Automated testing", "Device compatibility", "Performance testing"]
         }
       ]
     },
@@ -230,37 +260,43 @@
           "id": "de-1",
           "question": "What is DevOps and why is it important?",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["DevOps culture", "Collaboration", "Automation benefits", "Team efficiency"]
         },
         {
           "id": "de-2",
           "question": "Explain the difference between CI and CD.",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Continuous Integration", "Continuous Deployment", "Pipeline automation", "Build processes"]
         },
         {
           "id": "de-3",
           "question": "How do you implement containerization with Docker?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Container concepts", "Docker benefits", "Microservices", "Orchestration", "Environment management"]
         },
         {
           "id": "de-4",
           "question": "Describe your experience with infrastructure as code (IaC).",
           "level": "Intermediate",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Cloud services", "Cost optimization", "Scalability", "Security practices", "Monitoring strategies"]
         },
         {
           "id": "de-5",
           "question": "How do you handle monitoring and logging in production systems?",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Monitoring tools", "Log aggregation", "Alert systems", "Performance metrics", "Incident response"]
         },
         {
           "id": "de-6",
           "question": "Explain Kubernetes architecture and its benefits.",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Container orchestration", "Service discovery", "Load balancing", "Auto-scaling", "Rolling updates", "High availability"]
         }
       ]
     },
@@ -274,37 +310,43 @@
           "id": "ds-1",
           "question": "What's the difference between supervised and unsupervised learning?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Learning paradigms", "Training data", "Model types", "Use cases", "Advantages/limitations"]
         },
         {
           "id": "ds-2",
           "question": "How do you handle missing data in datasets?",
           "level": "Beginner",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Data cleaning", "Imputation methods", "Outlier detection", "Feature engineering", "Data quality"]
         },
         {
           "id": "ds-3",
-          "question": "Explain the bias-variance tradeoff in machine learning.",
+          "question": "Explain bias-variance tradeoff in machine learning.",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Bias definition", "Variance concept", "Trade-off explanation", "Model complexity", "Regularization techniques"]
         },
         {
           "id": "ds-4",
           "question": "How do you evaluate the performance of a machine learning model?",
           "level": "Intermediate",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Evaluation metrics", "Cross-validation", "Test sets", "Model selection", "Performance benchmarks"]
         },
         {
           "id": "ds-5",
           "question": "Describe your experience with deep learning and neural networks.",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Neural architectures", "Deep learning frameworks", "Training strategies", "Model optimization", "Research experience"]
         },
         {
           "id": "ds-6",
           "question": "How do you handle feature engineering and selection?",
           "level": "Advanced",
-          "type": "technical"
+          "type": "technical",
+          "keyPoints": ["Feature extraction", "Dimensionality reduction", "Feature selection", "Model interpretability", "Feature importance"]
         }
       ]
     },

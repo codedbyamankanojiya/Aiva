@@ -158,7 +158,7 @@ export function AIPanel({
               <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
                 <p className="text-gray-600 text-xs">
                   {isSilenceDetected 
-                    ? "Silence detected - processing answer..." 
+                    ? "Analyzing your response..." 
                     : isSTTConnecting 
                       ? "Connecting..." 
                       : sttError 
@@ -293,7 +293,7 @@ export function AIPanel({
             <div className="flex-1 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
               <p className="text-gray-600 text-xs">
                 {isSilenceDetected 
-                  ? "Silence detected - processing answer..." 
+                  ? "Analyzing your response..." 
                   : isSTTConnecting 
                     ? "Connecting..." 
                     : sttError 

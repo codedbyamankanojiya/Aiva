@@ -24,8 +24,6 @@ export function Session() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [hasPlayedFirstQuestion, setHasPlayedFirstQuestion] = useState(false);
   const hasInitialized = useRef(false);
-  const [sessionStartTime] = useState(new Date().toISOString());
-
   const sttSocketRef = useRef<WebSocket | null>(null);
   const sttAudioContextRef = useRef<AudioContext | null>(null);
   const sttWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
@@ -40,6 +38,7 @@ export function Session() {
   const [lastTranscriptLength, setLastTranscriptLength] = useState<number>(0);
   const [hasSpoken, setHasSpoken] = useState<boolean>(false);
   const [isSilenceDetected, setIsSilenceDetected] = useState<boolean>(false);
+  const [isMicDisabled, setIsMicDisabled] = useState<boolean>(false);
   const silenceTimerRef = useRef<number | null>(null);
 
   // Get section code from URL
@@ -131,6 +130,10 @@ export function Session() {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       
+      // Clear transcripts for new question
+      setFinalTranscripts([]);
+      setLiveTranscript('');
+      
       // Reset silence detection state for new question
       setHasSpoken(false);
       setLastTranscriptLength(0);
@@ -144,12 +147,25 @@ export function Session() {
       const nextQuestion = state.questions[nextIndex];
       if (nextQuestion) {
         await playQuestionAudio(nextQuestion.question);
+        
+        // Wait for TTS to complete before re-enabling mic
+        // The playQuestionAudio function already waits for TTS completion
+        // So we can safely re-enable mic here
+        setIsMuted(false);
+        setIsMicDisabled(false);
       }
     }
   };
 
   // Fetch questions once when component mounts
   useEffect(() => {
+    // Debug: Log initial state
+    console.log('🔍 ACTIVE SESSION MOUNT - Initial State:');
+    console.log('🔍 state.role:', state.role);
+    console.log('🔍 state.level:', state.level);
+    console.log('🔍 state.roleId:', state.roleId);
+    console.log('🔍 sectionCode:', sectionCode);
+    
     if (hasInitialized.current || !state.roleId) return;
     
     const fetchQuestions = async () => {
@@ -162,7 +178,11 @@ export function Session() {
           setQuestions(data.questions);
           setLoading(false);
           setHasPlayedFirstQuestion(true);
-          void playQuestionAudio(data.questions[0].question);
+          
+          // Play first question and wait for TTS to complete before enabling mic
+          await playQuestionAudio(data.questions[0].question);
+          setIsMuted(false);
+          setIsMicDisabled(false);
         }
       } catch (error) {
         console.error('Failed to fetch questions:', error);
@@ -217,6 +237,16 @@ export function Session() {
   const handleSilenceDetected = async () => {
     if (isSilenceDetected || !currentQuestion) return;
     
+    // Debug: Check current state values
+    console.log('🔍 SILENCE DETECTED - Current State Analysis:');
+    console.log('🔍 state.role:', state.role);
+    console.log('🔍 state.level:', state.level);
+    console.log('🔍 state.roleId:', state.roleId);
+    console.log('🔍 state.questions.length:', state.questions.length);
+    console.log('🔍 currentQuestion:', currentQuestion);
+    console.log('🔍 sectionCode:', sectionCode);
+    console.log('🔍 sessionId:', sessionId);
+    
     setIsSilenceDetected(true);
     
     // Combine all transcripts for complete answer
@@ -224,20 +254,32 @@ export function Session() {
     
     if (completeAnswer) {
       try {
-        // Save question transcript to backend
+        // Debug: Log the session data being sent
+        const transcriptPayload = {
+          sessionId: sessionId,
+          questionId: currentQuestion.id,
+          question: currentQuestion.question,
+          transcript: completeAnswer,
+          timestamp: new Date().toISOString(),
+          sectionCode: sectionCode,
+          // Include current session data to avoid empty fields
+          role: state.role,
+          level: state.level,
+          totalQuestions: state.questions.length
+        };
+        
+        console.log('🔍 Frontend sending transcript data:', transcriptPayload);
+        console.log('🔍 State role:', state.role);
+        console.log('🔍 State level:', state.level);
+        console.log('🔍 State questions length:', state.questions.length);
+        
+        // Save question transcript to backend with session data
         await fetch('http://localhost:8000/api/question-transcript', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            sessionId: sessionId,
-            questionId: currentQuestion.id,
-            question: currentQuestion.question,
-            transcript: completeAnswer,
-            timestamp: new Date().toISOString(),
-            sectionCode: sectionCode
-          }),
+          body: JSON.stringify(transcriptPayload),
         });
       } catch (error) {
         console.error('Failed to save question transcript:', error);
@@ -248,19 +290,27 @@ export function Session() {
     stopSTT();
     setIsMuted(true);
     
-    // Clear transcripts for next question
-    setFinalTranscripts([]);
-    setLiveTranscript('');
-    setHasSpoken(false);
-    setLastTranscriptLength(0);
+    // Disable mic button completely
+    setIsMicDisabled(true);
     
-    // Auto-advance to next question
-    if (!isLastQuestion) {
-      setTimeout(() => {
-        handleNextQuestion();
-        setIsSilenceDetected(false);
-      }, 1000);
-    }
+    // Keep transcripts in AI panel (don't clear them)
+    // setFinalTranscripts([]);
+    // setLiveTranscript('');
+    
+    // Reset silence detection state after a delay
+    setTimeout(() => {
+      setIsSilenceDetected(false);
+      setHasSpoken(false);
+      setLastTranscriptLength(0);
+    }, 2000); // Show "Analyzing your response" for 2 seconds
+    
+    // Auto-advance to next question (COMMENTED OUT)
+    // if (!isLastQuestion) {
+    //   setTimeout(() => {
+    //     handleNextQuestion();
+    //     setIsSilenceDetected(false);
+    //   }, 1000);
+    // }
   };
 
   // Silence detection useEffect
@@ -315,24 +365,6 @@ export function Session() {
 
   // Simplified end interview function
   const handleEndInterview = async () => {
-    const sessionEndTime = new Date().toISOString();
-    
-    // Calculate attendance time
-    const startTime = new Date(sessionStartTime);
-    const endTime = new Date(sessionEndTime);
-    const attendanceMs = endTime.getTime() - startTime.getTime();
-    const attendanceMinutes = Math.floor(attendanceMs / 60000);
-    const attendanceSeconds = Math.floor((attendanceMs % 60000) / 1000);
-    const totalAttendanceTime = `${attendanceMinutes}m ${attendanceSeconds}s`;
-    
-    // Calculate average time per question
-    const avgTimePerQuestion = currentQuestionIndex > 0 
-      ? Math.floor(attendanceMs / (currentQuestionIndex + 1) / 1000)
-      : 0;
-    const avgTimeFormatted = avgTimePerQuestion > 60 
-      ? `${Math.floor(avgTimePerQuestion / 60)}m ${avgTimePerQuestion % 60}s`
-      : `${avgTimePerQuestion}s`;
-    
     // Calculate results
     const results = {
       role: state.role,
@@ -340,14 +372,17 @@ export function Session() {
       questionsAnswered: currentQuestionIndex + 1,
       totalQuestions: state.questions.length,
       timeSpent: formatted,
-      completedAt: sessionEndTime,
+      completedAt: new Date().toISOString(),
       sectionCode: sectionCode,
-      sessionStartTime: sessionStartTime,
-      sessionEndTime: sessionEndTime,
-      totalAttendanceTime: totalAttendanceTime,
-      averageTimePerQuestion: avgTimeFormatted,
       transcripts: finalTranscripts,
       sessionId: sessionId,
+      // Add questionTranscripts field for merging
+      questionTranscripts: finalTranscripts.map((transcript, index) => ({
+        questionId: state.questions[index]?.id || `q-${index}`,
+        question: state.questions[index]?.question || "Question not available",
+        transcript: transcript,
+        timestamp: new Date().toISOString()
+      }))
     };
     
     // Save to localStorage for compatibility
@@ -755,26 +790,6 @@ export function Session() {
           />
         )}
 
-        {/* Silence Detection Overlay */}
-        {isSilenceDetected && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 flex items-center justify-center">
-            <div className="bg-white rounded-xl p-6 shadow-2xl max-w-sm mx-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <Mic size={20} className="text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-gray-900 font-semibold">Processing Answer</h3>
-                  <p className="text-gray-600 text-sm">Silence detected - saving your response</p>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded-lg px-3 py-2">
-                <p className="text-gray-700 text-sm">Moving to next question...</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Bottom controls - Professional Layout */}
         <div className="bg-white border-t border-gray-200 z-20 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
           <div className="flex items-center justify-between px-6 py-4">
@@ -790,11 +805,14 @@ export function Session() {
             {/* Center: Core Controls */}
             <div className="flex items-center justify-center gap-4 w-1/3">
               <button
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={() => !isMicDisabled && setIsMuted(!isMuted)}
+                disabled={isMicDisabled}
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
-                  isMuted 
-                    ? "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" 
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                  isMicDisabled
+                    ? "bg-gray-300 text-gray-400 border border-gray-300 cursor-not-allowed"
+                    : isMuted 
+                      ? "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" 
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
                 }`}
                 aria-label={isMuted ? "Unmute" : "Mute"}
               >

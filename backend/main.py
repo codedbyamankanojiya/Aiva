@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 import json
 import os
 import asyncio
+import re
 
 from dotenv import load_dotenv
 import websockets
@@ -21,6 +22,61 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def analyze_keywords(question_id: str, transcript: str) -> Dict[str, List[str]]:
+    """
+    Analyze which keyPoints from a question are mentioned in the transcript
+    
+    Args:
+        question_id: The ID of the question to analyze
+        transcript: The user's transcript to analyze
+        
+    Returns:
+        Dictionary with 'mentioned' and 'notMentioned' keyPoints
+    """
+    try:
+        # Load questions data
+        with open('questions.json', 'r', encoding='utf-8') as f:
+            questions_data = json.load(f)
+        
+        # Find the question and its keyPoints
+        key_points = []
+        for role in questions_data.get('roles', []):
+            for question in role.get('questions', []):
+                if question.get('id') == question_id:
+                    key_points = question.get('keyPoints', [])
+                    break
+            if key_points:
+                break
+        
+        if not key_points:
+            return {"mentioned": [], "notMentioned": []}
+        
+        # Convert transcript to lowercase for case-insensitive matching
+        transcript_lower = transcript.lower()
+        
+        mentioned = []
+        not_mentioned = []
+        
+        for key_point in key_points:
+            # Convert key point to lowercase and remove special characters for matching
+            key_point_lower = key_point.lower()
+            # Create a simple pattern to match the key point (allowing for word variations)
+            pattern = re.compile(r'\b' + re.escape(key_point_lower) + r'\b')
+            
+            if pattern.search(transcript_lower):
+                mentioned.append(key_point)
+            else:
+                not_mentioned.append(key_point)
+        
+        return {
+            "mentioned": mentioned,
+            "notMentioned": not_mentioned
+        }
+        
+    except Exception as e:
+        print(f"Error analyzing keywords: {str(e)}")
+        return {"mentioned": [], "notMentioned": []}
 
 # Pydantic models
 class Question(BaseModel):
@@ -51,9 +107,6 @@ class SectionData(BaseModel):
     timeSpent: str
     completedAt: str
     sectionCode: str
-    sessionStartTime: str
-    sessionEndTime: str
-    totalAttendanceTime: str
     averageTimePerQuestion: str
 
 # Load data from JSON files
@@ -96,15 +149,45 @@ def load_section_data():
 def save_section_data(section_data: dict):
     """Save section data to SectionData.json file"""
     try:
+        print(f"🔍 Saving section data for section: {section_data.get('sectionCode')}")
+        print(f"🔍 Role: {section_data.get('role')}, Level: {section_data.get('level')}")
+        
         data = load_section_data()
-        data["sections"].append(section_data)
+        
+        # Find existing section with same sectionCode to merge data
+        section_code = section_data.get("sectionCode")
+        existing_section = None
+        
+        for section in data.get("sections", []):
+            if section.get("sectionCode") == section_code:
+                existing_section = section
+                break
+        
+        if existing_section:
+            print(f"📝 Found existing section, merging data...")
+            print(f"📊 Existing role: {existing_section.get('role', 'NOT SET')}")
+            print(f"📊 Existing level: {existing_section.get('level', 'NOT SET')}")
+            print(f"📊 Existing questionTranscripts: {len(existing_section.get('questionTranscripts', []))}")
+            
+            # Merge data with existing section
+            existing_section.update(section_data)
+            # Preserve questionTranscripts if they exist
+            if "questionTranscripts" not in existing_section and "questionTranscripts" in section_data:
+                existing_section["questionTranscripts"] = section_data["questionTranscripts"]
+            
+            print(f"✅ Merged section data. New role: {existing_section.get('role')}")
+        else:
+            print(f"🆕 Creating new section entry")
+            # Add new section if not found
+            data["sections"].append(section_data)
         
         with open('SectionData.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
+        print(f"💾 Section data saved successfully")
         return True
     except Exception as e:
-        print(f"Error saving section data: {e}")
+        print(f"❌ Error saving section data: {e}")
         return False
 
 @app.get("/")
@@ -226,6 +309,11 @@ class QuestionTranscript(BaseModel):
     transcript: str
     timestamp: str
     sectionCode: str
+    role: Optional[str] = ""
+    level: Optional[str] = ""
+    totalQuestions: Optional[int] = 0
+    mentioned: Optional[List[str]] = []
+    notMentioned: Optional[List[str]] = []
 
 @app.post("/api/question-transcript")
 async def save_question_transcript(transcript_data: QuestionTranscript):
@@ -236,10 +324,24 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
         transcript_data: Question transcript data to save
     """
     try:
+        print(f"🔍 Saving transcript for section: {transcript_data.sectionCode}")
+        print(f"🔍 Question ID: {transcript_data.questionId}")
+        print(f"🔍 Session Data - Role: '{transcript_data.role}', Level: '{transcript_data.level}'")
+        print(f"🔍 Total Questions: {transcript_data.totalQuestions}")
+        print(f"🔍 Full transcript data: {transcript_data.dict()}")
+        
+        # Perform keyword analysis
+        keyword_analysis = analyze_keywords(transcript_data.questionId, transcript_data.transcript)
+        print(f"🔍 Keyword Analysis: {keyword_analysis}")
+        
+        # Update transcript data with keyword analysis results
+        transcript_data.mentioned = keyword_analysis["mentioned"]
+        transcript_data.notMentioned = keyword_analysis["notMentioned"]
+        
         # Load existing section data
         data = load_section_data()
         
-        # Find or create section entry for this session
+        # Find existing section entry for this session
         section_entry = None
         for section in data.get("sections", []):
             if section.get("sectionCode") == transcript_data.sectionCode:
@@ -247,34 +349,87 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
                 break
         
         if not section_entry:
-            # Create new section entry if not found
+            print(f"🆕 Creating new section for {transcript_data.sectionCode}")
+            
+            # Try to get role info from questions data if not provided
+            role_info = {"title": "", "level": ""}
+            try:
+                questions_data = load_questions()
+                for role in questions_data.get("roles", []):
+                    if role.get("id") == transcript_data.sectionCode or any(q.get("id") == transcript_data.questionId for q in role.get("questions", [])):
+                        role_info = {"title": role.get("title", ""), "level": transcript_data.level or "Intermediate"}
+                        break
+            except:
+                pass
+            
+            # Create new section entry with actual data
             section_entry = {
-                "role": "",  # Will be updated when session completes
-                "level": "",
+                "role": transcript_data.role or role_info["title"],  # Use provided or inferred role
+                "level": transcript_data.level or role_info["level"],  # Use provided or inferred level
                 "questionsAnswered": 0,
-                "totalQuestions": 0,
+                "totalQuestions": transcript_data.totalQuestions or 6,  # Use provided or default
                 "timeSpent": "",
                 "completedAt": transcript_data.timestamp,
                 "sectionCode": transcript_data.sectionCode,
-                "sessionStartTime": transcript_data.timestamp,
-                "sessionEndTime": transcript_data.timestamp,
-                "totalAttendanceTime": "",
                 "averageTimePerQuestion": "",
                 "questionTranscripts": []
             }
+            print(f"🔍 Creating section with data: {section_entry}")
             data["sections"].append(section_entry)
+        else:
+            print(f"📝 Found existing section for {transcript_data.sectionCode}")
+            print(f"📊 Current role: {section_entry.get('role', 'NOT SET')}")
+            print(f"📊 Current level: {section_entry.get('level', 'NOT SET')}")
+            
+            # Try to get role info from questions data if fields are empty
+            role_info = {"title": "", "level": ""}
+            if not section_entry.get('role') or not section_entry.get('level'):
+                try:
+                    questions_data = load_questions()
+                    for role in questions_data.get("roles", []):
+                        if role.get("id") == transcript_data.sectionCode or any(q.get("id") == transcript_data.questionId for q in role.get("questions", [])):
+                            role_info = {"title": role.get("title", ""), "level": transcript_data.level or "Intermediate"}
+                            break
+                except:
+                    pass
+            
+            # Fill in missing session data if available
+            if not section_entry.get('role'):
+                section_entry['role'] = transcript_data.role or role_info["title"]
+                print(f"✅ Updated role to: {section_entry['role']}")
+            
+            if not section_entry.get('level'):
+                section_entry['level'] = transcript_data.level or role_info["level"]
+                print(f"✅ Updated level to: {section_entry['level']}")
+            
+            if not section_entry.get('totalQuestions') and transcript_data.totalQuestions:
+                section_entry['totalQuestions'] = transcript_data.totalQuestions
+                print(f"✅ Updated totalQuestions to: {transcript_data.totalQuestions}")
         
         # Initialize questionTranscripts field if not exists
         if "questionTranscripts" not in section_entry:
             section_entry["questionTranscripts"] = []
         
-        # Add new question transcript
-        section_entry["questionTranscripts"].append({
-            "questionId": transcript_data.questionId,
-            "question": transcript_data.question,
-            "transcript": transcript_data.transcript,
-            "timestamp": transcript_data.timestamp
-        })
+        # Add new question transcript (avoid duplicates)
+        transcript_exists = False
+        for existing_transcript in section_entry["questionTranscripts"]:
+            if (existing_transcript.get("questionId") == transcript_data.questionId and 
+                existing_transcript.get("timestamp") == transcript_data.timestamp):
+                transcript_exists = True
+                break
+        
+        if not transcript_exists:
+            section_entry["questionTranscripts"].append({
+                "questionId": transcript_data.questionId,
+                "question": transcript_data.question,
+                "transcript": transcript_data.transcript,
+                "timestamp": transcript_data.timestamp,
+                "mentioned": transcript_data.mentioned,
+                "notMentioned": transcript_data.notMentioned
+            })
+            print(f"✅ Added transcript for question {transcript_data.questionId}")
+        else:
+            print(f"⚠️ Transcript already exists for question {transcript_data.questionId}")
         
         # Update questions answered count
         section_entry["questionsAnswered"] = len(section_entry["questionTranscripts"])
@@ -283,9 +438,16 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
         with open('SectionData.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
-        return {"message": "Question transcript saved successfully", "questionsAnswered": len(section_entry["questionTranscripts"])}
+        print(f"💾 Saved section data. Total questions answered: {len(section_entry['questionTranscripts'])}")
+        
+        return {
+            "message": "Question transcript saved successfully", 
+            "questionsAnswered": len(section_entry["questionTranscripts"]),
+            "sectionUpdated": bool(section_entry)
+        }
         
     except Exception as e:
+        print(f"❌ Error saving question transcript: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error saving question transcript: {str(e)}")
 
 
