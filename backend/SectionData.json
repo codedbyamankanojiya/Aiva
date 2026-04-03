@@ -512,6 +512,106 @@
           "ai_analysis": "You mentioned your technical preferences and reasoning skills, which shows you're thinking about your strengths. However, you didn’t actually name any specific programming languages or explain your proficiency with them, which is the core of the question. Next time, directly state the languages you're comfortable with and give a brief reason for each, like a project or feature you enjoy."
         }
       ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "00:47",
+      "completedAt": "2026-04-03T21:56:24.985Z",
+      "sectionCode": "S4IRS042",
+      "averageTimePerQuestion": "00:47",
+      "averageWordsPerMinute": 0,
+      "answerQuality": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "se-3",
+          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
+          "transcript": "Okay. So I would hear you. Brief interaction about myself. And I appreciate I have been working on this a lot.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Problem-solving",
+            "Project management",
+            "Technical challenges",
+            "Solutions implemented"
+          ],
+          "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "04:03",
+      "completedAt": "2026-04-03T22:00:41.616Z",
+      "sectionCode": "OIGDWH29",
+      "averageTimePerQuestion": "02:01",
+      "averageWordsPerMinute": 0,
+      "answerQuality": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "se-3",
+          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
+          "transcript": "So hello. I have managed to do a So we need problem.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Problem-solving",
+            "Project management",
+            "Technical challenges",
+            "Solutions implemented"
+          ],
+          "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "01:31",
+      "completedAt": "2026-04-03T22:02:22.508Z",
+      "sectionCode": "NWWEE586",
+      "averageTimePerQuestion": "00:45",
+      "averageWordsPerMinute": 11,
+      "answerQuality": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "So I have managed this thing. I would like to introduce myself.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [
+            "Professional introduction",
+            "Experience overview",
+            "Career highlights"
+          ],
+          "ai_analysis": "You introduced yourself, but you didn't share any details about your software development experience. Next time, start with a brief professional summary, then highlight key roles, skills, and accomplishments to make a strong first impression."
+        },
+        {
+          "questionId": "se-2",
+          "question": "What programming languages are you most comfortable with and why?",
+          "transcript": "Okay. So there are not any programming and use and component.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [
+            "Language proficiency",
+            "Technical preferences",
+            "Reasoning skills"
+          ],
+          "ai_analysis": "Thank you for sharing your answer. It seems you may have been uncertain, so remember that for this question it's important to clearly name specific languages and explain your experience or reasoning for choosing them, which helps demonstrate your technical fit for the role."
+        }
+      ]
     }
   ]
 }

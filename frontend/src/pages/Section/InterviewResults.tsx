@@ -49,11 +49,11 @@ export function InterviewResults() {
         const data: SectionDataResponse = await response.json();
         console.log('Fetched data:', data);
         
-        // Sort sections in ascending order by completion date
+        // Sort sections in descending order by completion date
         const sortedSections = (data.sections || []).sort((a, b) => {
           const dateA = new Date(a.completedAt).getTime();
           const dateB = new Date(b.completedAt).getTime();
-          return dateA - dateB; // Ascending order (oldest first)
+          return dateB - dateA; // Descending order (newest first)
         });
         
         setSectionData(sortedSections);
