@@ -22,19 +22,19 @@
 ## 🏗️ Architecture Overview
 
 ### System Architecture
-```
+```text
 ┌─────────────────┐    HTTP/WS   ┌─────────────────┐
 │   Frontend      │ ◄──────────► │    Backend      │
 │   (React)       │              │   (FastAPI)     │
 │                 │              │                 │
-│ • UI Components │              │ • API Endpoints │
-│ • State Mgmt    │              │ • TTS Service   │
-│ • Animations    │              │ • Data Models   │
+│ • Edge Vision   │              │ • API Endpoints │
+│ • UI Components │              │ • LLM/NLP Engine│
+│ • State Mgmt    │              │ • Speech-to-Text│
+│ • Animations    │              │ • TTS Service   │
 └─────────────────┘              └─────────────────┘
          │                               │
-         │                               │
-    Browser Storage                  ElevenLabs API
-    (localStorage)                   (TTS Service)
+    Local ML Models               External Services
+ (TensorFlow/Face-API)          (ElevenLabs, DB, LLM)
 ```
 
 ### Technology Stack
@@ -48,12 +48,14 @@
 - **Lenis** - Smooth scrolling
 - **React Router** - Client-side routing
 
-#### Backend
+#### Backend & AI
 - **Python 3.9+** - Programming language
 - **FastAPI** - Modern web framework
 - **Uvicorn** - ASGI server
+- **LLM/NLP Engine** - Evaluates contextual relevance of answers
+- **Vosk / Web Speech** - Speech-to-Text conversion
+- **ElevenLabs** - Text-to-speech AI generation
 - **Pydantic** - Data validation
-- **ElevenLabs** - Text-to-speech API
 - **python-dotenv** - Environment management
 
 #### Machine Learning / Vision (Frontend-driven)
@@ -727,52 +729,32 @@ test('complete interview flow', async ({ page }) => {
 
 ---
 
-## 🚀 Deployment Guide
+## 🚀 Deployment Guide (Split Strategy)
 
-### Frontend Deployment
+### Frontend Deployment (Vercel)
 
 #### Build Process
 ```bash
-# Production build
+# Vercel will automatically run this command:
 npm run build
-
-# Output: dist/ folder
-# Deploy to: Vercel, Netlify, or static hosting
 ```
 
 #### Environment Variables
-```bash
-# Production
-VITE_API_URL=https://api.aiva.dev
+In the Vercel dashboard, add:
+```env
+# Production Backend URL
+VITE_API_URL=https://your-backend-app.onrender.com
 VITE_ENABLE_ANALYTICS=true
 ```
 
-### Backend Deployment
+### Backend Deployment (Render or Railway)
+It is highly advised not to use Serverless (like Vercel) for the Python backend to avoid 10s execution timeouts during LLM/TTS generation. Use containers (Render/Railway).
 
-#### Docker Deployment
-```dockerfile
-# Dockerfile
-FROM python:3.9-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-#### Cloud Deployment
-```bash
-# Build and push to registry
-docker build -t aiva-backend .
-docker push your-registry/aiva-backend
-
-# Deploy to cloud service
-kubectl apply -f k8s-deployment.yaml
-```
+#### Render Deployment Steps
+1. Create a "Web Service" connecting to the GitHub Repo.
+2. Select Root Directory: `backend`
+3. Build Command: `pip install -r requirements.txt`
+4. Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 
 ### CI/CD Pipeline
 

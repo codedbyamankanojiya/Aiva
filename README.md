@@ -46,20 +46,22 @@ Unlike traditional recording tools, Aiva reconstructs this data into personalize
 React 18 + TypeScript
 ├── UI Framework: Tailwind CSS
 ├── Animations: Framer Motion + Lenis
-├── ML/Vision: TensorFlow.js + face-api (@vladmandic/face-api)
+├── ML/Vision: TensorFlow.js + face-api (Client-side edge computing)
 ├── State Management: React Context
 ├── Routing: React Router
 ├── HTTP Client: Fetch API
 └── Build Tool: Vite
 ```
 
-### Backend Stack
-```
+### Backend & AI Processing Stack
+```text
 Python + FastAPI
 ├── ASGI Server: Uvicorn
-├── AI Services: ElevenLabs TTS
+├── Core AI Logic: LLM integration (for contextual answer evaluation)
+├── NLP: Semantic response analysis
+├── Speech-to-Text: Vosk / Web Speech API
+├── Text-to-Speech: ElevenLabs API (Ultra-realistic voice)
 ├── Data Validation: Pydantic
-├── CORS: FastAPI built-in
 └── Environment: python-dotenv
 ```
 
@@ -331,6 +333,13 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 - **ESLint** and **Prettier** for code formatting
 - **Conventional Commits** for commit messages
 
+
+## 🗺️ Future Roadmap & Upcoming Features
+
+1. **Dynamic Resume Parsing** - Auto-generating highly specific, technical interview questions based on PDF/Docx uploads.
+2. **3D Animated "Robo-Companion"** - A fully animated digital avatar replacing the standard avatar to physically react to your answers in real-time.
+3. **Global Multilingual Intelligence** - Expanding NLP and TTS to support diverse regional and native languages.
+4. **Peer-to-Peer Mock Interviews** - Matching users applying for similar roles to interview each other while Aiva acts as a silent judge.
 
 ## 🙏 Acknowledgments
 

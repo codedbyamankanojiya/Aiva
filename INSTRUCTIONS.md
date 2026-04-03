@@ -328,28 +328,29 @@ npm install
 npm run dev:android
 ```
 
-## 🚀 Production Deployment
+## 🚀 Production Deployment (Recommended Split Strategy)
 
-### Frontend Build
-```bash
-# Create optimized production build
-npm run build
+To ensure high performance and prevent Serverless timeout errors during AI processing, we highly recommend a **Split Deployment Strategy**:
 
-# Output will be in: frontend/dist/
-# Deploy this folder to your hosting service
-```
+### 1. Frontend Deployment (Vercel - Recommended)
+Since the Vision System (Face-API & TensorFlow.js) runs client-side, Vercel is perfect for hosting the frontend.
+- Push your code to GitHub.
+- Import the repo in Vercel.
+- Set the **Root Directory** to `frontend`.
+- Vercel will automatically build the Vite application.
 
-### Backend Deployment
-```bash
-# Production server setup
-pip install gunicorn
+### 2. Backend Deployment (Render or Railway - Recommended)
+Avoid deploying the FastAPI backend to Serverless environments (like Vercel) as long-running processes like LLM evaluation or TTS generation will hit the 10-second timeout limit.
+- Create an account on Render.com or Railway.app.
+- Create a new "Web Service" and point it to your GitHub repo.
+- Set the **Root Directory** to `backend`.
+- Add your `.env` variables (e.g., `ELEVENLABS_API_KEY`).
+- Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 
-# Start with Gunicorn
-gunicorn main:app --host 0.0.0.0 --port 8000
-
-# Or use Docker (recommended)
-docker build -t aiva-backend .
-docker run -p 8000:8000 aiva-backend
+### 3. Connect Them
+Once your backend is deployed (e.g., `https://aiva-backend.onrender.com`), go to your Vercel project's Environment Variables and add:
+```env
+VITE_API_URL=https://aiva-backend.onrender.com
 ```
 
 ## 🔧 Environment Variables Reference
