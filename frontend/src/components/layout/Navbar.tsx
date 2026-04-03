@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { UserCircle, Settings, LogOut, ChevronDown } from "lucide-react";
+import { UserCircle, Settings, LogOut, ChevronDown, Menu } from "lucide-react";
 
 const pageTitles: Record<string, string> = {
   "/": "Dashboard",
@@ -15,7 +15,11 @@ const pageTitles: Record<string, string> = {
   "/settings": "Settings",
 };
 
-export function Navbar() {
+type NavbarProps = {
+  onOpenSidebar?: () => void;
+};
+
+export function Navbar({ onOpenSidebar }: NavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -50,13 +54,24 @@ export function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-30 px-6 py-4 flex items-center justify-between"
+      className="sticky top-0 z-30 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3"
     >
-      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
-        <span className="text-aiva-purple">Aiva</span>
-        <span className="mx-2 text-gray-300">|</span>
-        {title}
-      </h1>
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={onOpenSidebar}
+          className="lg:hidden inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-white/40 backdrop-blur-md ring-1 ring-white/30 hover:bg-white/60 transition-all shrink-0"
+          aria-label="Open navigation"
+        >
+          <Menu size={20} className="text-gray-700" />
+        </button>
+
+        <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight truncate">
+          <span className="text-aiva-purple">Aiva</span>
+          <span className="mx-2 text-gray-300">|</span>
+          {title}
+        </h1>
+      </div>
 
       {/* User profile dropdown */}
       <div className="relative" ref={dropdownRef}>
@@ -64,7 +79,7 @@ export function Navbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center gap-2.5 rounded-full pl-1 pr-3 py-1 bg-white/40 backdrop-blur-md ring-1 ring-white/30 hover:bg-white/60 transition-all cursor-pointer"
+          className="flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 bg-white/40 backdrop-blur-md ring-1 ring-white/30 hover:bg-white/60 transition-all cursor-pointer"
         >
           {/* Avatar */}
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-md overflow-hidden ring-2 ring-white/20">

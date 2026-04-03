@@ -469,10 +469,7 @@ export function Resources() {
   }, [isVoiceOpen]);
 
   // Reset filters when switching categories
-  useEffect(() => {
-    setSelectedTopics([]);
-    setAppliedFilters([]);
-  }, [selectedCategory]);
+  // (moved to category click handler to avoid setState inside effect)
 
   function handleTopicToggle(topic: string) {
     setSelectedTopics(prev => 
@@ -518,16 +515,1106 @@ export function Resources() {
   // Content generation functions for cheat sheets and practice assessments
   const generateCheatSheet = (categoryId: string) => {
     const cheatSheets: Record<string, string> = {
-      "ethical-hacking": "🔒 ETHICAL HACKING CHEAT SHEET v2.0\n\n🛡️ SECURITY INCIDENT RESPONSE FRAMEWORK\n1. DETECTION\n   • Antivirus scans\n   • SIEM monitoring\n   • Employee reports\n   • Unusual behavior analysis\n\n2. CONTAINMENT\n   • Short-term: Disconnect affected systems\n   • Long-term: Take servers offline\n   • Preserve evidence for investigation",
-      "human-resources": "👥 HUMAN RESOURCES CHEAT SHEET v2.0\n\n📊 HR LIFECYCLE MANAGEMENT\nRECRUITMENT → ONBOARDING → TRAINING → PERFORMANCE → COMPENSATION → OFFBOARDING\n\n🔑 KEY HR METRICS\n• Turnover Rate: (Employees Left ÷ Total Employees) × 100\n• Time to Hire: Days from job posting to acceptance",
-      "dsa": "💻 DATA STRUCTURES & ALGORITHMS CHEAT SHEET v2.0\n\n⚡ TIME COMPLEXITY BIG-O\nO(1) - Constant: Array access\nO(log n) - Logarithmic: Binary search\nO(n) - Linear: Linear search\nO(n log n) - Linearithmic: Merge sort, quicksort\nO(n²) - Quadratic: Bubble sort, nested loops",
-      "physics": "⚛️ PHYSICS CHEAT SHEET v2.0\n\n💡 LAWS OF THERMODYNAMICS\nZeroth Law: Thermal equilibrium → Temperature measurement\nFirst Law: ΔU = Q - W (Energy conservation)\nSecond Law: Entropy always increases (ΔS > 0)\nThird Law: Absolute zero (0K) is unattainable",
-      "chemistry": "🧪 CHEMISTRY CHEAT SHEET v2.0\n\n⚗️ pH SCALE & CALCULATIONS\npH Scale: 0 (acidic) ← 7 (neutral) → 14 (basic)\npH = -log[H⁺]\n[H⁺] = 10^(-pH)\n\nStrong Acids: Complete dissociation (HCl, HNO₃)\nWeak Acids: Partial dissociation (CH₃COOH)",
-      "dbms": "🗃️ DATABASE MANAGEMENT CHEAT SHEET v2.0\n\n🔤 SQL COMMANDS QUICK REFERENCE\n-- DDL (Data Definition)\nCREATE TABLE table_name (column1 datatype, column2 datatype);\nALTER TABLE table_name ADD column_name datatype;\nDROP TABLE table_name;\n\n-- DML (Data Manipulation)\nSELECT * FROM table_name WHERE condition;",
-      "financial-accounting": "💰 FINANCIAL ACCOUNTING CHEAT SHEET v2.0\n\n💵 TIME VALUE OF MONEY\nFuture Value: FV = PV × (1 + r)ⁿ\nPresent Value: PV = FV ÷ (1 + r)ⁿ\nAnnuity FV: PMT × [((1+r)ⁿ - 1) ÷ r]\nAnnuity PV: PMT × [(1 - (1+r)⁻ⁿ) ÷ r]"
+      "ethical-hacking": `🔒 ETHICAL HACKING CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+🛡️ SECURITY INCIDENT RESPONSE FRAMEWORK
+
+═══════════════════════════════════════════════════════
+
+1️⃣ DETECTION & IDENTIFICATION
+─────────────────────────────
+• Antivirus/Antimalware alerts
+• SIEM (Security Information & Event Management) monitoring
+• IDS/IPS anomaly detection
+• Employee reports & help desk tickets
+• Log analysis & unusual behavior patterns
+
+2️⃣ CONTAINMENT
+─────────────────────────────
+• Short-term: Isolate affected systems (disconnect from network)
+• Long-term: Quarantine at network level
+• Preserve forensic evidence (don't power off!)
+• Document timeline of events
+
+3️⃣ ERADICATION
+─────────────────────────────
+• Remove malware & backdoors
+• Patch vulnerabilities exploited
+• Reset compromised credentials
+• Close attack vectors
+
+4️⃣ RECOVERY
+─────────────────────────────
+• Restore from clean backups
+• Rebuild compromised systems
+• Restore services gradually
+• Monitor for re-infection
+
+5️⃣ LESSONS LEARNED
+─────────────────────────────
+• Conduct post-incident review
+• Update incident response plan
+• Implement preventive controls
+
+═══════════════════════════════════════════════════════
+
+🔐 COMMON ATTACK VECTORS
+
+═══════════════════════════════════════════════════════
+
+PHISHING ATTACKS:
+• Email phishing - deceptive emails
+• Spear phishing - targeted individuals
+• Whaling - targeting executives
+• Smishing - SMS phishing
+• Vishing - voice phishing
+
+PREVENTION: Email filtering, MFA, user training
+
+───────────────────────────────────────────────────────
+
+SQL INJECTION:
+• Code injection via user input
+• Types: In-band, Blind, Out-of-band
+• Payloads: ' OR '1'='1, UNION SELECT, etc.
+
+PREVENTION: Input validation, parameterized queries
+
+───────────────────────────────────────────────────────
+
+XSS (Cross-Site Scripting):
+• Stored XSS - persistent in database
+• Reflected XSS - via URL parameters
+• DOM-based XSS - client-side execution
+
+PREVENTION: Output encoding, Content Security Policy
+
+───────────────────────────────────────────────────────
+
+MAN-IN-THE-MIDDLE (MITM):
+• ARP spoofing
+• SSL stripping
+• Session hijacking
+
+PREVENTION: HTTPS, HSTS, certificate pinning
+
+═══════════════════════════════════════════════════════
+
+🛠️ ESSENTIAL TOOLS
+
+═══════════════════════════════════════════════════════
+
+RECONNAISSANCE:
+• Nmap - port scanning & network mapping
+• Maltego - OSINT & data mining
+• theHarvester - email harvesting
+• WHOIS - domain registration info
+
+VULNERABILITY SCANNING:
+• Nessus - comprehensive vulnerability scanner
+• OpenVAS - open-source vulnerability scanner
+• Nikto - web server scanner
+
+EXPLOITATION:
+• Metasploit - penetration testing framework
+• Burp Suite - web application testing
+• Wireshark - packet analysis
+• John the Ripper - password cracking
+
+DEFENSE:
+• firewall-cmd / iptables - Linux firewall
+• ClamAV - antivirus
+• OSSEC - HIDS
+• Snort - intrusion detection`,
+
+      "human-resources": `👥 HUMAN RESOURCES CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+📊 HR LIFECYCLE FRAMEWORK
+
+═══════════════════════════════════════════════════════
+
+RECRUITMENT          ONBOARDING           DEVELOPMENT
+    │                    │                     │
+    ▼                    ▼                     ▼
+┌─────────┐         ┌─────────┐          ┌─────────┐
+│ Sourcing│         │ Orientation      │ Training │
+│ Screening│         │ Integration      │Mentoring │
+│Interview│         │ Compliance      │Performance│
+└────┬────┘         └─────────┘          └────┬────┘
+     │                                       │
+     ▼                                       ▼
+┌─────────┐         COMPENSATION          ┌─────────┐
+│Selection│◄─────── & BENEFITS ──────────►│Growth   │
+└─────────┘                               └─────────┘
+                                              │
+                                              ▼
+                                       OFFBOARDING
+                                          (Exit)
+
+═══════════════════════════════════════════════════════
+
+📈 KEY HR METRICS
+
+═══════════════════════════════════════════════════════
+
+TURNOVER RATE:
+Formula: (Employees Left ÷ Average Headcount) × 100
+
+• Industry benchmark: 10-15% annually
+• High turnover = culture/management issues
+• Track by department, tenure, reason
+
+───────────────────────────────────────────────────────
+
+TIME TO HIRE (TTH):
+Formula: Days from job posting → Offer accepted
+
+• Competitive: 25-35 days
+• Senior roles: 40-60 days
+• Impacted by: market, hiring process efficiency
+
+───────────────────────────────────────────────────────
+
+COST PER HIRE (CPH):
+Formula: Total Recruitment Costs ÷ Number of Hires
+
+• Includes: Recruiting, interviewing, onboarding
+• Average: $4,000-5,000 per hire (US)
+• Reduces with employee referrals
+
+───────────────────────────────────────────────────────
+
+EMPLOYEE ENGAGEMENT SCORE:
+Measured via surveys (quarterly/annual)
+
+Categories:
+• Satisfaction
+• Motivation
+• Commitment
+• Advocacy (eNPS)
+
+───────────────────────────────────────────────────────
+
+PRODUCTIVITY RATIO:
+Output per employee = Revenue ÷ Headcount
+
+Tracks: Individual, team, department, company-wide
+
+═══════════════════════════════════════════════════════
+
+⚖️ LEGAL COMPLIANCE CHECKLIST
+
+═══════════════════════════════════════════════════════
+
+☑ I-9 Employment Eligibility Verification
+☑ W-4 Tax Withholding Forms
+☑ EEO-1 Pay Data Reporting
+☑ OSHA Workplace Safety
+☑ FMLA (Family & Medical Leave)
+☑ FLSA Overtime Rules
+☑ ADA (Americans with Disabilities Act)
+☑ Workers' Compensation Insurance
+
+═══════════════════════════════════════════════════════
+
+🎯 PERFORMANCE MANAGEMENT CYCLE
+
+═══════════════════════════════════════════════════════
+
+PLANNING          MONITORING           REVIEW
+   │                  │                  │
+   ▼                  ▼                  ▼
+┌─────────┐      ┌─────────┐       ┌─────────┐
+│Goal     │◄────►│Weekly   │◄─────►│Annual   │
+│Setting  │      │Check-ins│       │Review   │
+└─────────┘      └─────────┘       └────┬────┘
+                                        │
+                                   ┌────▼────┐
+                                   │Rating & │
+                                   │Feedback │
+                                   └─────────┘
+
+GOAL SETTING (SMART Framework):
+• Specific - Clear, well-defined
+• Measurable - Quantifiable metrics
+• Achievable - Realistic targets
+• Relevant - Aligned to business
+• Time-bound - Deadlines
+
+FEEDBACK FRAMEWORKS:
+• SBI: Situation → Behavior → Impact
+• STAR: Situation → Task → Action → Result
+• COIN: Context → Observation → Impact → Next Steps`,
+
+      "dsa": `💻 DATA STRUCTURES & ALGORITHMS CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+⚡ TIME COMPLEXITY BIG-O NOTATION
+
+═══════════════════════════════════════════════════════
+
+O(1)        Constant      Array access [i]
+O(log n)    Logarithmic   Binary search
+O(n)        Linear        Linear search, iteration
+O(n log n)  Linearithmic  Merge sort, QuickSort
+O(n²)       Quadratic     Bubble sort, nested loops
+O(n³)       Cubic         3 nested loops
+O(2ⁿ)       Exponential   Recursive Fibonacci
+O(n!)       Factorial     Permutations
+
+───────────────────────────────────────────────────────
+
+SPACE COMPLEXITY QUICK REFERENCE:
+
+• Array: O(n) space
+• Linked List: O(n) space
+• Binary Tree: O(n) space
+• Hash Table: O(n) space
+• Recursion stack: O(depth)
+
+═══════════════════════════════════════════════════════
+
+📦 DATA STRUCTURES
+
+═══════════════════════════════════════════════════════
+
+ARRAYS:
+• Access: O(1) | Search: O(n) | Insert/Delete: O(n)
+• Types: 1D, 2D (Matrix), Dynamic (ArrayList)
+• Contiguous memory, cache-friendly
+
+───────────────────────────────────────────────────────
+
+LINKED LISTS:
+• Singly: next pointer only
+• Doubly: prev + next pointers
+• Circular: tail→head connection
+
+Operations:
+• Access: O(n) | Search: O(n)
+• Insert at head: O(1) | At tail: O(n)
+• Delete: O(1) if node given (no search)
+
+───────────────────────────────────────────────────────
+
+STACKS (LIFO):
+• Push: O(1) | Pop: O(1) | Peek: O(1)
+• Applications: Function calls, undo, expression eval
+• Implementation: Array or Linked List
+
+───────────────────────────────────────────────────────
+
+QUEUES (FIFO):
+• Enqueue: O(1) | Dequeue: O(1)
+• Types: Simple, Circular, Priority, Deque
+• Applications: BFS, scheduling, buffering
+
+───────────────────────────────────────────────────────
+
+HASH TABLES:
+• Insert: O(1) avg | Delete: O(1) avg | Search: O(1) avg
+• Collision handling: Chaining, Open addressing
+• Load factor (α) = n/k (threshold ~0.7)
+
+───────────────────────────────────────────────────────
+
+TREES:
+• Binary Search Tree: O(log n) avg for all ops
+• AVL Trees: Self-balancing, O(log n) guaranteed
+• Red-Black Trees: Less strict balancing
+• B-Trees: For databases (multiple keys per node)
+• Trie: String operations, prefix search
+
+───────────────────────────────────────────────────────
+
+GRAPHS:
+• Adjacency Matrix: O(V²) space, O(1) edge check
+• Adjacency List: O(V+E) space, O(V) edge check
+• Traversal: BFS (queue), DFS (stack/recursion)
+• Shortest paths: Dijkstra, Bellman-Ford
+• MST: Prim's, Kruskal's
+
+═══════════════════════════════════════════════════════
+
+🔍 SORTING ALGORITHMS
+
+═══════════════════════════════════════════════════════
+
+ALGORITHM      BEST        AVG         WORST       SPACE    STABLE
+─────────────────────────────────────────────────────────────
+Bubble Sort    O(n)        O(n²)       O(n²)       O(1)     ✅
+Selection Sort O(n²)       O(n²)       O(n²)       O(1)     ❌
+Insertion Sort O(n)        O(n²)       O(n²)       O(1)     ✅
+Merge Sort     O(n log n)  O(n log n)  O(n log n)  O(n)     ✅
+Quick Sort     O(n log n)  O(n log n)  O(n²)       O(log n) ❌
+Heap Sort      O(n log n)  O(n log n)  O(n log n)  O(1)     ❌
+
+───────────────────────────────────────────────────────
+
+QUICKSORT PARTITIONING:
+• Choose pivot (last element)
+• Partition: < pivot → left, > pivot → right
+• Recursively sort left and right
+
+MERGESORT:
+• Divide array in half
+• Recursively sort both halves
+• Merge sorted halves
+
+═══════════════════════════════════════════════════════
+
+🧠 ALGORITHM PATTERNS
+
+═══════════════════════════════════════════════════════
+
+TWO POINTERS:
+for i in range(n):
+    while j < n and condition:
+        j += 1
+    # process
+
+Used in: Pairs sum, palindrome, trapping rain water
+
+───────────────────────────────────────────────────────
+
+SLIDING WINDOW:
+while r < len(nums):
+    # expand window
+    while condition violated:
+        # shrink from left
+    # update answer
+
+Types: Fixed size, variable size
+
+───────────────────────────────────────────────────────
+
+BINARY SEARCH:
+lo, hi = 0, len(arr)-1
+while lo <= hi:
+    mid = (lo+hi)//2
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        lo = mid + 1
+    else:
+        hi = mid - 1
+
+───────────────────────────────────────────────────────
+
+DYNAMIC PROGRAMMING:
+1. Identify optimal substructure
+2. Define state: dp[i] or dp[i][j]
+3. Recurrence relation
+4. Base case
+5. Bottom-up (tabulation) or Top-down (memoization)
+
+───────────────────────────────────────────────────────
+
+BFS (Breadth-First Search):
+from collections import deque
+queue = deque([start])
+while queue:
+    node = queue.popleft()
+    for neighbor in graph[node]:
+        if not visited[neighbor]:
+            visited[neighbor] = True
+            queue.append(neighbor)
+
+Use: Shortest path (unweighted), level order
+
+───────────────────────────────────────────────────────
+
+DFS (Depth-First Search):
+stack = [start]
+while stack:
+    node = stack.pop()
+    if not visited[node]:
+        visited[node] = True
+        for neighbor in graph[node]:
+            if not visited[neighbor]:
+                stack.append(neighbor)
+
+Use: Path finding, cycle detection, topological sort`,
+
+      "physics": `⚛️ PHYSICS CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+🔬 CORE UNITS & CONSTANTS
+
+═══════════════════════════════════════════════════════
+
+SI BASE UNITS:
+• Length: meter (m)
+• Mass: kilogram (kg)
+• Time: second (s)
+• Electric current: ampere (A)
+• Temperature: kelvin (K)
+• Amount of substance: mole (mol)
+• Luminous intensity: candela (cd)
+
+───────────────────────────────────────────────────────
+
+DERIVED UNITS:
+• Force: Newton (N) = kg·m/s²
+• Energy: Joule (J) = N·m = kg·m²/s²
+• Power: Watt (W) = J/s = kg·m²/s³
+• Pressure: Pascal (Pa) = N/m²
+• Frequency: Hertz (Hz) = 1/s
+
+───────────────────────────────────────────────────────
+
+KEY CONSTANTS:
+• Speed of light: c = 3×10⁸ m/s
+• Gravitational constant: G = 6.67×10⁻¹¹ N·m²/kg²
+• Planck's constant: h = 6.63×10⁻³⁴ J·s
+• Avogadro's number: Nₐ = 6.02×10²³ mol⁻¹
+• Gas constant: R = 8.314 J/(mol·K)
+
+═══════════════════════════════════════════════════════
+
+⚡ MECHANICS
+
+═══════════════════════════════════════════════════════
+
+KINEMATICS:
+• v = u + at (velocity-time)
+• s = ut + ½at² (displacement)
+• v² = u² + 2as (velocity-displacement)
+
+Where: u = initial velocity, v = final velocity
+       a = acceleration, t = time, s = displacement
+
+───────────────────────────────────────────────────────
+
+NEWTON'S LAWS:
+1st (Inertia): Objects remain at rest/motion unless acted upon
+2nd (F=ma): Force = mass × acceleration
+3rd (Action-Reaction): Every action has equal & opposite reaction
+
+───────────────────────────────────────────────────────
+
+WORK, ENERGY, POWER:
+• W = F·d·cos(θ) [Joules]
+• KE = ½mv² [Joules]
+• PE = mgh (gravitational) [Joules]
+• Power = W/t = F·v [Watts]
+
+Conservation of Energy:
+Total Energy = KE + PE = constant (closed system)
+
+───────────────────────────────────────────────────────
+
+MOMENTUM:
+• p = mv [kg·m/s]
+• Impulse: J = F·Δt = Δp
+• Conservation: Σp_initial = Σp_final (isolated system)
+
+═══════════════════════════════════════════════════════
+
+🌡️ THERMODYNAMICS
+
+═══════════════════════════════════════════════════════
+
+LAWS OF THERMODYNAMICS:
+
+ZEROTH LAW:
+If A≈B and B≈C, then A≈C
+→ Basis for temperature measurement
+
+FIRST LAW (Energy Conservation):
+ΔU = Q - W
+• ΔU = change in internal energy
+• Q = heat added to system
+• W = work done by system
+
+SECOND LAW:
+Entropy always increases in isolated system
+• ΔS ≥ 0 for isolated system
+• Heat flows spontaneously: hot → cold
+
+THIRD LAW:
+Absolute zero (0 K) is unattainable
+
+───────────────────────────────────────────────────────
+
+IDEAL GAS LAW:
+PV = nRT
+• P = pressure, V = volume
+• n = moles, R = gas constant
+• T = temperature (K)
+
+Combined Gas Law: P₁V₁/T₁ = P₂V₂/T₂
+
+═══════════════════════════════════════════════════════
+
+⚡ ELECTROMAGNETISM
+
+═══════════════════════════════════════════════════════
+
+ELECTRIC FIELDS:
+• F = kq₁q₂/r² (Coulomb's Law)
+• E = F/q = kQ/r² (Electric field)
+• V = kQ/r (Electric potential)
+
+CIRCUITS:
+• V = IR (Ohm's Law)
+• P = IV = I²R = V²/R (Power)
+• Series: R_total = R₁ + R₂ + ...
+• Parallel: 1/R_total = 1/R₁ + 1/R₂ + ...
+
+Kirchhoff's Laws:
+• Current (KCL): ΣI_in = ΣI_out
+• Voltage (KVL): ΣV = 0 (closed loop)
+
+───────────────────────────────────────────────────────
+
+MAGNETIC FIELDS:
+• F = qvB sin(θ) (force on moving charge)
+• F = BIL sin(θ) (force on wire)
+• B = μ₀I/(2πr) (wire)
+• B = μ₀NI/L (solenoid)
+
+Faraday's Law: ε = -dΦ/dt
+Lenz's Law: Direction opposes change
+
+═══════════════════════════════════════════════════════
+
+🌊 WAVES & OPTICS
+
+═══════════════════════════════════════════════════════
+
+WAVE EQUATION:
+v = fλ
+• v = wave speed, f = frequency, λ = wavelength
+
+INTERFERENCE:
+• Constructive: Path diff = nλ (bright)
+• Destructive: Path diff = (n+½)λ (dark)
+
+REFLECTION & REFRACTION:
+• Law of reflection: θᵢ = θᵣ
+• Snell's Law: n₁sin(θ₁) = n₂sin(θ₂)
+• Critical angle: sin(θc) = n₂/n₁
+
+LENSES & MIRRORS:
+• 1/f = 1/do + 1/di (thin lens equation)
+• Magnification: M = -di/do = hi/ho
+
+═══════════════════════════════════════════════════════
+
+⚛️ MODERN PHYSICS
+
+═══════════════════════════════════════════════════════
+
+RELATIVITY:
+• E = mc² (mass-energy equivalence)
+• γ = 1/√(1 - v²/c²)
+• Time dilation: Δt' = γΔt
+• Length contraction: L' = L/γ
+
+PHOTOELECTRIC EFFECT:
+• E = hf - φ (Einstein's equation)
+• h = Planck's constant, f = frequency
+• φ = work function (minimum energy needed)
+
+DE BROGLIE WAVELENGTH:
+• λ = h/p = h/(mv)
+
+NUCLEAR PHYSICS:
+• Half-life: N = N₀(½)^(t/t½)
+• Radioactive decay: A = λN
+• E = Δmc² (mass defect → energy)`,
+
+      "chemistry": `🧪 CHEMISTRY CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+⚗️ pH SCALE & CALCULATIONS
+
+═══════════════════════════════════════════════════════
+
+pH SCALE:
+0 ←─────── 7 ───────→ 14
+ acidic    neutral     basic
+
+Strong Acid: pH 0-3      Weak Acid: pH 4-6
+Strong Base: pH 11-14    Weak Base: pH 8-10
+
+───────────────────────────────────────────────────────
+
+KEY EQUATIONS:
+• pH = -log₁₀[H⁺]
+• [H⁺] = 10^(-pH)
+• pOH = -log₁₀[OH⁻]
+• pH + pOH = 14 (at 25°C)
+• [H⁺][OH⁻] = 10^(-14) = Kw
+
+───────────────────────────────────────────────────────
+
+ACID-BASE STRENGTH:
+Strong Acids: HCl, HBr, HI, HNO₃, HClO₄, H₂SO₄
+→ Complete dissociation in water
+
+Weak Acids: CH₃COOH, HF, H₂CO₃, H₃PO₄
+→ Partial dissociation (Ka < 1)
+
+Strong Bases: NaOH, KOH, Ca(OH)₂ (soluble)
+→ Complete dissociation
+
+Weak Bases: NH₃, amines, carbonate salts
+→ Partial dissociation (Kb < 1)
+
+Ka × Kb = Kw (at given temperature)
+
+═══════════════════════════════════════════════════════
+
+⚛️ ATOMIC STRUCTURE
+
+═══════════════════════════════════════════════════════
+
+SUBATOMIC PARTICLES:
+• Proton: +1, 1 amu, in nucleus
+• Neutron: 0, 1 amu, in nucleus
+• Electron: -1, ~0 amu, in orbitals
+
+ATOMIC NUMBER (Z) = protons
+MASS NUMBER (A) = protons + neutrons
+Isotopes: Same Z, different A
+
+───────────────────────────────────────────────────────
+
+ELECTRON CONFIGURATION:
+Aufbau Principle: Fill from lowest energy
+Hund's Rule: Maximize unpaired electrons first
+Pauli Exclusion: 2 electrons per orbital (opposite spin)
+
+Notation: 1s² 2s² 2p⁶ 3s² 3p⁶...
+Orbital order: 1s→2s→2p→3s→3p→4s→3d→4p→5s→4d→5p→6s→4f→5d→6p
+
+═══════════════════════════════════════════════════════
+
+🔗 CHEMICAL BONDING
+
+═══════════════════════════════════════════════════════
+
+IONIC BONDING:
+• Metal + Non-metal
+• Electron transfer → cations & anions
+• Strong electrostatic forces
+• High melting/boiling points
+
+COVALENT BONDING:
+• Non-metal + Non-metal
+• Electron sharing
+• Types: Single (σ), Double (σ+π), Triple (σ+2π)
+• Polar vs Non-polar
+
+VSEPR GEOMETRIES:
+• Linear: 180° (sp hybridized)
+• Trigonal planar: 120° (sp²)
+• Tetrahedral: 109.5° (sp³)
+• Trigonal bipyramidal: 90°, 120°
+• Octahedral: 90°
+
+═══════════════════════════════════════════════════════
+
+⚖️ STOICHIOMETRY
+
+═══════════════════════════════════════════════════════
+
+MOLAR MASS: Mass of 1 mole (6.02×10²³ particles)
+
+MOLES CALCULATIONS:
+• n = mass / molar mass
+• n = concentration × volume (L)
+• n = PV / RT (ideal gas)
+
+MOLARITY (M):
+M = moles of solute / liters of solution
+
+DILUTION:
+M₁V₁ = M₂V₂
+
+═══════════════════════════════════════════════════════
+
+⚗️ REDOX REACTIONS
+
+═══════════════════════════════════════════════════════
+
+OXIDATION: Loss of electrons (LEO)
+REDUCTION: Gain of electrons (GER)
+
+OIL RIG: Oxidation Is Loss, Reduction Is Gain
+
+GALVANIC CELLS (Voltaic):
+• Spontaneous reaction
+• Anode (oxidation) = negative
+• Cathode (reduction) = positive
+• E°cell = E°cathode - E°anode
+
+ELECTROLYTIC CELLS:
+• Non-spontaneous
+• Requires external power
+• Anode = positive, Cathode = negative`,
+
+      "dbms": `🗃️ DATABASE MANAGEMENT CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+🔤 SQL COMMANDS QUICK REFERENCE
+
+═══════════════════════════════════════════════════════
+
+📌 DDL (Data Definition Language):
+───────────────────────────────────────────────────────
+
+CREATE:
+CREATE TABLE table_name (
+    column1 datatype PRIMARY KEY,
+    column2 datatype NOT NULL,
+    column3 datatype DEFAULT value,
+    FOREIGN KEY (col) REFERENCES other_table(col)
+);
+
+ALTER:
+ALTER TABLE table_name ADD column_name datatype;
+ALTER TABLE table_name DROP COLUMN column_name;
+
+DROP vs TRUNCATE:
+• DROP: Removes table structure + data (DDL)
+• TRUNCATE: Removes all data, keeps structure (DDL)
+• DELETE: Removes rows one by one (DML)
+
+───────────────────────────────────────────────────────
+
+📌 DML (Data Manipulation Language):
+───────────────────────────────────────────────────────
+
+SELECT with JOIN:
+SELECT t1.col, t2.col
+FROM table1 t1
+INNER JOIN table2 t2 ON t1.id = t2.foreign_id;
+
+SUBQUERIES:
+• Scalar: Returns single value
+• Column: Returns single column
+• Table: Returns complete table
+• Correlated: References outer query
+
+UNION / INTERSECT / EXCEPT:
+• UNION: Combine, remove duplicates
+• UNION ALL: Combine, keep duplicates
+• INTERSECT: Common rows only
+• EXCEPT: Rows in first but not second
+
+═══════════════════════════════════════════════════════
+
+📊 AGGREGATE & WINDOW FUNCTIONS
+
+═══════════════════════════════════════════════════════
+
+AGGREGATE FUNCTIONS:
+SELECT
+    COUNT(*) AS total_rows,
+    SUM(salary) AS total_salary,
+    AVG(salary) AS avg_salary,
+    MIN(salary) AS min_salary,
+    MAX(salary) AS max_salary
+FROM employees;
+
+GROUP BY with HAVING:
+SELECT department, COUNT(*) as count
+FROM employees
+GROUP BY department
+HAVING COUNT(*) > 5;
+
+WINDOW FUNCTIONS:
+SELECT
+    name,
+    department,
+    AVG(salary) OVER (PARTITION BY department) as dept_avg,
+    RANK() OVER (ORDER BY salary DESC) as salary_rank
+FROM employees;
+
+• ROW_NUMBER(): Unique sequential integers
+• RANK(): Gaps in ranking for ties
+• DENSE_RANK(): No gaps in ranking
+• LEAD/LAG(): Access adjacent rows
+
+═══════════════════════════════════════════════════════
+
+🔒 CONSTRAINTS
+
+═══════════════════════════════════════════════════════
+
+PRIMARY KEY:
+• Uniquely identifies each row
+• Only one per table
+• Cannot be NULL
+• Automatically creates unique index
+
+FOREIGN KEY:
+• References PRIMARY KEY of another table
+• Enforces referential integrity
+• Can have multiple per table
+
+OTHER CONSTRAINTS:
+• UNIQUE: No duplicate values (multiple allowed)
+• NOT NULL: Cannot be empty
+• CHECK: User-defined condition
+• DEFAULT: Value if not specified
+
+═══════════════════════════════════════════════════════
+
+🏗️ NORMALIZATION FORMS
+
+═══════════════════════════════════════════════════════
+
+1NF (First Normal Form):
+✓ Atomic values (no repeating groups)
+✓ Unique column names
+✓ Each row uniquely identifiable
+
+2NF (Second Normal Form):
+✓ In 1NF
+✓ No partial dependencies
+✓ (All non-key columns depend on entire PK)
+
+3NF (Third Normal Form):
+✓ In 2NF
+✓ No transitive dependencies
+
+BCNF (Boyce-Codd):
+✓ In 3NF
+✓ Every determinant must be a candidate key
+
+NORMALIZATION CHECKLIST:
+┌────────┬─────────────────────────────────────┐
+│ 1NF    │ Atomic values, no arrays/lists        │
+│ 2NF    │ No partial dependencies (1NF + ...)   │
+│ 3NF    │ No transitive dependencies (2NF + ...) │
+│ BCNF   │ Every determinant is a candidate key │
+└────────┴─────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════
+
+⚡ TRANSACTION MANAGEMENT (ACID)
+
+═══════════════════════════════════════════════════════
+
+ATOMICITY:
+• All operations succeed OR all fail
+• No partial commits
+
+CONSISTENCY:
+• Database moves from one valid state to another
+• All constraints must be satisfied
+
+ISOLATION:
+• Concurrent transactions don't interfere
+• Each transaction appears to run alone
+
+DURABILITY:
+• Committed changes persist permanently
+• Survives system failures
+
+───────────────────────────────────────────────────────
+
+ISOLATION LEVELS (Least → Most Strict):
+
+READ UNCOMMITTED: No isolation, dirty reads possible
+READ COMMITTED: Only committed data visible
+REPEATABLE READ: Same query returns same result
+SERIALIZABLE: Full isolation, slowest
+
+═══════════════════════════════════════════════════════
+
+🔍 INDEXING
+
+═══════════════════════════════════════════════════════
+
+TYPES OF INDEXES:
+
+B-Tree Index (Default):
+• Balanced tree structure
+• O(log n) search
+• Supports: =, >, <, BETWEEN, LIKE 'prefix%'
+
+Bitmap Index:
+• Bits for each value
+• Fast for low-cardinality columns
+
+Hash Index:
+• O(1) exact match
+• No range queries
+
+Composite Index:
+• Multiple columns in one index
+• Leftmost prefix rule applies
+
+CREATE INDEX:
+CREATE [UNIQUE] INDEX idx_name
+ON table_name (column1, column2);`,
+
+      "financial-accounting": `💰 FINANCIAL ACCOUNTING CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+💵 TIME VALUE OF MONEY
+
+═══════════════════════════════════════════════════════
+
+CORE FORMULAS:
+
+Future Value (Single Sum):
+FV = PV × (1 + r)ⁿ
+
+Present Value (Single Sum):
+PV = FV ÷ (1 + r)ⁿ
+
+Future Value of Annuity:
+FVA = PMT × [((1+r)ⁿ - 1) ÷ r]
+
+Present Value of Annuity:
+PVA = PMT × [(1 - (1+r)⁻ⁿ) ÷ r]
+
+Where: PMT = payment, r = rate per period, n = periods
+
+───────────────────────────────────────────────────────
+
+COMPOUNDING VS DISCOUNTING:
+
+Compound: PV → FV (multiply by growth factor)
+Discount: FV → PV (divide by growth factor)
+
+Example:
+PV = $1,000, r = 10%, n = 5 years
+FV = 1000 × (1.10)⁵ = $1,610.51
+
+═══════════════════════════════════════════════════════
+
+📊 FINANCIAL STATEMENTS
+
+═══════════════════════════════════════════════════════
+
+INCOME STATEMENT (P&L):
+Revenue
+- Cost of Goods Sold (COGS)
+= Gross Profit
+- Operating Expenses
+= Operating Income (EBIT)
++/- Interest & Taxes
+= Net Income
+
+BALANCE SHEET:
+Assets = Liabilities + Equity
+
+ASSETS (Ordered by Liquidity):
+• Current: Cash, Accounts Receivable, Inventory
+• Non-Current: Property/Equipment, Investments
+
+LIABILITIES:
+• Current: AP, Short-term Debt, Accruals
+• Non-Current: Long-term Debt, Deferred Tax
+
+EQUITY:
+• Common Stock, Additional Paid-in Capital
+• Retained Earnings - Treasury Stock
+
+═══════════════════════════════════════════════════════
+
+📈 KEY RATIO ANALYSIS
+
+═══════════════════════════════════════════════════════
+
+LIQUIDITY RATIOS:
+
+Current Ratio = Current Assets ÷ Current Liabilities
+• > 1.5 generally acceptable
+
+Quick Ratio = (Current Assets - Inventory) ÷ Current Liabilities
+• > 1.0 generally acceptable
+
+───────────────────────────────────────────────────────
+
+SOLVENCY RATIOS:
+
+Debt-to-Equity = Total Debt ÷ Total Equity
+• < 1.0 considered healthy
+
+Interest Coverage = EBIT ÷ Interest Expense
+• > 2.5 generally considered safe
+
+───────────────────────────────────────────────────────
+
+PROFITABILITY RATIOS:
+
+Gross Margin = (Revenue - COGS) ÷ Revenue
+Operating Margin = Operating Income ÷ Revenue
+Net Profit Margin = Net Income ÷ Revenue
+
+ROA = Net Income ÷ Average Total Assets
+ROE = Net Income ÷ Average Equity
+
+═══════════════════════════════════════════════════════
+
+⚖️ ACCOUNTING PRINCIPLES
+
+═══════════════════════════════════════════════════════
+
+GAAP (Generally Accepted Accounting Principles):
+
+1. Revenue Recognition:
+   Revenue earned when realized/earned
+
+2. Matching Principle:
+   Expenses matched to revenues they generate
+
+3. Cost Principle:
+   Assets recorded at historical cost
+
+4. Going Concern:
+   Assumes business will continue indefinitely
+
+5. Materiality:
+   Significant items disclosed separately
+
+───────────────────────────────────────────────────────
+
+DOUBLE-ENTRY BOOKKEEPING:
+
+Every transaction affects TWO accounts:
+• Debits must equal Credits
+• Assets ↑ = Debit
+• Liabilities ↑ = Credit
+• Equity ↑ = Credit
+• Revenue ↑ = Credit
+• Expenses ↑ = Debit
+
+═══════════════════════════════════════════════════════
+
+📋 WORKING CAPITAL
+
+═══════════════════════════════════════════════════════
+
+WORKING CAPITAL = Current Assets - Current Liabilities
+
+Cash Conversion Cycle:
+Days Inventory Outstanding (DIO)
++ Days Sales Outstanding (DSO)
+- Days Payable Outstanding (DPO)
+= Cash Conversion Cycle (CCC)
+
+GOAL: Minimize CCC (faster cash regeneration)`
     };
-    
-    return cheatSheets[categoryId] || "Cheat sheet not available for this subject.";
+
+    return cheatSheets[categoryId] || "📝 Cheat sheet coming soon for this subject! Aiva is working on it.";
   };
 
   const generatePracticeAssessment = (categoryId: string) => {
@@ -659,7 +1746,7 @@ export function Resources() {
                     {filterTabs.map((f) => (
                       <button
                         key={f.key}
-                        onClick={() => setActiveFilter(f.key as any)}
+                        onClick={() => setActiveFilter(f.key)}
                         className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                           activeFilter === f.key
                             ? `${f.activeClass} text-white shadow-[0_10px_20px_-5px_rgba(139,92,246,0.3)] scale-105`
@@ -720,7 +1807,11 @@ export function Resources() {
                     animate="show"
                     whileHover="hover"
                     whileTap="tap"
-                    onClick={() => setSelectedCategory(cat.id)}
+                    onClick={() => {
+                      setSelectedTopics([]);
+                      setAppliedFilters([]);
+                      setSelectedCategory(cat.id);
+                    }}
                     className="w-full text-left group relative"
                   >
                     {/* Coming Soon Ribbon - High-precision diagonal design */}
@@ -733,7 +1824,7 @@ export function Resources() {
                     )}
 
                     <div
-                      className={`relative overflow-hidden rounded-[3.5rem] px-10 py-8 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border transition-all duration-500 ${
+                      className={`relative overflow-hidden rounded-[3.5rem] px-6 sm:px-10 py-8 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border transition-all duration-500 ${
                         cat.status === "coming-soon" 
                           ? "border-white/20 dark:border-white/5 opacity-80 grayscale-[0.3]" 
                           : "border-white/40 dark:border-white/5 group-hover:border-aiva-purple/30 group-hover:shadow-[0_15px_35px_-10px_rgba(139,92,246,0.1)]"

@@ -247,7 +247,7 @@ export function Practice() {
       </motion.div>
 
       {/* Category tabs */}
-      <motion.div variants={fadeUp} className="flex gap-4 overflow-x-auto justify-center">
+      <motion.div variants={fadeUp} className="flex gap-4 overflow-x-auto justify-start sm:justify-center px-1">
         {categories.map((cat, index) => {
           const Icon = cat.icon;
           return (
@@ -279,9 +279,9 @@ export function Practice() {
       </motion.div>
 
       {/* Results count and filter */}
-      <motion.div variants={fadeUp} className="flex items-center justify-between">
+      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <motion.h2 
-          className="text-2xl font-bold text-gray-800"
+          className="text-xl sm:text-2xl font-bold text-gray-800"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -312,7 +312,7 @@ export function Practice() {
           initial="hidden"
           animate="show"
           exit="hidden"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {filtered.map((role: Role) => (
             <motion.div key={role.id} variants={fadeUp}>
