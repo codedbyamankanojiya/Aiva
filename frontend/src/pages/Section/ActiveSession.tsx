@@ -7,6 +7,9 @@ import { useTimer } from "@/hooks/useTimer";
 import { Mic, MicOff, Video, VideoOff, Hand, ChevronRight, Phone, MessageSquare } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AIPanel } from "./sectionComponent/AIPanel";
+import { useVisionSystem } from "@/hooks/useVisionSystem";
+import { FaceTrackingOverlay } from "@/components/vision/FaceTrackingOverlay";
+import { VisionHUD } from "@/components/vision/VisionHUD";
 
 /* ── Active session phase (screenshot 6) ─────────────────── */
 export function Session() {
@@ -15,6 +18,9 @@ export function Session() {
   const [isMuted, setIsMuted] = useState(true); // Start with mic muted
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [videoDimensions, setVideoDimensions] = useState({ w: 1280, h: 720 });
   const [loading, setLoading] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false); // Start with chat hidden
   const [isMobile, setIsMobile] = useState(false);
@@ -151,6 +157,36 @@ export function Session() {
     sessionStorage.setItem('interviewSessionId', id);
     return id;
   }, [state.roleId, state.level, sectionCode]);
+
+  // Track video container dimensions safely
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    setVideoDimensions({ w: el.clientWidth, h: el.clientHeight });
+
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        setVideoDimensions((prev) => {
+          const nw = Math.round(width);
+          const nh = Math.round(height);
+          if (prev.w === nw && prev.h === nh) return prev;
+          return { w: nw, h: nh };
+        });
+      }
+    });
+
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // ── Vision monitoring system ─────────────────────────────────────────────
+  const visionState = useVisionSystem({
+    videoRef,
+    sessionId,
+    enabled: isCameraOn,
+  });
 
   // Load persisted transcripts on mount
   useEffect(() => {
@@ -447,6 +483,13 @@ export function Session() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Auto-start camera on mount
+  useEffect(() => {
+    if (!isCameraOn) {
+      startCamera();
+    }
+  }, []);
+
   // Simplified end interview function
   const handleEndInterview = async () => {
     // Calculate results
@@ -706,7 +749,11 @@ export function Session() {
   };
 
   const stopCamera = () => {
+    // Stop all tracks immediately — this kills the hardware camera light
     stopTracks(mediaStream);
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
     setMediaStream(null);
     setIsCameraOn(false);
   };
@@ -728,6 +775,31 @@ export function Session() {
 
   return (
     <>
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {loading && !hasPlayedFirstQuestion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white"
+          >
+            <div className="relative mb-8">
+              <div className="w-20 h-20 rounded-2xl bg-aiva-purple/10 flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-aiva-purple border-t-transparent rounded-full animate-spin" />
+              </div>
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute -inset-4 bg-aiva-purple/5 rounded-full blur-xl"
+              />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Preparing Your Interview</h2>
+            <p className="text-gray-500 text-sm">Aiva is crafting personalized questions for you...</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Light background */}
       <div className="fixed inset-0 bg-white z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-gray-50" />
@@ -756,16 +828,19 @@ export function Session() {
         </div>
 
         {/* Video grid area */}
-        <div className="flex-1 p-4 overflow-hidden">
-          <div className={`w-full h-full transition-all duration-300 ${
+        <div className="flex-1 min-h-0 p-4 lg:p-6 overflow-hidden">
+          <div className={`w-full h-full transition-all duration-300 ease-in-out ${
             showAIPanel && !isMobile 
-              ? "grid grid-cols-1 lg:grid-cols-3 gap-4" 
-              : "grid grid-cols-1 gap-4"
+              ? "grid grid-cols-1 lg:grid-cols-3 gap-6" 
+              : "grid grid-cols-1 gap-6"
           }`}>
             {/* Main video feed */}
-            <div className={`${showAIPanel && !isMobile ? 'lg:col-span-2' : ''} relative`}>
-              <div className="relative w-full h-full bg-gray-100 rounded-xl overflow-hidden border border-gray-300 shadow-lg">
-                {/* Video */}
+            <div className={`${showAIPanel && !isMobile ? 'lg:col-span-2' : ''} relative h-full min-h-[300px]`}>
+              <div
+                className="relative w-full h-full bg-gray-900 rounded-3xl overflow-hidden border border-gray-200/50 shadow-2xl transition-all duration-500"
+                ref={containerRef}
+              >
+                {/* Layer 1: Video feed */}
                 {isCameraOn && mediaStream ? (
                   <video
                     className="absolute inset-0 w-full h-full object-cover"
@@ -773,8 +848,10 @@ export function Session() {
                     playsInline
                     muted
                     ref={(el) => {
-                      if (!el) return;
-                      if (el.srcObject !== mediaStream) el.srcObject = mediaStream;
+                      videoRef.current = el;
+                      if (el && el.srcObject !== mediaStream) {
+                        el.srcObject = mediaStream;
+                      }
                     }}
                   />
                 ) : (
@@ -792,35 +869,62 @@ export function Session() {
                     </div>
                   </button>
                 )}
-                
+
+                {/* Layer 2: Landmark canvas overlay */}
+                {isCameraOn && (
+                  <FaceTrackingOverlay
+                    faceResult={visionState.faceResult}
+                    poseResult={visionState.poseResult}
+                    width={videoDimensions.w}
+                    height={videoDimensions.h}
+                  />
+                )}
+
+                {/* Layer 3: Vision HUD (glass overlay) */}
+                {isCameraOn && (
+                  <VisionHUD
+                    faceMetrics={visionState.faceMetrics}
+                    movementMetrics={visionState.movementMetrics}
+                    systemStatus={visionState.systemStatus}
+                    inferenceLatencyMs={visionState.inferenceLatencyMs}
+                    videoEl={videoRef.current}
+                  />
+                )}
+
                 {/* User info overlay */}
-                <div className="absolute bottom-6 left-6 bg-black/60 backdrop-blur-md rounded-lg px-4 py-2 shadow-lg border border-white/10">
+                <div className="absolute bottom-6 left-6 bg-black/60 backdrop-blur-md rounded-lg px-4 py-2 shadow-lg border border-white/10" style={{ zIndex: 30 }}>
                   <p className="text-white text-sm font-medium tracking-wide">You</p>
                 </div>
 
                 {/* Question overlay - Show when chat is hidden */}
-                {!showAIPanel && currentQuestion && (
-                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl px-6 py-5 shadow-2xl border border-gray-200/60 transition-all duration-300 z-10">
+                {!showAIPanel && (
+                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl px-6 py-5 shadow-2xl border border-gray-200/60 transition-all duration-300" style={{ zIndex: 40 }}>
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-md flex-shrink-0">
                         AI
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-gray-900 text-base font-medium leading-relaxed">{currentQuestion.question}</p>
-                        <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
-                          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-                            Question {currentQuestionIndex + 1} of {state.questions.length}
-                          </span>
-                          <Button
-                            size="sm"
-                            onClick={handleNextQuestion}
-                            disabled={isLastQuestion || isSpeaking}
-                            className="flex items-center gap-2 bg-aiva-purple hover:bg-aiva-purple/90 text-white rounded-full px-4 shadow-sm transition-all"
-                          >
-                            Next Question
-                            <ChevronRight size={16} />
-                          </Button>
-                        </div>
+                        {currentQuestion ? (
+                          <>
+                            <p className="text-gray-900 text-base font-medium leading-relaxed">{currentQuestion.question}</p>
+                            <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                              <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
+                                Question {currentQuestionIndex + 1} of {state.questions.length}
+                              </span>
+                              <Button
+                                size="sm"
+                                onClick={handleNextQuestion}
+                                disabled={isLastQuestion || isSpeaking}
+                                className="flex items-center gap-2 bg-aiva-purple hover:bg-aiva-purple/90 text-white rounded-full px-4 shadow-sm transition-all"
+                              >
+                                Next Question
+                                <ChevronRight size={16} />
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-gray-500 text-base font-medium leading-relaxed">Preparing your interview questions...</p>
+                        )}
                       </div>
                     </div>
                   </div>

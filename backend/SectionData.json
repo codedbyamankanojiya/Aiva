@@ -37,6 +37,31 @@
           ]
         }
       ]
+    },
+    {
+      "role": "Web Developer",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "",
+      "completedAt": "2026-04-03T05:38:20.321Z",
+      "sectionCode": "NZDMOTDN",
+      "averageTimePerQuestion": "",
+      "questionTranscripts": [
+        {
+          "questionId": "wd-3",
+          "question": "Explain the box model in CSS and how it works.",
+          "transcript": "Okay. So Hello?",
+          "timestamp": "2026-04-03T05:38:20.321Z",
+          "mentioned": [],
+          "notMentioned": [
+            "CSS box model",
+            "Layout properties",
+            "Positioning",
+            "Margin and padding"
+          ]
+        }
+      ]
     }
   ]
 }

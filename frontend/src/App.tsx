@@ -33,6 +33,7 @@ export default function App() {
 
             {/* ActiveSection routes without sidebar */}
             <Route
+              path="/interview"
               element={
                 <ProtectedRoute>
                   <div className="min-h-screen">
@@ -40,11 +41,10 @@ export default function App() {
                   </div>
                 </ProtectedRoute>
               }
-            >
-              <Route path="/interview" element={<Interview />} />
-            </Route>
+            />
 
             <Route
+              path="/active-section/session"
               element={
                 <ProtectedRoute>
                   <div className="min-h-screen">
@@ -52,11 +52,10 @@ export default function App() {
                   </div>
                 </ProtectedRoute>
               }
-            >
-              <Route path="/active-section/session" element={<Session />} />
-            </Route>
+            />
 
             <Route
+              path="/results"
               element={
                 <ProtectedRoute>
                   <div className="min-h-screen">
@@ -64,9 +63,7 @@ export default function App() {
                   </div>
                 </ProtectedRoute>
               }
-            >
-              <Route path="/results" element={<InterviewResults />} />
-            </Route>
+            />
 
 
             {/* Protected app routes with sidebar */}

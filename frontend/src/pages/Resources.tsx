@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Search, Mic, ArrowLeft, Edit3, Sparkles, Send, X, 
@@ -249,7 +249,7 @@ const CATEGORIES = [
 ];
 
 /* ── Animations ───────────────────────────────────────────── */
-const stagger = {
+const stagger: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -260,7 +260,7 @@ const stagger = {
   },
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { 
     opacity: 1, 
@@ -274,7 +274,7 @@ const fadeUp = {
   },
 };
 
-const slideIn = {
+const slideIn: Variants = {
   hidden: { opacity: 0, x: 40, scale: 0.95 },
   show: { 
     opacity: 1, 
@@ -289,7 +289,7 @@ const slideIn = {
   },
 };
 
-const categoryCardVariants = {
+const categoryCardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { 
     opacity: 1, 

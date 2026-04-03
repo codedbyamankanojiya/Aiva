@@ -9,4 +9,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    target: "esnext", // Required for top-level await support
+  },
+  // NOTE: We intentionally do NOT set Cross-Origin-Embedder-Policy here.
+  // COEP "require-corp" / "credentialless" would block fetching MediaPipe
+  // models from Google Storage unless those servers send CORP headers (they don't).
 });
