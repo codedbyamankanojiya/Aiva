@@ -37,8 +37,14 @@ export function Session() {
   const [liveTranscript, setLiveTranscript] = useState<string>("");
   const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
   const [sttError, setSttError] = useState<string>("");
+  const [sessionStartTime] = useState<number>(Date.now());
   const [isSTTConnecting, setIsSTTConnecting] = useState(false);
   const [sttLatency, setSttLatency] = useState<number | null>(null);
+  
+  // Words per minute tracking
+  const [wordsPerMinute, setWordsPerMinute] = useState<number>(0);
+  const transcriptStartTimeRef = useRef<number | null>(null);
+  const totalWordsRef = useRef<number>(0);
 
   // Silence detection state
   const [lastTranscriptLength, setLastTranscriptLength] = useState<number>(0);
@@ -68,8 +74,15 @@ export function Session() {
           if (transcript && transcript.ai_analysis) {
             console.log('✅ AI Analysis fetched from SectionData.json:', transcript.ai_analysis);
             setAiAnalysis(transcript.ai_analysis);
+          } else {
+            console.log('⚠️ No AI analysis found for question:', questionId);
+            console.log('📝 Available transcripts:', currentSection.questionTranscripts.map((t: any) => ({ id: t.questionId, hasAI: !!t.ai_analysis })));
           }
+        } else {
+          console.log('⚠️ No section found or no transcripts for sectionCode:', sectionCode);
         }
+      } else {
+        console.log('❌ Failed to fetch section data, status:', response.status);
       }
     } catch (error) {
       console.error('❌ Error fetching AI analysis from SectionData.json:', error);
@@ -169,6 +182,17 @@ export function Session() {
       localStorage.setItem(`transcripts-${sessionId}`, JSON.stringify(finalTranscripts));
     }
   }, [finalTranscripts, sessionId]);
+
+  // Clear transcripts when starting new session
+  useEffect(() => {
+    if (state.status === 'active') {
+      setFinalTranscripts([]);
+      setLiveTranscript('');
+      setWordsPerMinute(0);
+      transcriptStartTimeRef.current = null;
+      totalWordsRef.current = 0;
+    }
+  }, [state.status]);
 
   // Clear transcripts when starting new session
   useEffect(() => {
@@ -395,10 +419,15 @@ export function Session() {
     // }
   };
 
-  // Clear AI analysis when question changes and fetch from SectionData.json
+  // Clear transcripts when question changes and fetch from SectionData.json
   useEffect(() => {
     // Clear AI analysis when moving to a new question
     setAiAnalysis('');
+    
+    // Reset WPM tracking for new question
+    setWordsPerMinute(0);
+    transcriptStartTimeRef.current = null;
+    totalWordsRef.current = 0;
     
     // Fetch AI analysis for current question from SectionData.json
     if (currentQuestion) {
@@ -477,6 +506,17 @@ export function Session() {
 
   // Simplified end interview function
   const handleEndInterview = async () => {
+    // Calculate final WPM - average across all questions
+    const totalWords = finalTranscripts.join(' ').split(' ').filter((word: string) => word.length > 0).length;
+    const totalMinutes = Math.floor((Date.now() - sessionStartTime) / 1000 / 60);
+    const finalWPM = totalMinutes > 0 ? Math.round(totalWords / totalMinutes) : 0;
+    
+    console.log('📊 WPM Calculation:');
+    console.log('- Total words:', totalWords);
+    console.log('- Total minutes:', totalMinutes);
+    console.log('- Final WPM:', finalWPM);
+    console.log('- Current WPM state:', wordsPerMinute);
+    
     // Calculate results
     const results = {
       role: state.role,
@@ -488,6 +528,7 @@ export function Session() {
       sectionCode: sectionCode,
       transcripts: finalTranscripts,
       sessionId: sessionId,
+      averageWordsPerMinute: finalWPM, // Use calculated final WPM
       // Add questionTranscripts field - only save actual questions answered
       questionTranscripts: finalTranscripts.map((transcript, index) => {
         // Only include transcripts for questions that were actually answered and have valid content
@@ -623,6 +664,20 @@ export function Session() {
             if (msg.is_final) {
               setFinalTranscripts((prev) => [...prev, msg.transcript]);
               setLiveTranscript("");
+              
+              // Update words per minute calculation
+              const words = msg.transcript.split(' ').filter((word: string) => word.length > 0).length;
+              totalWordsRef.current += words;
+              
+              if (!transcriptStartTimeRef.current) {
+                transcriptStartTimeRef.current = Date.now();
+              }
+              
+              const elapsedTime = (Date.now() - (transcriptStartTimeRef.current || Date.now())) / 1000 / 60; // in minutes
+              if (elapsedTime > 0) {
+                const wpm = Math.round(totalWordsRef.current / elapsedTime);
+                setWordsPerMinute(wpm);
+              }
             } else {
               setLiveTranscript(msg.transcript);
             }
@@ -959,7 +1014,8 @@ export function Session() {
                 sttError={sttError}
                 isSTTConnecting={isSTTConnecting}
                 sttLatency={sttLatency}
-                aiAnalysis={aiAnalysis} // Pass AI analysis to component
+                aiAnalysis={aiAnalysis}
+                wordsPerMinute={wordsPerMinute}
               />
             )}
           </div>

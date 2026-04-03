@@ -49,6 +49,7 @@ class SectionData(BaseModel):
     completedAt: str
     sectionCode: str
     averageTimePerQuestion: str
+    averageWordsPerMinute: int = 0
     questionTranscripts: Optional[List[dict]] = []
 
 app = FastAPI(title="Aiva Interview API", version="1.0.0")
@@ -266,6 +267,40 @@ def load_roles():
         roles.append(role)
     
     return roles
+def calculate_average_time_per_question(time_spent: str, questions_answered: int) -> str:
+    """Calculate average time per question from total time spent"""
+    try:
+        if not time_spent or questions_answered == 0:
+            return ""
+        
+        # Parse time_spent format "MM:SS" or "HH:MM:SS"
+        time_parts = time_spent.split(':')
+        
+        if len(time_parts) == 2:  # MM:SS format
+            minutes = int(time_parts[0])
+            seconds = int(time_parts[1])
+            total_seconds = minutes * 60 + seconds
+        elif len(time_parts) == 3:  # HH:MM:SS format
+            hours = int(time_parts[0])
+            minutes = int(time_parts[1])
+            seconds = int(time_parts[2])
+            total_seconds = hours * 3600 + minutes * 60 + seconds
+        else:
+            return ""
+        
+        # Calculate average time per question in seconds
+        avg_seconds = total_seconds / questions_answered
+        
+        # Convert back to MM:SS format
+        avg_minutes = int(avg_seconds // 60)
+        avg_seconds_rem = int(avg_seconds % 60)
+        
+        return f"{avg_minutes:02d}:{avg_seconds_rem:02d}"
+        
+    except Exception as e:
+        print(f"❌ Error calculating average time per question: {e}")
+        return ""
+
 def load_section_data():
     """Load section data from SectionData.json file"""
     try:
@@ -355,6 +390,17 @@ def save_section_data(section_data: dict):
             for key, value in actual_section_data.items():
                 if key != "questionTranscripts":  # Don't overwrite transcripts
                     existing_section[key] = value
+            
+            # Recalculate average time per question when updating
+            if "timeSpent" in actual_section_data and "questionsAnswered" in actual_section_data:
+                existing_section["averageTimePerQuestion"] = calculate_average_time_per_question(
+                    actual_section_data["timeSpent"], 
+                    actual_section_data["questionsAnswered"]
+                )
+            
+            # Update average WPM if provided
+            if "averageWordsPerMinute" in actual_section_data:
+                existing_section["averageWordsPerMinute"] = actual_section_data["averageWordsPerMinute"]
             
             # Handle new transcripts if provided
             new_transcripts = actual_section_data.get("questionTranscripts", [])
@@ -498,6 +544,7 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
         
         # Add AI analysis to transcript data
         ai_analysis_text = ai_result.get("analysis", "AI analysis not available")
+        print(f"🤖 Generated AI Analysis: {ai_analysis_text}")
         
         # Calculate actual total questions for this role and level
         actual_total_questions = get_total_questions_for_level(transcript_data.role, transcript_data.level)
@@ -529,14 +576,20 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
                 "mentioned": transcript_data.mentioned,
                 "notMentioned": transcript_data.notMentioned,
                 "ai_analysis": ai_analysis_text
-                # Note: sectionCode, timestamp, totalQuestions excluded from individual transcripts
             }
+            
+            print(f"📝 Adding transcript with AI analysis for question {transcript_data.questionId}")
+            print(f"🤖 AI Analysis included: {ai_analysis_text[:100]}...")
             
             existing_section["questionTranscripts"].append(clean_transcript)
             existing_section["questionsAnswered"] = len(existing_section["questionTranscripts"])
             existing_section["completedAt"] = datetime.now().isoformat()
             
             success = save_section_data(data)
+            if success:
+                print(f"✅ Successfully saved transcript with AI analysis for question {transcript_data.questionId}")
+            else:
+                print(f"❌ Failed to save transcript data")
         else:
             print(f"🆕 Creating new section entry")
             # Create new section
@@ -548,7 +601,8 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
                 "timeSpent": "",
                 "completedAt": datetime.now().isoformat(),
                 "sectionCode": transcript_data.sectionCode,
-                "averageTimePerQuestion": "",
+                "averageTimePerQuestion": "00:00",  # Single question, no average yet
+                "averageWordsPerMinute": 0,  # Will be updated when session ends
                 "questionTranscripts": [{
                     "questionId": transcript_data.questionId,
                     "question": transcript_data.question,
@@ -615,7 +669,8 @@ async def save_section_data_endpoint(request: dict):
             "timeSpent": time_spent,
             "completedAt": completed_at,
             "sectionCode": section_code,
-            "averageTimePerQuestion": "",
+            "averageTimePerQuestion": calculate_average_time_per_question(time_spent, questions_answered),
+            "averageWordsPerMinute": request.get("averageWordsPerMinute", 0),
             "questionTranscripts": question_transcripts
         }
         
