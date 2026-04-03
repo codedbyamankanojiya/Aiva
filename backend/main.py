@@ -418,6 +418,21 @@ async def get_questions(role_id: str, level: Optional[str] = None):
             filtered_questions = [
                 Question(**q) for q in role_questions["questions"]
             ]
+
+        compulsory_question = "Kindly introduce yourself"
+        compulsory_item = next(
+            (q for q in filtered_questions if (q.question or "").strip().lower() == compulsory_question.lower()),
+            None,
+        )
+        if compulsory_item is None:
+            compulsory_item = Question(
+                id="intro-1",
+                question=compulsory_question,
+                level=level or "all",
+                type="behavioral",
+            )
+        filtered_questions = [q for q in filtered_questions if q.id != compulsory_item.id]
+        filtered_questions.insert(0, compulsory_item)
         
         return QuestionsResponse(
             role=role_questions["title"],
