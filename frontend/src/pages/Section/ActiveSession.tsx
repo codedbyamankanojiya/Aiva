@@ -817,7 +817,7 @@ export function Session() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-slate-950"
           >
             <div className="relative mb-8">
               <div className="w-20 h-20 rounded-2xl bg-aiva-purple/10 flex items-center justify-center">
@@ -829,32 +829,32 @@ export function Session() {
                 className="absolute -inset-4 bg-aiva-purple/5 rounded-full blur-xl"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Preparing Your Interview</h2>
-            <p className="text-gray-500 text-sm">Aiva is crafting personalized questions for you...</p>
+            <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-slate-100">Preparing Your Interview</h2>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Aiva is crafting personalized questions for you...</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Light background */}
-      <div className="fixed inset-0 bg-white z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-gray-50" />
+      <div className="fixed inset-0 z-0 bg-white dark:bg-slate-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.16),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(99,102,241,0.14),_transparent_32%)] opacity-0 dark:opacity-100" />
       </div>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col h-screen">
         {/* Top bar - Light theme */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between border-b border-gray-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/85">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-aiva-purple flex items-center justify-center text-white text-sm font-semibold shadow-sm">
-              A
+            <div className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-white/70 shadow-md shadow-aiva-purple/20 dark:ring-white/10">
+              <img src="/Assets/Laadla.png" alt="Aiva Assistant" className="h-full w-full object-contain" />
             </div>
             <div>
-              <h1 className="text-gray-900 text-sm font-medium">Aiva Interview Session</h1>
-              <p className="text-gray-600 text-xs">{state.role || "Software Development"} · {state.level} · Section: {sectionCode}</p>
+              <h1 className="text-sm font-medium text-gray-900 dark:text-slate-100">Aiva Interview Session</h1>
+              <p className="text-xs text-gray-600 dark:text-slate-400">{state.role || "Software Development"} · {state.level} · Section: {sectionCode}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-gray-500 hover:text-gray-700 transition-colors">
+            <button className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
@@ -872,7 +872,7 @@ export function Session() {
             {/* Main video feed */}
             <div className={`${showAIPanel && !isMobile ? 'lg:col-span-2' : ''} relative h-full min-h-[300px]`}>
               <div
-                className="relative w-full h-full bg-gray-900 rounded-3xl overflow-hidden border border-gray-200/50 shadow-2xl transition-all duration-500"
+                className="relative h-full w-full overflow-hidden rounded-3xl border border-gray-200/50 bg-gray-900 shadow-2xl transition-all duration-500 dark:border-white/10"
                 ref={containerRef}
               >
                 {/* Layer 1: Video feed */}
@@ -893,14 +893,14 @@ export function Session() {
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="absolute inset-0 flex items-center justify-center w-full h-full"
+                    className="absolute inset-0 flex h-full w-full items-center justify-center bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950"
                   >
                     <div className="text-center group">
-                      <div className="w-24 h-24 rounded-full bg-white shadow-md flex items-center justify-center mb-6 mx-auto group-hover:scale-105 transition-transform duration-300">
-                        <VideoOff size={isMobile ? 36 : 44} className="text-gray-400 group-hover:text-aiva-purple transition-colors" />
+                      <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-300 group-hover:scale-105 dark:bg-slate-800 dark:shadow-black/20">
+                        <VideoOff size={isMobile ? 36 : 44} className="text-gray-400 transition-colors group-hover:text-aiva-purple dark:text-slate-500" />
                       </div>
-                      <p className="text-gray-800 text-lg font-semibold tracking-wide">Camera is off</p>
-                      <p className="text-gray-500 text-sm mt-2 font-medium">Click to start video</p>
+                      <p className="text-lg font-semibold tracking-wide text-gray-800 dark:text-slate-100">Camera is off</p>
+                      <p className="mt-2 text-sm font-medium text-gray-500 dark:text-slate-400">Click to start video</p>
                     </div>
                   </button>
                 )}
@@ -933,24 +933,24 @@ export function Session() {
 
                 {/* Question overlay - Show when chat is hidden */}
                 {!showAIPanel && (
-                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl px-6 py-5 shadow-2xl border border-gray-200/60 transition-all duration-300" style={{ zIndex: 40 }}>
+                  <div className="absolute left-1/2 top-6 w-full max-w-2xl -translate-x-1/2 rounded-2xl border border-gray-200/60 bg-white/95 px-6 py-5 shadow-2xl transition-all duration-300 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/92" style={{ zIndex: 40 }}>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-md flex-shrink-0">
-                        AI
+                      <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ring-2 ring-white/70 shadow-md shadow-aiva-purple/25 dark:ring-white/10">
+                        <img src="/Assets/Laadla.png" alt="Aiva Assistant" className="h-full w-full object-contain" />
                       </div>
                       <div className="flex-1 pt-1">
                         {currentQuestion ? (
                           <>
-                            <p className="text-gray-900 text-base font-medium leading-relaxed">{currentQuestion.question}</p>
-                            <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
-                              <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
+                            <p className="text-base font-medium leading-relaxed text-gray-900 dark:text-slate-100">{currentQuestion.question}</p>
+                            <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-white/10">
+                              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
                                 Question {currentQuestionIndex + 1} of {state.questions.length}
                               </span>
                               <Button
                                 size="sm"
                                 onClick={handleNextQuestion}
                                 disabled={isLastQuestion || isSpeaking}
-                                className="flex items-center gap-2 bg-aiva-purple hover:bg-aiva-purple/90 text-white rounded-full px-4 shadow-sm transition-all"
+                                className="flex items-center gap-2 rounded-full bg-aiva-purple px-4 text-white shadow-md shadow-aiva-purple/30 transition-all hover:bg-aiva-purple/90 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-slate-400"
                               >
                                 Next Question
                                 <ChevronRight size={16} />
@@ -958,7 +958,7 @@ export function Session() {
                             </div>
                           </>
                         ) : (
-                          <p className="text-gray-500 text-base font-medium leading-relaxed">Preparing your interview questions...</p>
+                          <p className="text-base font-medium leading-relaxed text-gray-500 dark:text-slate-400">Preparing your interview questions...</p>
                         )}
                       </div>
                     </div>
@@ -1011,19 +1011,20 @@ export function Session() {
             isSilenceDetected={isSilenceDetected}
             onClose={() => setShowAIPanel(false)}
             onNextQuestion={handleNextQuestion}
+            aiAnalysis={aiAnalysis}
           />
         )}
 
         {/* Bottom controls - Professional Layout */}
-        <div className="bg-white border-t border-gray-200 z-20 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <div className="z-20 border-t border-gray-200 bg-white shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] dark:border-white/10 dark:bg-slate-950 dark:shadow-[0_-10px_30px_-20px_rgba(0,0,0,0.8)]">
           <div className="flex items-center justify-between px-6 py-4">
             {/* Left: Time & Status */}
             <div className="flex items-center gap-4 w-1/3">
-              <span className="text-gray-800 text-base font-semibold font-mono tracking-tight">
+              <span className="text-base font-semibold tracking-tight text-gray-800 font-mono dark:text-slate-100">
                 {formatted}
               </span>
-              <div className="h-4 w-px bg-gray-300"></div>
-              <span className="text-gray-500 text-sm font-medium hidden sm:inline-block">Session Active</span>
+              <div className="h-4 w-px bg-gray-300 dark:bg-white/10"></div>
+              <span className="hidden text-sm font-medium text-gray-500 dark:text-slate-400 sm:inline-block">Session Active</span>
             </div>
 
             {/* Center: Core Controls */}
@@ -1031,12 +1032,12 @@ export function Session() {
               <button
                 onClick={() => !isMicDisabled && setIsMuted(!isMuted)}
                 disabled={isMicDisabled}
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
+                className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all duration-300 shadow-md ${
                   isMicDisabled
-                    ? "bg-gray-300 text-gray-400 border border-gray-300 cursor-not-allowed"
+                    ? "cursor-not-allowed border-gray-300 bg-gray-300 text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500"
                     : isMuted 
-                      ? "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" 
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                      ? "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300 dark:hover:bg-red-500/20" 
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 }`}
                 aria-label={isMuted ? "Unmute" : "Mute"}
               >
@@ -1045,10 +1046,10 @@ export function Session() {
 
               <button
                 onClick={toggleCamera}
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
+                className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all duration-300 shadow-md ${
                   !isCameraOn
-                    ? "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                    ? "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300 dark:hover:bg-red-500/20"
+                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 }`}
                 aria-label={isCameraOn ? "Turn camera off" : "Turn camera on"}
               >
@@ -1057,7 +1058,7 @@ export function Session() {
 
               <button
                 onClick={handleEndInterview}
-                className="w-16 h-12 rounded-full bg-red-500 hover:bg-red-600 text-white transition-all duration-300 shadow-md shadow-red-200 flex items-center justify-center group"
+                className="group flex h-12 w-16 items-center justify-center rounded-full bg-red-500 text-white transition-all duration-300 shadow-lg shadow-red-500/30 hover:bg-red-600"
                 aria-label="End call"
               >
                 <div className="group-hover:scale-110 transition-transform">
@@ -1070,10 +1071,10 @@ export function Session() {
             <div className="flex items-center justify-end gap-3 w-1/3">
               <button
                 onClick={() => setShowAIPanel(!showAIPanel)}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
+                className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-300 shadow-md ${
                   showAIPanel 
-                    ? "bg-aiva-purple/10 text-aiva-purple border border-aiva-purple/20 shadow-purple-100" 
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                    ? "border-aiva-purple/30 bg-aiva-purple text-white shadow-aiva-purple/30 hover:bg-aiva-purple/90" 
+                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 }`}
                 aria-label="Toggle chat panel"
               >
