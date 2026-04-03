@@ -86,7 +86,7 @@ const FocusRing = ({ score }: { score: number }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="text-white text-lg font-black leading-none tracking-tighter"
         >
-          {score}
+          {Math.round(score)}
         </motion.span>
         <span className="text-white/40 text-[9px] font-black uppercase leading-none mt-1 tracking-widest">focus</span>
       </div>
