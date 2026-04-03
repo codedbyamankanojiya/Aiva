@@ -492,37 +492,43 @@
           "id": "ps-1",
           "question": "How do you prepare for an important presentation?",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Research audience", "Content structure", "Practice delivery", "Visual aids preparation"]
         },
         {
           "id": "ps-2",
           "question": "What techniques do you use to engage your audience?",
           "level": "Beginner",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Storytelling", "Interactive questions", "Visual aids", "Audience adaptation", "Body language"]
         },
         {
           "id": "ps-3",
           "question": "How do you handle nervousness before public speaking?",
           "level": "Intermediate",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Breathing exercises", "Practice preparation", "Positive visualization", "Experience building", "Stress management"]
         },
         {
           "id": "ps-4",
           "question": "Describe your approach to storytelling in presentations.",
           "level": "Intermediate",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Narrative structure", "Emotional connection", "Relevant examples", "Audience relevance", "Story arc"]
         },
         {
           "id": "ps-5",
           "question": "How do you adapt your presentation style for different audiences?",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Audience analysis", "Content customization", "Language adaptation", "Technical level adjustment", "Cultural sensitivity"]
         },
         {
           "id": "ps-6",
           "question": "What's your approach to handling Q&A sessions after presentations?",
           "level": "Advanced",
-          "type": "behavioral"
+          "type": "behavioral",
+          "keyPoints": ["Question anticipation", "Clear communication", "Handling difficult questions", "Time management", "Follow-up preparation"]
         }
       ]
     },

@@ -47,72 +47,32 @@ export function Session() {
   const [isMicDisabled, setIsMicDisabled] = useState<boolean>(false);
   const silenceTimerRef = useRef<number | null>(null);
 
-  // AI Analysis state
-  const [aiAnalysis, setAiAnalysis] = useState<string>(""); // Add AI analysis state
+  // AI Analysis state - fetched from SectionData.json
+  const [aiAnalysis, setAiAnalysis] = useState<string>("");
 
-  // Fetch AI analysis from backend
-  const fetchAIAnalysis = async (question: any, transcript: string, mentioned: string[], notMentioned: string[]) => {
+  // Fetch AI analysis from SectionData.json for current question
+  const fetchAIAnalysisFromSectionData = async (questionId: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/ai-analysis`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: question.question,
-          transcript: transcript,
-          mentioned: mentioned,
-          notMentioned: notMentioned
-        })
-      });
-
+      const response = await fetch(`http://localhost:8000/api/section-data`);
       if (response.ok) {
         const data = await response.json();
-        setAiAnalysis(data.analysis || 'AI analysis not available');
-        console.log('✅ AI Analysis received:', data.analysis);
-      } else {
-        console.error('❌ Failed to fetch AI analysis');
-        setAiAnalysis('AI analysis failed');
+        const sections = data.sections || [];
+        
+        // Find current section by sectionCode
+        const currentSection = sections.find((section: any) => section.sectionCode === sectionCode);
+        if (currentSection && currentSection.questionTranscripts) {
+          // Find transcript for current question
+          const transcript = currentSection.questionTranscripts.find(
+            (t: any) => t.questionId === questionId
+          );
+          if (transcript && transcript.ai_analysis) {
+            console.log('✅ AI Analysis fetched from SectionData.json:', transcript.ai_analysis);
+            setAiAnalysis(transcript.ai_analysis);
+          }
+        }
       }
     } catch (error) {
-      console.error('❌ Error fetching AI analysis:', error);
-      setAiAnalysis('AI analysis error');
-    }
-  };
-
-  // Fetch semantic analysis and then AI analysis
-  const fetchSemanticAnalysisAndAI = async (question: any, transcript: string) => {
-    try {
-      // First get semantic analysis from backend
-      const response = await fetch(`http://localhost:8000/api/semantic-analysis`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          questionId: currentQuestion?.id || '',
-          transcript: transcript
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const mentioned = data.mentioned || [];
-        const notMentioned = data.notMentioned || [];
-        
-        console.log('✅ Semantic Analysis:', { mentioned, notMentioned });
-        
-        // Then fetch AI analysis with semantic context
-        await fetchAIAnalysis(question, transcript, mentioned, notMentioned);
-      } else {
-        console.error('❌ Failed to fetch semantic analysis');
-        // Fallback to AI analysis without semantic context
-        await fetchAIAnalysis(question, transcript, [], []);
-      }
-    } catch (error) {
-      console.error('❌ Error in semantic analysis:', error);
-      // Fallback to AI analysis without semantic context
-      await fetchAIAnalysis(question, transcript, [], []);
+      console.error('❌ Error fetching AI analysis from SectionData.json:', error);
     }
   };
 
@@ -392,6 +352,9 @@ export function Session() {
           },
           body: JSON.stringify(transcriptPayload),
         });
+        
+        // After saving, fetch AI analysis from SectionData.json
+        await fetchAIAnalysisFromSectionData(transcriptPayload.questionId);
       } catch (error) {
         console.error('Failed to save question transcript:', error);
       }
@@ -409,13 +372,18 @@ export function Session() {
     // setLiveTranscript('');
     
     // Reset silence detection state after a delay
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsSilenceDetected(false);
       setHasSpoken(false);
       setLastTranscriptLength(0);
       
-      // Get semantic analysis first, then fetch AI analysis
-      fetchSemanticAnalysisAndAI(currentQuestion, finalTranscripts.join(' '));
+      // Backend handles all processing internally
+      console.log('🔍 Final transcript ready:', finalTranscripts.join(' '));
+      
+      // Fetch AI analysis from SectionData.json after processing
+      setTimeout(async () => {
+        await fetchAIAnalysisFromSectionData(currentQuestion.id);
+      }, 1000); // Wait for backend to save data
     }, 2000); // Show "Analyzing your response" for 2 seconds
     
     // Auto-advance to next question (COMMENTED OUT)
@@ -427,10 +395,15 @@ export function Session() {
     // }
   };
 
-  // Clear AI analysis when question changes
+  // Clear AI analysis when question changes and fetch from SectionData.json
   useEffect(() => {
     // Clear AI analysis when moving to a new question
     setAiAnalysis('');
+    
+    // Fetch AI analysis for current question from SectionData.json
+    if (currentQuestion) {
+      fetchAIAnalysisFromSectionData(currentQuestion.id);
+    }
   }, [currentQuestionIndex]);
 
   // FIXED Silence detection useEffect - 5 second same length detection
@@ -515,10 +488,10 @@ export function Session() {
       sectionCode: sectionCode,
       transcripts: finalTranscripts,
       sessionId: sessionId,
-      // Add questionTranscripts field - only save actual questions asked
+      // Add questionTranscripts field - only save actual questions answered
       questionTranscripts: finalTranscripts.map((transcript, index) => {
-        // Only include transcripts for questions that were actually asked
-        if (index < state.questions.length) {
+        // Only include transcripts for questions that were actually answered and have valid content
+        if (index < currentQuestionIndex && transcript && transcript.trim() && transcript !== "see.") {
           return {
             questionId: state.questions[index]?.id || `se-${index + 1}`,
             question: state.questions[index]?.question || "Question not available",
@@ -526,7 +499,7 @@ export function Session() {
             timestamp: new Date().toISOString()
           };
         }
-        return null; // Skip invalid question entries
+        return null; // Skip unanswered or invalid question entries
       }).filter(Boolean) // Remove null entries
     };
     

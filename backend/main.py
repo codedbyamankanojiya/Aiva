@@ -345,8 +345,29 @@ def save_section_data(section_data: dict):
         
         if existing_section_index is not None:
             print(f"📝 Found existing section, updating...")
-            # Update existing section completely (replace entire section)
-            data["sections"][existing_section_index] = actual_section_data
+            # Update existing section but preserve questionTranscripts
+            existing_section = data["sections"][existing_section_index]
+            
+            # Preserve existing questionTranscripts
+            existing_transcripts = existing_section.get("questionTranscripts", [])
+            
+            # Update other fields
+            for key, value in actual_section_data.items():
+                if key != "questionTranscripts":  # Don't overwrite transcripts
+                    existing_section[key] = value
+            
+            # Handle new transcripts if provided
+            new_transcripts = actual_section_data.get("questionTranscripts", [])
+            if new_transcripts:
+                # Append new transcripts that don't already exist
+                existing_ids = {t.get("questionId") for t in existing_transcripts}
+                for new_transcript in new_transcripts:
+                    if new_transcript.get("questionId") not in existing_ids:
+                        existing_transcripts.append(new_transcript)
+                
+                # Update the transcripts array
+                existing_section["questionTranscripts"] = existing_transcripts
+                existing_section["questionsAnswered"] = len(existing_transcripts)
         else:
             print(f"🆕 Creating new section entry")
             # Add new section
@@ -548,39 +569,15 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
         print(f"❌ Error saving question transcript: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error saving question transcript: {str(e)}")
 
-@app.post("/api/semantic-analysis")
-async def semantic_analysis_endpoint(request: dict):
-    """Semantic analysis endpoint"""
-    try:
-        question_id = request.get("questionId", "")
-        transcript = request.get("transcript", "")
-        
-        if not question_id or not transcript:
-            raise HTTPException(status_code=400, detail="Question ID and transcript are required")
-        
-        result = analyze_keywords(question_id, transcript)
-        return {"success": True, "mentioned": result.get("mentioned", []), "notMentioned": result.get("notMentioned", [])}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Semantic analysis failed: {str(e)}")
-
 @app.post("/api/ai-analysis")
 async def ai_analysis_endpoint(request: dict):
-    """AI analysis endpoint"""
-    try:
-        question = request.get("question", "")
-        transcript = request.get("transcript", "")
-        mentioned = request.get("mentioned", [])
-        not_mentioned = request.get("notMentioned", [])
-        
-        if not question or not transcript:
-            raise HTTPException(status_code=400, detail="Question and transcript are required")
-        
-        result = await get_ai_analysis(question, transcript, mentioned, not_mentioned)
-        return {"success": True, "analysis": result.get("analysis", "Analysis failed")}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI analysis failed: {str(e)}")
+    """DEPRECATED - AI analysis is now handled internally in /api/question-transcript"""
+    return {"success": False, "analysis": "This endpoint is deprecated. Use /api/question-transcript instead."}
+
+@app.post("/api/semantic-analysis") 
+async def semantic_analysis_endpoint(request: dict):
+    """DEPRECATED - Semantic analysis is now handled internally in /api/question-transcript"""
+    return {"success": False, "mentioned": [], "notMentioned": "This endpoint is deprecated. Use /api/question-transcript instead."}
 
 @app.post("/api/section-data")
 async def save_section_data_endpoint(request: dict):
