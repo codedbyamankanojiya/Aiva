@@ -1,0 +1,181 @@
+HUMAN RESOURCES 
+
+---
+
+Part 1: Basics of Human Resources
+
+What is Human Resources (HR)?
+
+· HR means the people who work in an organization.
+· People are the most important resource because they run everything else.
+· Without people, machines, money, and buildings cannot do anything on their own.
+· HR treats employees as assets, not just costs, because good employees make the business successful.
+
+What is HR Management (HRM)?
+
+· Managing people in a smart way to help the business succeed.
+· Includes hiring, training, paying, and taking care of employees.
+· HRM makes sure employees are happy, productive, and motivated to do their best work.
+· It also helps the company save money by reducing turnover and avoiding legal problems.
+
+How HR has changed over time:
+
+· Old days: HR only did paperwork (payroll, forms, birthdays).
+· Now: HR helps make business decisions and plan for the future.
+· The old name was "Personnel Management" which sounded very administrative and boring.
+· The new name "Human Resource Management" shows that people are valuable resources like money and materials.
+
+Why HR changed:
+
+· COVID-19 showed worker shortages.
+· Technology grew fast.
+· Companies now work globally.
+· Employees today expect more than just a salary – they want purpose, flexibility, and growth.
+· Social media made company culture visible to the public, so HR had to improve how employees are treated.
+
+Main jobs of HR (5 functions):
+
+1. Staffing – Hiring the right people.
+2. Training – Teaching employees new skills.
+3. Compensation – Paying salaries and benefits.
+4. Employee relations – Handling disputes and keeping morale high.
+5. Compliance – Following all labor laws.
+
+· These five functions work together to support employees from the day they join until the day they leave.
+· If any one function is weak (like bad training or unfair pay), the whole system suffers.
+
+---
+
+Part 2: Employee Lifecycle (What HR does step by step)
+
+Recruitment and hiring:
+
+· Goal: Put the right person in the right job.
+· Wrong hire is expensive – so HR must be careful.
+· A bad hire can cost the company many months of salary in lost time and productivity.
+· HR uses interviews, tests, and reference checks to reduce the risk of hiring the wrong person.
+
+Where to find candidates:
+
+· Internal – promote or transfer current employees.
+· External – job boards, campus hiring, social media, agencies.
+· Internal hiring is cheaper and faster because the employee already knows the company culture.
+· External hiring brings fresh ideas and new skills but takes more time and money.
+
+Hiring steps:
+
+1. Write job ad.
+2. Screen applications.
+3. Interview candidates.
+4. Test skills if needed.
+5. Check references.
+6. Make job offer.
+7. Reject other applicants politely.
+
+· Each step removes unqualified candidates until only the best one remains.
+· Skipping any step (like reference checks) can lead to hiring someone who looks good on paper but fails in real work.
+
+Training vs. Development:
+
+· Training – teaches skills for the current job (example: software training).
+· Development – prepares for future jobs (example: leadership coaching).
+· Training gives immediate results – the employee can do their current job better right away.
+· Development takes longer but prepares the company for future leadership needs when senior people retire or leave.
+
+How to keep employees from leaving (retention):
+
+· Pay competitive salaries.
+· Offer work-life balance (flexible hours, remote work).
+· Recognize good work.
+· Create a positive culture.
+· Employees leave managers, not companies – so training managers to be good leaders is very important for retention.
+· Regular feedback and career growth conversations make employees feel valued and less likely to search for other jobs.
+
+Performance management (checking employee work):
+
+· Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound).
+· Track progress regularly.
+· Do formal reviews (yearly or quarterly).
+· Reward good performance.
+· Performance management is not just about punishing bad work – it is about helping good employees become even better.
+· Without regular feedback, employees feel lost and may start working in the wrong direction without knowing it.
+
+---
+
+Part 3: Strategy, Culture, and Laws
+
+What is human capital?
+
+· The value of an employee's skills, knowledge, and experience.
+· This is often a company's only unique advantage.
+· Machines and buildings can be copied by competitors, but a skilled and motivated team cannot be easily replicated.
+· Investing in human capital (training, good pay, good culture) gives higher returns than investing in equipment alone.
+
+HR as a strategic partner:
+
+· HR should not just do paperwork.
+· HR should ask: "Do we have the right talent to grow the business?"
+· When HR sits at the leadership table, the company makes better decisions about hiring, firing, and promotions.
+· Without HR's input, leaders might make people decisions based on emotion or favoritism instead of data and fairness.
+
+What is corporate culture?
+
+· Shared values, beliefs, and behaviors of a company.
+· Example: Some companies are formal; some are casual and fun.
+· Culture is not written in any manual – it is "how things really get done around here."
+· A strong culture attracts the right employees and pushes away the wrong ones naturally.
+
+HR's role in culture:
+
+· Writes the employee handbook (rules and values).
+· Enforces code of conduct (example: no taking bribes from vendors).
+· HR also investigates complaints about harassment, discrimination, or unethical behavior.
+· When HR consistently enforces the rules for everyone (including senior leaders), trust in the culture grows.
+
+Diversity and Inclusion (D&I):
+
+· Diversity – having different types of people (race, gender, age).
+· Inclusion – making sure everyone's voice is heard and valued.
+· Diversity without inclusion is useless – you can hire diverse people but still make them feel unwelcome.
+· Diverse teams make better decisions because they see problems from multiple angles, not just one narrow view.
+
+Affirmative action:
+
+· Actively recruiting women, minorities, and people with disabilities.
+· Done to correct past discrimination.
+· Affirmative action is not about hiring unqualified people – it is about finding qualified people from groups that were ignored in the past.
+· Many countries have laws requiring affirmative action for government jobs and government contracts.
+
+Important employment laws HR must follow:
+
+· No discrimination based on race, religion, gender, age, or disability.
+· Must pay minimum wage and overtime.
+· Must provide a safe workplace (no hazards).
+· Must allow medical or family leave.
+· Must follow rules about unions and collective bargaining.
+· Breaking these laws can lead to lawsuits, fines, and damage to the company's reputation.
+· HR must stay updated on laws because they change frequently – what was legal last year may be illegal today.
+
+---
+
+Part 4: Key Terms and Modern Trends
+
+Important vocabulary:
+
+· Exempt employee – No overtime pay (usually managers).
+· Non-exempt employee – Gets overtime pay (hourly workers).
+· Progressive discipline – Warnings get stronger each time (verbal → written → suspension → fired).
+· Turnover – Rate at which employees leave the company. High turnover is bad.
+· Turnover is calculated as (number of leavers ÷ average total employees) × 100. High turnover means something is wrong.
+· Progressive discipline gives employees a chance to correct their behavior before being fired, which also protects the company from wrongful termination lawsuits.
+
+Modern trends in HR:
+
+· Digital HR (HRIS) – Using software and AI to automate hiring, payroll, and data analysis.
+· Employee well-being – Not just physical safety. Now includes mental health support.
+· Remote and hybrid work – Managing teams that work from home and office.
+· Learning organization – Company encourages continuous learning and upgrading skills.
+· Digital HR saves time by automating repetitive tasks so HR staff can focus on strategic work like culture and employee relations.
+· Remote work requires new skills like managing by output (results) instead of managing by watching people work at their desks.
+
+---

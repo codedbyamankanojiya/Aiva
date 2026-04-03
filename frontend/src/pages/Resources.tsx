@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Search, Mic, ArrowLeft, Edit3, Sparkles, Send, X, 
   MoreVertical, Trash2, Pencil, FileText, Video, Link as LinkIcon, 
-  Download, ExternalLink, Bookmark
+  Download, ExternalLink, Bookmark, BookOpen, Zap, Users, ChevronRight
 } from "lucide-react";
 
 /* ── Resource categories data ─────────────────────────────── */
@@ -16,7 +16,39 @@ const CATEGORIES = [
     subtitle: "Interview prep & coding questions",
     topics: ["DSA", "System Design", "OOP", "Design Patterns", "Testing", "Algorithms"],
     type: "tech",
-    icon: "💻"
+    icon: "💻",
+    status: "coming-soon"
+  },
+  {
+    id: "ethical-hacking",
+    title: "Ethical Hacking",
+    subtitle: "Security protocols & penetration testing",
+    topics: ["Network Security", "Cryptography", "Exploits", "Vulnerability Assessment"],
+    type: "tech",
+    icon: "🛡️",
+    status: "active",
+    resourceFile: "/Resources/Ethical Hacking.txt"
+  },
+  {
+    id: "dsa",
+    title: "DSA",
+    subtitle: "Data Structures and Algorithms",
+    topics: ["Arrays", "Linked Lists", "Trees", "Graphs", "Dynamic Programming"],
+    type: "tech",
+    icon: "🧩",
+    status: "active",
+    resourceFile: "/Resources/Data Structures And Algorithms.txt"
+  },
+  {
+    id: "dbms",
+    title: "DBMS",
+    subtitle: "Database systems & SQL programming",
+    topics: ["SQL Queries", "Normalization", "Database Design", "Transaction Management"],
+    type: "academic",
+    icon: "🗄️",
+    status: "active",
+    hasResources: true,
+    resourceFile: "/Resources/Database Management System.txt"
   },
   {
     id: "web-developer",
@@ -24,7 +56,8 @@ const CATEGORIES = [
     subtitle: "Frontend & backend development",
     topics: ["React", "Node.js", "HTML/CSS", "JavaScript", "APIs"],
     type: "tech",
-    icon: "🌐"
+    icon: "🌐",
+    status: "coming-soon"
   },
   {
     id: "backend-developer",
@@ -32,7 +65,8 @@ const CATEGORIES = [
     subtitle: "Server-side development",
     topics: ["APIs", "Databases", "Authentication", "Microservices", "Caching"],
     type: "tech",
-    icon: "⚙️"
+    icon: "⚙️",
+    status: "coming-soon"
   },
   {
     id: "ui-ux-designer",
@@ -40,7 +74,8 @@ const CATEGORIES = [
     subtitle: "Design principles & tools",
     topics: ["Figma", "User Research", "Prototyping", "Wireframing", "Design Systems"],
     type: "tech",
-    icon: "🎨"
+    icon: "🎨",
+    status: "coming-soon"
   },
   {
     id: "app-developer",
@@ -48,7 +83,8 @@ const CATEGORIES = [
     subtitle: "Mobile app development",
     topics: ["React Native", "Flutter", "iOS", "Android", "Mobile UI"],
     type: "tech",
-    icon: "📱"
+    icon: "📱",
+    status: "coming-soon"
   },
   {
     id: "devops-engineer",
@@ -56,7 +92,8 @@ const CATEGORIES = [
     subtitle: "Deployment & operations",
     topics: ["Docker", "Kubernetes", "CI/CD", "Cloud Services", "Monitoring"],
     type: "tech",
-    icon: "🚀"
+    icon: "🚀",
+    status: "coming-soon"
   },
   {
     id: "data-scientist",
@@ -64,7 +101,8 @@ const CATEGORIES = [
     subtitle: "Data analysis & machine learning",
     topics: ["Statistics", "ML Models", "Python", "Data Viz", "NLP"],
     type: "tech",
-    icon: "📊"
+    icon: "📊",
+    status: "coming-soon"
   },
   {
     id: "product-manager",
@@ -72,15 +110,19 @@ const CATEGORIES = [
     subtitle: "Product strategy & management",
     topics: ["Product Strategy", "Roadmapping", "User Stories", "Analytics", "Stakeholder Management"],
     type: "tech",
-    icon: "📋"
+    icon: "📋",
+    status: "coming-soon"
   },
   {
     id: "hr-recruiter",
-    title: "HR Recruiter",
-    subtitle: "Recruitment & talent management",
-    topics: ["Sourcing", "Interviewing", "Onboarding", "Compensation", "Employer Branding"],
-    type: "tech",
-    icon: "👔"
+    title: "Human Resources",
+    subtitle: "People management & organizational development",
+    topics: ["Recruitment", "Training", "Performance Management", "Employee Relations"],
+    type: "academic",
+    icon: "👔",
+    status: "active",
+    hasResources: true,
+    resourceFile: "/Resources/Human Resources.txt"
   },
   
   // Skill Development
@@ -90,7 +132,8 @@ const CATEGORIES = [
     subtitle: "Professional behavior development",
     topics: ["Leadership", "Teamwork", "Problem Solving", "Adaptability", "Communication"],
     type: "skill",
-    icon: "🤝"
+    icon: "🤝",
+    status: "coming-soon"
   },
   {
     id: "presentation-skills",
@@ -98,7 +141,8 @@ const CATEGORIES = [
     subtitle: "Public speaking & presentations",
     topics: ["Public Speaking", "Slide Design", "Body Language", "Storytelling", "Q&A Handling"],
     type: "skill",
-    icon: "🎤"
+    icon: "🎤",
+    status: "coming-soon"
   },
   {
     id: "communication-boost",
@@ -106,7 +150,8 @@ const CATEGORIES = [
     subtitle: "Effective communication techniques",
     topics: ["Active Listening", "Written Communication", "Verbal Skills", "Non-verbal Cues", "Empathy"],
     type: "skill",
-    icon: "💬"
+    icon: "💬",
+    status: "coming-soon"
   },
   {
     id: "leadership-skills",
@@ -114,7 +159,8 @@ const CATEGORIES = [
     subtitle: "Leadership development",
     topics: ["Team Management", "Decision Making", "Strategic Thinking", "Motivation", "Conflict Resolution"],
     type: "skill",
-    icon: "👑"
+    icon: "👑",
+    status: "coming-soon"
   },
   {
     id: "negotiation-skills",
@@ -122,7 +168,8 @@ const CATEGORIES = [
     subtitle: "Negotiation techniques",
     topics: ["Salary Negotiation", "Contract Terms", "Win-Win Solutions", "Persuasion", "BATNA"],
     type: "skill",
-    icon: "🤝"
+    icon: "🤝",
+    status: "coming-soon"
   },
   {
     id: "time-management",
@@ -130,7 +177,8 @@ const CATEGORIES = [
     subtitle: "Productivity & time optimization",
     topics: ["Prioritization", "Goal Setting", "Delegation", "Focus Techniques", "Work-Life Balance"],
     type: "skill",
-    icon: "⏰"
+    icon: "⏰",
+    status: "coming-soon"
   },
   {
     id: "stress-management",
@@ -138,7 +186,8 @@ const CATEGORIES = [
     subtitle: "Stress reduction techniques",
     topics: ["Mindfulness", "Work-Life Balance", "Coping Strategies", "Relaxation Techniques", "Resilience"],
     type: "skill",
-    icon: "🧘"
+    icon: "🧘",
+    status: "coming-soon"
   },
   {
     id: "networking-skills",
@@ -146,7 +195,8 @@ const CATEGORIES = [
     subtitle: "Professional networking",
     topics: ["Building Connections", "LinkedIn", "Informational Interviews", "Follow-up", "Personal Branding"],
     type: "skill",
-    icon: "🕸️"
+    icon: "🕸️",
+    status: "coming-soon"
   },
   {
     id: "critical-thinking",
@@ -154,7 +204,8 @@ const CATEGORIES = [
     subtitle: "Analytical thinking skills",
     topics: ["Logical Reasoning", "Problem Analysis", "Decision Making", "Creative Thinking", "Evaluation"],
     type: "skill",
-    icon: "🧠"
+    icon: "🧠",
+    status: "coming-soon"
   },
   
   // Academic Subjects
@@ -164,7 +215,9 @@ const CATEGORIES = [
     subtitle: "Periodic table & chemical reactions",
     topics: ["Organic", "Inorganic", "Physical", "Analytical"],
     type: "academic",
-    icon: "🧪"
+    icon: "🧪",
+    status: "active",
+    resourceFile: "/Resources/Chemistry Chemistry.txt"
   },
   {
     id: "biology",
@@ -172,7 +225,8 @@ const CATEGORIES = [
     subtitle: "Life sciences & organisms",
     topics: ["Cell Biology", "Genetics", "Ecology", "Microbiology"],
     type: "academic",
-    icon: "🧬"
+    icon: "🧬",
+    status: "coming-soon"
   },
   {
     id: "physics",
@@ -180,7 +234,9 @@ const CATEGORIES = [
     subtitle: "Laws of nature & matter",
     topics: ["Mechanics", "Thermodynamics", "Electromagnetism", "Quantum Physics"],
     type: "academic",
-    icon: "⚛️"
+    icon: "⚛️",
+    status: "active",
+    resourceFile: "/Resources/Physics.txt"
   },
   {
     id: "mathematics",
@@ -188,7 +244,8 @@ const CATEGORIES = [
     subtitle: "Mathematical concepts & problems",
     topics: ["Calculus", "Algebra", "Geometry", "Statistics", "Probability"],
     type: "academic",
-    icon: "📐"
+    icon: "📐",
+    status: "coming-soon"
   },
   {
     id: "commerce",
@@ -196,15 +253,18 @@ const CATEGORIES = [
     subtitle: "Business studies & economics",
     topics: ["Accounting", "Business Studies", "Economics", "Finance", "Marketing", "Entrepreneurship"],
     type: "academic",
-    icon: "💹"
+    icon: "💹",
+    status: "coming-soon"
   },
   {
     id: "accounting",
-    title: "Accounting",
+    title: "Financial Accounting",
     subtitle: "Financial accounting & bookkeeping",
     topics: ["Financial Accounting", "Cost Accounting", "Taxation", "Auditing", "Bookkeeping"],
     type: "academic",
-    icon: "📖"
+    icon: "📖",
+    status: "active",
+    resourceFile: "/Resources/Financial Accounting And Management.txt"
   },
   {
     id: "economics",
@@ -212,7 +272,9 @@ const CATEGORIES = [
     subtitle: "Economic principles & theories",
     topics: ["Microeconomics", "Macroeconomics", "International Trade", "Monetary Policy", "Market Analysis"],
     type: "academic",
-    icon: "📉"
+    icon: "📉",
+    status: "active",
+    resourceFile: "/Resources/Economics.txt"
   },
   {
     id: "business-studies",
@@ -220,7 +282,8 @@ const CATEGORIES = [
     subtitle: "Business management & organization",
     topics: ["Business Management", "Organizational Behavior", "Strategic Planning", "Operations Management", "Business Ethics"],
     type: "academic",
-    icon: "🏢"
+    icon: "🏢",
+    status: "coming-soon"
   },
   {
     id: "finance",
@@ -228,7 +291,8 @@ const CATEGORIES = [
     subtitle: "Financial management & investment",
     topics: ["Corporate Finance", "Investment Analysis", "Financial Markets", "Risk Management", "Portfolio Management"],
     type: "academic",
-    icon: "💰"
+    icon: "💰",
+    status: "coming-soon"
   },
   {
     id: "marketing",
@@ -236,7 +300,8 @@ const CATEGORIES = [
     subtitle: "Marketing strategies & branding",
     topics: ["Digital Marketing", "Brand Management", "Market Research", "Consumer Behavior", "Advertising"],
     type: "academic",
-    icon: "📢"
+    icon: "📢",
+    status: "coming-soon"
   },
   {
     id: "entrepreneurship",
@@ -244,7 +309,8 @@ const CATEGORIES = [
     subtitle: "Starting & running businesses",
     topics: ["Business Planning", "Startup Funding", "Business Models", "Innovation", "Venture Capital"],
     type: "academic",
-    icon: "💡"
+    icon: "💡",
+    status: "coming-soon"
   },
 ];
 
@@ -318,7 +384,7 @@ export function Resources() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<"all" | "tech" | "skill" | "academic">("all");
+  const [activeFilter, setActiveFilter] = useState<"all" | "tech" | "skill" | "academic" | "upcoming">("all");
   const [askQuery, setAskQuery] = useState("");
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -340,11 +406,59 @@ export function Resources() {
   const firstName = user?.firstName || "there";
   const selected = CATEGORIES.find((c) => c.id === selectedCategory);
 
+  // Content loading state
+  const [resourceContent, setResourceContent] = useState<string | null>(null);
+  const [isContentLoading, setIsContentLoading] = useState(false);
+  const [viewingMaterialId, setViewingMaterialId] = useState<string | null>(null);
+  const [personalizeQuery, setPersonalizeQuery] = useState("");
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Fetch content when category changes
+  useEffect(() => {
+    if (selected?.resourceFile) {
+      setIsContentLoading(true);
+      fetch(selected.resourceFile)
+        .then(res => res.text())
+        .then(text => {
+          setResourceContent(text);
+          setIsContentLoading(false);
+        })
+        .catch(err => {
+          console.error("Failed to load resource:", err);
+          setIsContentLoading(false);
+        });
+    } else {
+      setResourceContent(null);
+    }
+    setViewingMaterialId(null); // Reset when category changes
+  }, [selectedCategory, selected]);
+
+  // Updated filter categories with "Upcoming Notes"
+  const filterTabs = [
+    { key: "all" as const, label: "All Subjects", activeClass: "bg-aiva-purple" },
+    { key: "tech" as const, label: "Tech Roles", activeClass: "bg-blue-500" },
+    { key: "skill" as const, label: "Skill Development", activeClass: "bg-emerald-500" },
+    { key: "academic" as const, label: "Academic", activeClass: "bg-orange-500" },
+    { key: "upcoming" as const, label: "Upcoming Notes", activeClass: "bg-rose-500" },
+  ];
+
   const filteredCategories = CATEGORIES.filter(
-    (c) =>
-      (activeFilter === "all" || c.type === activeFilter) &&
-      (c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.topics.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())))
+    (c) => {
+      const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           c.topics.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      // If upcoming is selected, show only coming-soon
+      if (activeFilter === "upcoming") {
+        return c.status === "coming-soon" && matchesSearch;
+      }
+      
+      // If any other filter is selected, only show active subjects
+      const isActive = c.status === "active";
+      if (!isActive) return false;
+
+      if (activeFilter === "all") return matchesSearch;
+      return c.type === activeFilter && matchesSearch;
+    }
   );
 
   useEffect(() => {
@@ -368,29 +482,102 @@ export function Resources() {
 
   function handleApplyFilters() {
     setIsApplying(true);
-    // Simulate a slight loading state for professional feel
     setTimeout(() => {
       setAppliedFilters(selectedTopics);
       setIsApplying(false);
+      
+      // Auto-scroll to section if content is visible
+      if (selectedTopics.length > 0 && resourceContent && contentRef.current) {
+        const text = resourceContent.toLowerCase();
+        const firstTopic = selectedTopics[0].toLowerCase();
+        
+        // Very basic "jump to" logic: find first occurrence of topic in text
+        const index = text.indexOf(firstTopic);
+        if (index !== -1) {
+          // If viewing material isn't set, set it to Notes by default
+          if (!viewingMaterialId) setViewingMaterialId("notes");
+          
+          // Small delay to ensure content is rendered
+          setTimeout(() => {
+            const preElement = contentRef.current?.querySelector('pre');
+            if (preElement) {
+              const fullText = preElement.textContent || "";
+              const linesBefore = fullText.substring(0, index).split('\n').length;
+              const lineHeight = 20; // estimate
+              preElement.scrollTo({
+                top: (linesBefore - 2) * lineHeight,
+                behavior: 'smooth'
+              });
+            }
+          }, 100);
+        }
+      }
     }, 400);
   }
 
-  // Sample materials that will be filtered
+  // Content generation functions for cheat sheets and practice assessments
+  const generateCheatSheet = (categoryId: string) => {
+    const cheatSheets: Record<string, string> = {
+      "ethical-hacking": "🔒 ETHICAL HACKING CHEAT SHEET v2.0\n\n🛡️ SECURITY INCIDENT RESPONSE FRAMEWORK\n1. DETECTION\n   • Antivirus scans\n   • SIEM monitoring\n   • Employee reports\n   • Unusual behavior analysis\n\n2. CONTAINMENT\n   • Short-term: Disconnect affected systems\n   • Long-term: Take servers offline\n   • Preserve evidence for investigation",
+      "human-resources": "👥 HUMAN RESOURCES CHEAT SHEET v2.0\n\n📊 HR LIFECYCLE MANAGEMENT\nRECRUITMENT → ONBOARDING → TRAINING → PERFORMANCE → COMPENSATION → OFFBOARDING\n\n🔑 KEY HR METRICS\n• Turnover Rate: (Employees Left ÷ Total Employees) × 100\n• Time to Hire: Days from job posting to acceptance",
+      "dsa": "💻 DATA STRUCTURES & ALGORITHMS CHEAT SHEET v2.0\n\n⚡ TIME COMPLEXITY BIG-O\nO(1) - Constant: Array access\nO(log n) - Logarithmic: Binary search\nO(n) - Linear: Linear search\nO(n log n) - Linearithmic: Merge sort, quicksort\nO(n²) - Quadratic: Bubble sort, nested loops",
+      "physics": "⚛️ PHYSICS CHEAT SHEET v2.0\n\n💡 LAWS OF THERMODYNAMICS\nZeroth Law: Thermal equilibrium → Temperature measurement\nFirst Law: ΔU = Q - W (Energy conservation)\nSecond Law: Entropy always increases (ΔS > 0)\nThird Law: Absolute zero (0K) is unattainable",
+      "chemistry": "🧪 CHEMISTRY CHEAT SHEET v2.0\n\n⚗️ pH SCALE & CALCULATIONS\npH Scale: 0 (acidic) ← 7 (neutral) → 14 (basic)\npH = -log[H⁺]\n[H⁺] = 10^(-pH)\n\nStrong Acids: Complete dissociation (HCl, HNO₃)\nWeak Acids: Partial dissociation (CH₃COOH)",
+      "dbms": "🗃️ DATABASE MANAGEMENT CHEAT SHEET v2.0\n\n🔤 SQL COMMANDS QUICK REFERENCE\n-- DDL (Data Definition)\nCREATE TABLE table_name (column1 datatype, column2 datatype);\nALTER TABLE table_name ADD column_name datatype;\nDROP TABLE table_name;\n\n-- DML (Data Manipulation)\nSELECT * FROM table_name WHERE condition;",
+      "financial-accounting": "💰 FINANCIAL ACCOUNTING CHEAT SHEET v2.0\n\n💵 TIME VALUE OF MONEY\nFuture Value: FV = PV × (1 + r)ⁿ\nPresent Value: PV = FV ÷ (1 + r)ⁿ\nAnnuity FV: PMT × [((1+r)ⁿ - 1) ÷ r]\nAnnuity PV: PMT × [(1 - (1+r)⁻ⁿ) ÷ r]"
+    };
+    
+    return cheatSheets[categoryId] || "Cheat sheet not available for this subject.";
+  };
+
+  const generatePracticeAssessment = (categoryId: string) => {
+    const assessments: Record<string, string> = {
+      "ethical-hacking": "🔒 ETHICAL HACKING PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the first step in incident response?\n   a) Eradication\n   b) Detection ✓\n   c) Recovery\n   d) Containment\n\n2. Which tool is best for network scanning?\n   a) Wireshark\n   b) Nmap ✓\n   c) Metasploit\n   d) Burp Suite",
+      "human-resources": "👥 HUMAN RESOURCES PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the primary purpose of onboarding?\n   a) Salary negotiation\n   b) Cultural integration and role clarity ✓\n   c) Performance evaluation\n   d) Compliance training\n\n2. Which metric measures employee retention?\n   a) Time to hire\n   b) Turnover rate ✓\n   c) Cost per hire\n   d) Engagement score",
+      "dsa": "💻 DSA PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the time complexity of binary search?\n   a) O(n)\n   b) O(log n) ✓\n   c) O(n log n)\n   d) O(n²)\n\n2. Which data structure uses LIFO principle?\n   a) Queue\n   b) Stack ✓\n   c) Array\n   d) Linked List",
+      "physics": "⚛️ PHYSICS PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. Which law states energy cannot be created or destroyed?\n   a) Zeroth Law\n   b) First Law ✓\n   c) Second Law\n   d) Third Law\n\n2. What happens to entropy in an isolated system?\n   a) Always decreases\n   b) Remains constant\n   c) Always increases ✓\n   d) Fluctuates randomly",
+      "chemistry": "🧪 CHEMISTRY PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the pH of 0.001M HCl solution?\n   a) 1\n   b) 2\n   c) 3 ✓\n   d) 4\n\n2. Which is a strong acid?\n   a) CH₃COOH\n   b) HCl ✓\n   c) NH₄OH\n   d) H₂CO₃",
+      "dbms": "🗃️ DATABASE MANAGEMENT PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. Which normal form eliminates partial dependencies?\n   a) 1NF\n   b) 2NF ✓\n   c) 3NF\n   d) BCNF\n\n2. What does SQL stand for?\n   a) Structured Query Language ✓\n   b) Simple Query Language\n   c) Standard Query Logic\n   d) System Query Language",
+      "financial-accounting": "💰 FINANCIAL ACCOUNTING PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the formula for Present Value?\n   a) FV × (1 + r)ⁿ\n   b) FV ÷ (1 + r)ⁿ ✓\n   c) FV + r × n\n   d) FV - r × n\n\n2. Current Ratio of 1.5 indicates:\n   a) Liquidity issues\n   b) Good liquidity ✓\n   c) Excessive liquidity\n   d) Insufficient data"
+    };
+    
+    return assessments[categoryId] || "Practice assessment not available for this subject.";
+  };
+
   const allMaterials = useMemo(() => [
-    { title: "Introduction Guide", type: "pdf", size: "2.4 MB", description: "Core concepts and fundamentals.", topics: ["DSA", "System Design", "Chemistry", "Biology"] },
-    { title: "Advanced Techniques", type: "video", duration: "12:45", description: "Deep dive into complex patterns.", topics: ["Algorithms", "OOP", "Physics", "Mathematics"] },
-    { title: "Interactive Roadmap", type: "link", site: "ROADMAP.SH", description: "Step-by-step path to master.", topics: ["System Design", "Algorithms", "Mathematics"] },
-    { title: "Cheat Sheet v2.0", type: "pdf", size: "1.1 MB", description: "Quick reference for all syntax.", topics: ["DSA", "OOP", "Chemistry", "Physics"] },
-    { title: "Community Resources", type: "link", site: "GITHUB.COM", description: "Curated list of learning materials.", topics: ["System Design", "Testing", "Biology"] },
-    { title: "Practice Assessment", type: "video", duration: "08:20", description: "Watch common interview problems.", topics: ["DSA", "Algorithms", "Testing"] }
+    { 
+      id: "notes", 
+      title: "Notes", 
+      type: "pdf", 
+      size: "2.4 MB", 
+      description: "Foundational concepts and overview of the subject.",
+      icon: <BookOpen size={20} />
+    },
+    { 
+      id: "cheat-sheet", 
+      title: "Cheat Sheet v2.0", 
+      type: "pdf", 
+      size: "1.1 MB", 
+      description: "Condensed quick-reference with formulas and key concepts.",
+      icon: <Zap size={20} />
+    },
+    { 
+      id: "practice-assessment", 
+      title: "Practice Assessment", 
+      type: "video", 
+      duration: "08:20", 
+      description: "Interactive MCQs and problems to test your knowledge.",
+      icon: <FileText size={20} />
+    }
   ], []);
 
   const displayedMaterials = useMemo(() => {
-    if (appliedFilters.length === 0) return allMaterials;
-    return allMaterials.filter(m => 
-      m.topics.some(t => appliedFilters.includes(t))
-    );
-  }, [appliedFilters, allMaterials]);
+    // Only show materials for subjects that have resources
+    if (!selected?.status || selected.status === "coming-soon") {
+      return [];
+    }
+    return allMaterials;
+  }, [selected, allMaterials]);
 
   function handleOpenVoice() {
     setIsVoiceOpen(true);
@@ -469,15 +656,10 @@ export function Resources() {
                 {/* Header & Filter buttons */}
                 <div className="space-y-4">
                   <motion.div variants={fadeUp} className="flex gap-2 flex-wrap">
-                    {([
-                      { key: "all" as const, label: "All Subjects", activeClass: "bg-aiva-purple" },
-                      { key: "tech" as const, label: "Tech Roles", activeClass: "bg-blue-500" },
-                      { key: "skill" as const, label: "Skill Development", activeClass: "bg-emerald-500" },
-                      { key: "academic" as const, label: "Academic", activeClass: "bg-orange-500" },
-                    ] as const).map((f) => (
+                    {filterTabs.map((f) => (
                       <button
                         key={f.key}
-                        onClick={() => setActiveFilter(f.key)}
+                        onClick={() => setActiveFilter(f.key as any)}
                         className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                           activeFilter === f.key
                             ? `${f.activeClass} text-white shadow-[0_10px_20px_-5px_rgba(139,92,246,0.3)] scale-105`
@@ -524,7 +706,7 @@ export function Resources() {
                 )}
               </div>
 
-              {/* Category List Stack */}
+                {/* Category List Stack */}
               <motion.div 
                 layout
                 className="flex flex-col gap-5 w-full max-w-2xl"
@@ -539,29 +721,59 @@ export function Resources() {
                     whileHover="hover"
                     whileTap="tap"
                     onClick={() => setSelectedCategory(cat.id)}
-                    className="w-full text-left group"
+                    className="w-full text-left group relative"
                   >
+                    {/* Coming Soon Ribbon - High-precision diagonal design */}
+                    {cat.status === "coming-soon" && (
+                      <div className="absolute top-0 right-0 z-20 pointer-events-none overflow-hidden w-28 h-28">
+                        <div className="bg-gradient-to-r from-rose-500 via-rose-600 to-rose-500 text-white text-[9px] font-black uppercase tracking-tighter py-1.5 w-[160px] text-center rotate-45 translate-x-10 translate-y-4 shadow-xl border-y border-white/20">
+                          Upcoming
+                        </div>
+                      </div>
+                    )}
+
                     <div
-                      className="relative overflow-hidden rounded-[3.5rem] px-10 py-8 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-white/40 dark:border-white/5 transition-all duration-500 group-hover:border-aiva-purple/30 group-hover:shadow-[0_15px_35px_-10px_rgba(139,92,246,0.1)]"
+                      className={`relative overflow-hidden rounded-[3.5rem] px-10 py-8 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border transition-all duration-500 ${
+                        cat.status === "coming-soon" 
+                          ? "border-white/20 dark:border-white/5 opacity-80 grayscale-[0.3]" 
+                          : "border-white/40 dark:border-white/5 group-hover:border-aiva-purple/30 group-hover:shadow-[0_15px_35px_-10px_rgba(139,92,246,0.1)]"
+                      }`}
                       style={{
-                        background: `linear-gradient(135deg, 
-                          rgba(165, 148, 249, ${0.25 + (i % 3) * 0.05}) 0%, 
-                          rgba(129, 140, 248, ${0.15 + (i % 3) * 0.03}) 50%, 
-                          rgba(196, 181, 253, ${0.2 + (i % 3) * 0.04}) 100%)`,
+                        background: cat.status === "coming-soon"
+                          ? `linear-gradient(135deg, rgba(244, 244, 245, 0.4) 0%, rgba(228, 228, 231, 0.3) 100%)`
+                          : `linear-gradient(135deg, 
+                              rgba(165, 148, 249, ${0.25 + (i % 3) * 0.05}) 0%, 
+                              rgba(129, 140, 248, ${0.15 + (i % 3) * 0.03}) 50%, 
+                              rgba(196, 181, 253, ${0.2 + (i % 3) * 0.04}) 100%)`,
                       }}
                     >
                       {/* Decorative background element */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      {cat.status !== "coming-soon" && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      )}
                       
                       <div className="relative z-10">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors">
-                          {cat.title}
-                        </h3>
+                        <div className="flex items-center gap-4 mb-2">
+                          <span className="text-3xl filter drop-shadow-md">{cat.icon}</span>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors">
+                            {cat.title}
+                          </h3>
+                        </div>
                         {cat.subtitle && (
-                          <p className="text-sm text-gray-500/80 dark:text-gray-400/80 font-medium mt-1 leading-relaxed">
+                          <p className="text-sm text-gray-500/80 dark:text-gray-400/80 font-medium mt-1 leading-relaxed pl-1">
                             {cat.subtitle}
                           </p>
                         )}
+                        <div className="flex flex-wrap gap-2 mt-4 pl-1">
+                          {cat.topics.slice(0, 3).map(topic => (
+                            <span key={topic} className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                              {topic}
+                            </span>
+                          ))}
+                          {cat.topics.length > 3 && (
+                            <span className="text-[10px] font-bold text-gray-400">+{cat.topics.length - 3} more</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </motion.button>
@@ -906,7 +1118,7 @@ export function Resources() {
               </div>
 
               {/* Content Grid with Purple Layer */}
-              <div className="relative ml-4 mt-8 min-h-[400px]">
+              <div className="relative ml-4 mt-8 min-h-[400px]" ref={contentRef}>
                 {/* Purple glassmorphic layer behind boxes */}
                 <div className="absolute inset-0 -m-6 rounded-[3rem] bg-gradient-to-br from-aiva-purple/15 to-blue-500/10 backdrop-blur-3xl ring-1 ring-white/10 pointer-events-none" />
                 
@@ -930,58 +1142,111 @@ export function Resources() {
                       key="grid"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="relative grid grid-cols-1 md:grid-cols-2 gap-4"
+                      className="relative"
                     >
-                      {displayedMaterials.map((item, idx) => (
-                        <motion.div
-                          key={item.title}
-                          layout
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: idx * 0.04 }}
-                          whileHover={{ scale: 1.01, y: -1 }}
-                          className="group relative rounded-[2rem] p-5 bg-white/50 dark:bg-gray-900/40 backdrop-blur-xl border border-white/40 dark:border-white/5 transition-all duration-300"
+                      {/* Material Grid */}
+                      {!viewingMaterialId ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {displayedMaterials.map((item, idx) => (
+                            <motion.button
+                              key={item.title}
+                              layout
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: idx * 0.04 }}
+                              whileHover={{ scale: 1.02, y: -2 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => setViewingMaterialId(item.id)}
+                              className="group relative text-left rounded-[2rem] p-6 bg-white/60 dark:bg-gray-900/50 backdrop-blur-xl border border-white/40 dark:border-white/5 transition-all duration-300 hover:shadow-2xl hover:shadow-aiva-purple/10 hover:border-aiva-purple/30"
+                            >
+                              <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-aiva-purple/10 text-aiva-purple flex items-center justify-center shrink-0 group-hover:bg-aiva-purple group-hover:text-white transition-all duration-500">
+                                  {item.icon}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors truncate">
+                                    {item.title}
+                                  </h4>
+                                  <p className="text-[11px] text-gray-500/80 dark:text-gray-400/80 mt-1 line-clamp-1">
+                                    {item.description}
+                                  </p>
+                                </div>
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-aiva-purple group-hover:text-white transition-all">
+                                  <ChevronRight size={16} />
+                                </div>
+                              </div>
+                            </motion.button>
+                          ))}
+                        </div>
+                      ) : (
+                        /* Detailed Material Content View */
+                        <motion.div 
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="w-full"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-                              item.type === 'pdf' ? 'bg-rose-500/10 text-rose-500' :
-                              item.type === 'video' ? 'bg-blue-500/10 text-blue-500' :
-                              'bg-emerald-500/10 text-emerald-500'
-                            }`}>
-                              {item.type === 'pdf' ? <FileText size={20} /> :
-                               item.type === 'video' ? <Video size={20} /> :
-                               <LinkIcon size={20} />}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-aiva-purple transition-colors truncate">
-                                {item.title}
-                              </h4>
-                              <p className="text-[11px] text-gray-500/80 dark:text-gray-400/80 mt-0.5 line-clamp-1">
-                                {item.description}
-                              </p>
-                              <div className="mt-1 text-[9px] font-bold tracking-widest text-gray-400 uppercase">
-                                {item.type === 'pdf' ? (item as any).size : 
-                                 item.type === 'video' ? (item as any).duration : 
-                                 (item as any).site}
+                          <button 
+                            onClick={() => setViewingMaterialId(null)}
+                            className="flex items-center gap-2 text-xs font-bold text-aiva-purple mb-6 hover:underline"
+                          >
+                            <ArrowLeft size={14} />
+                            Back to {selected?.title} Materials
+                          </button>
+                          
+                          <div className="p-8 rounded-[2.5rem] bg-white/70 dark:bg-gray-900/60 backdrop-blur-2xl border border-white/50 dark:border-white/10 shadow-2xl">
+                            <div className="flex items-center gap-4 mb-8">
+                              <div className="w-12 h-12 rounded-2xl bg-aiva-purple text-white flex items-center justify-center">
+                                {allMaterials.find(m => m.id === viewingMaterialId)?.icon}
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                                  {allMaterials.find(m => m.id === viewingMaterialId)?.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 font-medium">Aiva Curated Resource</p>
                               </div>
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-                                {item.type === 'link' ? <ExternalLink size={14} /> : <Download size={14} />}
-                              </button>
-                              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/60 dark:bg-gray-800/60 text-gray-400 hover:text-aiva-purple hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-                                <Bookmark size={14} />
-                              </button>
-                            </div>
+
+                            {isContentLoading ? (
+                              <div className="py-20 flex flex-col items-center justify-center gap-4">
+                                <motion.div 
+                                  animate={{ rotate: 360 }}
+                                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                  className="w-10 h-10 border-4 border-aiva-purple border-t-transparent rounded-full"
+                                />
+                                <p className="text-sm font-bold text-gray-400 animate-pulse">Aiva is preparing your notes...</p>
+                              </div>
+                            ) : viewingMaterialId === "notes" && resourceContent ? (
+                              <div className="prose prose-sm dark:prose-invert max-w-none">
+                                <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300 leading-relaxed bg-black/5 dark:bg-white/5 p-6 rounded-2xl border border-black/5 dark:border-white/5">
+                                  {resourceContent}
+                                </pre>
+                              </div>
+                            ) : viewingMaterialId === "cheat-sheet" ? (
+                              <div className="prose prose-sm dark:prose-invert max-w-none">
+                                <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300 leading-relaxed bg-black/5 dark:bg-white/5 p-6 rounded-2xl border border-black/5 dark:border-white/5">
+                                  {generateCheatSheet(selected?.id || "")}
+                                </pre>
+                              </div>
+                            ) : viewingMaterialId === "practice-assessment" ? (
+                              <div className="prose prose-sm dark:prose-invert max-w-none">
+                                <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300 leading-relaxed bg-black/5 dark:bg-white/5 p-6 rounded-2xl border border-black/5 dark:border-white/5">
+                                  {generatePracticeAssessment(selected?.id || "")}
+                                </pre>
+                              </div>
+                            ) : (
+                              <div className="py-20 text-center">
+                                <p className="text-gray-400 font-medium italic">This resource is currently being updated by Aiva.</p>
+                              </div>
+                            )}
                           </div>
                         </motion.div>
-                      ))}
+                      )}
                       
-                      {displayedMaterials.length === 0 && (
+                      {displayedMaterials.length === 0 && !viewingMaterialId && (
                         <motion.div 
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="col-span-full py-20 text-center"
+                          className="py-20 text-center"
                         >
                           <p className="text-gray-400 font-medium italic">No materials found for the selected filters.</p>
                         </motion.div>
@@ -1006,11 +1271,50 @@ export function Resources() {
                   <div className="relative group">
                     <input
                       type="text"
-                      placeholder="Customize your notes..."
+                      value={personalizeQuery}
+                      onChange={(e) => setPersonalizeQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          // Search for query in text and scroll
+                          if (resourceContent && contentRef.current) {
+                            const index = resourceContent.toLowerCase().indexOf(personalizeQuery.toLowerCase());
+                            if (index !== -1) {
+                              if (!viewingMaterialId) setViewingMaterialId("notes");
+                              setTimeout(() => {
+                                const preElement = contentRef.current?.querySelector('pre');
+                                if (preElement) {
+                                  const fullText = preElement.textContent || "";
+                                  const linesBefore = fullText.substring(0, index).split('\n').length;
+                                  preElement.scrollTo({ top: (linesBefore - 2) * 20, behavior: 'smooth' });
+                                }
+                              }, 100);
+                            }
+                          }
+                        }
+                      }}
+                      placeholder="Jump to a topic..."
                       className="w-full pl-5 pr-12 py-3.5 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 border border-white/20 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-aiva-purple/30 transition-all"
                     />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-xl bg-aiva-purple/10 text-aiva-purple hover:bg-aiva-purple hover:text-white transition-all">
-                      <Edit3 size={15} />
+                    <button 
+                      onClick={() => {
+                        if (resourceContent && contentRef.current) {
+                          const index = resourceContent.toLowerCase().indexOf(personalizeQuery.toLowerCase());
+                          if (index !== -1) {
+                            if (!viewingMaterialId) setViewingMaterialId("notes");
+                            setTimeout(() => {
+                              const preElement = contentRef.current?.querySelector('pre');
+                              if (preElement) {
+                                const fullText = preElement.textContent || "";
+                                const linesBefore = fullText.substring(0, index).split('\n').length;
+                                preElement.scrollTo({ top: (linesBefore - 2) * 20, behavior: 'smooth' });
+                              }
+                            }, 100);
+                          }
+                        }
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-xl bg-aiva-purple/10 text-aiva-purple hover:bg-aiva-purple hover:text-white transition-all"
+                    >
+                      <Search size={15} />
                     </button>
                   </div>
                 </div>

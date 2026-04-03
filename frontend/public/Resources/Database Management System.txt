@@ -1,0 +1,275 @@
+DATABASE MANAGEMENT 
+NOTES 
+
+1: What is a Database and Why is it Needed?
+
+· Database: Organized collection of structured data stored electronically for efficient retrieval and management.
+
+· DBMS (Database Management System): Software that creates, manages, and interacts with databases (e.g., MySQL, PostgreSQL, Oracle).
+
+· Data management: Provides systematic way to store, modify, and retrieve data without redundancy or inconsistency.
+
+
+· Data integrity: Ensures accuracy, consistency, and reliability of data through constraints and validation rules.
+
+· Information systems: Backend for applications like banking, e-commerce, healthcare, and inventory systems.
+
+· Why needed: File systems cause data redundancy, inconsistency, security issues, and lack of concurrent access. Databases solve these with ACID properties, access control, and query languages.
+
+---
+
+2: Primary Key and Foreign Key
+
+
+· Primary key: Column(s) that uniquely identifies each row in a table. Must be unique and non-null (e.g., student_id). Only one per table.
+
+· Foreign key: Column(s) in one table that references the primary key of another table. Establishes table relationships.
+
+· Table relationships: One-to-one, one-to-many (most common), many-to-many (via junction table).
+
+· Referential integrity: Ensures foreign key values match existing primary key values or are NULL. Prevents orphan records.
+
+· Data integrity: Primary keys enforce entity integrity (no duplicates). Foreign keys enforce referential integrity (valid relationships).
+
+· Normalization: Uses keys to decompose tables and reduce redundancy while maintaining relationships.
+
+---
+ 3: Basic SQL Queries (SELECT, INSERT, UPDATE)
+
+SELECT – Retrieve data:
+
+```sql
+SELECT column1, column2 FROM table_name WHERE condition;
+SELECT * FROM students WHERE age > 18;
+```
+
+INSERT – Add new rows:
+
+```sql
+INSERT INTO table_name (col1, col2) VALUES (val1, val2);
+INSERT INTO students (id, name, age) VALUES (101, 'Alice', 20);
+```
+
+UPDATE – Modify existing data:
+
+```sql
+UPDATE table_name SET col1 = value WHERE condition;
+UPDATE students SET age = 21 WHERE id = 101;
+```
+
+· WHERE clause: Filters rows based on condition. Omitting WHERE affects all rows (dangerous for UPDATE/DELETE).
+· Data manipulation: These are DML (Data Manipulation Language) commands – core CRUD operations (Create, Read, Update, Delete).
+
+---
+
+4: Database Normalization
+
+· Normalization: Process of organizing database tables to reduce data redundancy and improve data consistency.
+
+· Database design: Decomposes large tables into smaller, related tables using functional dependencies.
+
+· Data redundancy: Duplicate data wastes space and causes update anomalies (insertion, update, deletion anomalies).
+
+· Functional dependency: Relationship where one attribute determines another (e.g., student_id → student_name).
+
+· Normal forms (progressive levels):
+  
+· 1NF (First Normal Form): Atomic values, no repeating groups.
+ 
+ · 2NF (Second Normal Form): 1NF + no partial dependency on composite keys.
+  
+· 3NF (Third Normal Form): 2NF + no transitive dependency (non-key → non-key).
+
+  · BCNF (Boyce-Codd Normal Form): Stricter 3NF.
+
+  · 4NF, 5NF (higher, less common).
+
+· Data consistency: Eliminating redundancy prevents anomalies when data is updated. Trade-off: normalized tables require more JOINs (performance vs integrity).
+
+INTERMEDIATE NOTES 
+
+ 1: JOIN Operations in SQL
+
+· JOIN operations: Combine rows from two or more tables based on a related column.
+
+· INNER JOIN: Returns only matching rows from both tables.
+  ```sql
+  SELECT * FROM orders INNER JOIN customers ON orders.cust_id = customers.id;
+  ```
+· LEFT JOIN (left outer join): Returns all rows from left table, matched rows from right table (NULL if no match).
+  ```sql
+  SELECT * FROM customers LEFT JOIN orders ON customers.id = orders.cust_id;
+  ```
+· RIGHT JOIN (right outer join): Returns all rows from right table, matched rows from left table.
+· FULL OUTER JOIN: Returns all rows from both tables, matching where possible.
+· SELF JOIN: Table joins with itself using aliases (e.g., employees with manager_id referencing same table).
+· Query optimization: Use indexes on join columns, filter early with WHERE, choose appropriate join type. Inner joins are typically fastest.
+
+---
+
+2: SQL vs NoSQL Databases
+
+SQL Databases (Relational)
+
+· Fixed, predefined schema with tables, rows, and columns
+· Vertical scaling only (upgrading server hardware)
+· Strong ACID compliance for data consistency
+· Standardized SQL query language
+· Best for complex transactions, banking, ERP, CRM
+· Examples: MySQL, PostgreSQL, Oracle
+
+NoSQL Databases (Non-relational)
+
+· Dynamic, schema-flexible structure (document, key-value, column-family, graph)
+· Horizontal scaling (adding more servers) – better for large-scale apps
+· BASE model (Basically Available, Soft state, Eventual consistency) – weaker consistency but higher availability
+· Query languages vary by database (MongoDB, Cassandra, etc.)
+· Best for real-time apps, big data, content management, catalogs
+· Examples: MongoDB, Cassandra, Redis, DynamoDB---
+
+Answer 3: Indexing and Its Importance
+
+· Indexing: Data structure (typically B-tree) that improves search speed by providing fast lookups on columns.
+
+· How it works: Like a book's index – stores column values with pointers to actual row locations.
+
+· B-tree: Balanced tree structure enabling O(log n) search, insert, delete. Supports range queries efficiently.
+
+· Database performance: Dramatically speeds up SELECT queries with WHERE, JOIN, ORDER BY clauses.
+
+· Query optimization: Query planner uses indexes to avoid full table scans, reducing disk I/O.
+
+· Trade-offs:
+
+  · Benefits: Faster reads, improved sorting/grouping, unique constraint enforcement.
+
+  · Costs: Slower writes (INSERT/UPDATE/DELETE need index updates), extra disk space, maintenance overhead.
+
+· Best practice: Index foreign keys, frequently queried columns, but avoid over-indexing.
+
+---
+
+ 4: Transaction Management in Databases
+
+· Transactions: Logical unit of work consisting of one or more SQL operations that execute as a single, atomic unit.
+· ACID properties:
+  · Atomicity: All operations succeed or none do (all-or-nothing).
+  · Consistency: Transaction brings database from one valid state to another (follows all rules/constraints).
+  · Isolation: Concurrent transactions execute as if they were sequential (no interference).
+  · Durability: Committed changes persist even after system failure.
+· COMMIT: Permanently saves all transaction changes to database.
+· ROLLBACK: Reverts all transaction changes, undoing any modifications.
+· Concurrency control: Prevents problems like dirty reads, non-repeatable reads, phantom reads.
+· Isolation levels (from weakest to strongest): READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, SERIALIZABLE.
+· Data consistency: Transactions ensure database remains correct and reliable even with concurrent access or system crashes.
+
+Advance notes 
+
+ 1: Database Normalization Forms (1NF, 2NF, 3NF)
+
+1NF (First Normal Form):
+
+· Each column contains atomic values (no lists, arrays, or nested tables)
+· No repeating groups of columns
+· Each row is uniquely identifiable
+
+2NF (Second Normal Form):
+
+· Must be in 1NF first
+· No partial dependency – every non-key column must depend on the entire primary key (not just part of a composite key)
+
+3NF (Third Normal Form):
+
+· Must be in 2NF first
+· No transitive dependency – non-key columns cannot depend on other non-key columns (eliminate columns that depend on another non-key)
+
+BCNF (Boyce-Codd Normal Form) – Stricter version of 3NF: every determinant must be a candidate key
+
+Functional dependencies: Relationship where one attribute determines another (A → B means A uniquely determines B)
+
+Database design principles: Higher normal forms reduce redundancy and anomalies but may require more JOINs (performance vs integrity trade-off)
+
+Data integrity: Normalization prevents insertion, update, and deletion anomalies
+
+---
+
+2: Database Backup and Recovery Strategies
+
+Backup strategies:
+
+· Full backup: Complete copy of entire database (slowest, most storage)
+· Incremental backup: Only changes since last backup (fastest, smaller)
+· Differential backup: All changes since last full backup (middle ground)
+· Transaction log backup: Captures all committed transactions
+
+Recovery methods:
+
+· Restore: Copy backup data back to database
+· Point-in-time recovery: Restore to specific timestamp (using full backup + transaction logs)
+· Crash recovery: Automatic recovery after system failure using logs
+
+Disaster recovery:
+
+· Cold backup: Database offline during backup
+· Hot backup: Database online (no downtime)
+· Replication: Maintain live copy on another server
+
+Data protection: Regular backups, offsite storage, encryption, access controls
+
+Business continuity: Recovery Time Objective (RTO – max downtime allowed) and Recovery Point Objective (RPO – max data loss allowed)
+
+---
+
+3: Distributed Database Concepts
+
+Distributed databases: Data stored across multiple physical locations (servers, data centers) but appears as single logical database
+
+Replication: Copying same data to multiple nodes – improves read performance and fault tolerance
+
+Sharding (partitioning): Splitting data across different nodes (each node holds subset) – improves write scalability
+
+Consistency models:
+
+· Strong consistency – all nodes see same data at same time
+· Eventual consistency – nodes converge over time (higher availability)
+· Weak consistency – no guarantees
+
+CAP theorem: Distributed system can only guarantee two of three:
+
+· Consistency – all nodes see same data
+· Availability – every request receives response
+· Partition tolerance – system works despite network breaks
+
+Scalability: Horizontal scaling (add more nodes) vs vertical scaling (bigger machines)
+
+Fault tolerance: System continues operating even if some nodes fail (redundancy, automatic failover)
+
+---
+
+ 4: Design a Database Schema for a Complex System
+
+Example: E-commerce System
+
+Entity-Relationship Diagram (main entities):
+
+· User (user_id PK, name, email, password_hash, created_at)
+· Product (product_id PK, name, price, stock_quantity, category_id FK)
+· Category (category_id PK, name, parent_category_id FK – self-referencing)
+· Order (order_id PK, user_id FK, order_date, total_amount, status)
+· OrderItem (order_id FK, product_id FK, quantity, unit_price – composite PK)
+· Review (review_id PK, user_id FK, product_id FK, rating, comment)
+· Payment (payment_id PK, order_id FK, amount, method, status)
+
+Normalization: Apply 3NF to eliminate redundancy (e.g., product price not repeated in OrderItem – stored separately to preserve historical price)
+
+Performance design:
+
+· Indexes on foreign keys (user_id, product_id, category_id) and frequently queried columns (email, order_date)
+· Denormalization where needed (e.g., total_amount in Order avoids recalculating from OrderItems each time)
+
+Real-world application considerations:
+
+· Soft deletes (is_active flags instead of actual deletion)
+· Audit timestamps (created_at, updated_at)
+· Data partitioning (archive old orders)
+· Sharding strategy for user data across regions

@@ -1,0 +1,189 @@
+ECONOMICS 
+NOTES
+
+1: Demand and Supply
+
+· Demand: Quantity of a good consumers are willing and able to buy at different prices. Law of demand – price ↑, demand ↓ (inverse relationship).
+· Supply: Quantity producers are willing to sell at different prices. Law of supply – price ↑, supply ↑ (direct relationship).
+· Market equilibrium: Point where quantity demanded equals quantity supplied. No tendency to change.
+· Price determination: Equilibrium price (market-clearing price) is determined by intersection of demand and supply curves.
+· Market forces: Surplus (excess supply) pushes price down; shortage (excess demand) pushes price up.
+· Elasticity: Measures responsiveness – elastic (small price change causes large quantity change) vs inelastic (small response).
+
+---
+
+2: GDP and Its Calculation
+
+· GDP (Gross Domestic Product): Total monetary value of all final goods and services produced within a country's borders in a specific time period (usually a year or quarter).
+· Economic growth: Increase in GDP over time – primary indicator of economic development.
+· Calculation methods (all yield same result):
+  · Expenditure approach: GDP = C + I + G + (X - M) [Consumption + Investment + Government spending + Net exports]
+  · Income approach: Sum of all incomes (wages, rent, interest, profit)
+  · Production approach (value-added): Sum of value added at each production stage
+· Per capita income: GDP divided by population – better measure of average living standards than total GDP.
+· Economic indicators: Nominal GDP (current prices) vs Real GDP (inflation-adjusted) – real GDP shows true growth.
+
+---
+
+3: Types of Economic Systems
+
+· Capitalism (market economy): Private ownership of resources, profit motive, price determined by supply/demand, minimal government intervention. Examples: USA, UK.
+· Socialism (planned economy): Government/collective ownership of major resources, central planning, equitable distribution, price controls. Examples: China (current hybrid), Cuba.
+· Mixed economy: Combines elements of capitalism and socialism – private sector with government regulation, social welfare programs, public goods. Examples: India, France, Canada.
+· Economic models: Each system answers three basic questions – What to produce? How to produce? For whom to produce?
+· Comparison: Capitalism excels at efficiency/innovation but can create inequality; Socialism ensures equity but may lack incentives; Mixed economy balances both.
+
+---
+
+ 4: Inflation and Its Causes
+
+· Inflation: Sustained increase in general price rise of goods and services over time (reduces purchasing power of money).
+· Causes of inflation (two main types):
+  · Demand-pull inflation: Aggregate demand exceeds aggregate supply (too much money chasing too few goods). Causes – increased consumption, government spending, money supply growth.
+  · Cost-push inflation: Production costs rise, pushing up prices. Causes – higher wages, raw material costs (e.g., oil), supply chain disruptions, taxes.
+· Inflation control methods: Monetary policy (RBI raises interest rates, increases reserve ratios), fiscal policy (reduced government spending, higher taxes), supply-side measures.
+· Economic impact: Hurts fixed-income groups, savers, lenders (real value erodes). Benefits borrowers, asset owners (real estate, gold).
+· RBI policies: Inflation targeting (typically 2-6% range in India), repo rate adjustments, open market operations to control money supply.
+
+INTERMEDIATE NOTES 
+
+1: Monetary Policy and Its Tools
+
+· Monetary policy: Actions taken by a central bank (RBI in India) to control money supply and credit in the economy to achieve economic stability and growth.
+
+· RBI objectives: Price stability (control inflation), economic growth, exchange rate stability, employment generation.
+
+· Monetary instruments (tools):
+  · Repo rate: Rate at which RBI lends to commercial banks. Increasing repo rate reduces money supply (controls inflation).
+  · Reverse repo rate: Rate RBI pays to banks for parking excess funds. Absorbs liquidity from market.
+  · CRR (Cash Reserve Ratio) : Percentage of deposits banks must keep with RBI. Higher CRR reduces lending capacity.
+  · SLR (Statutory Liquidity Ratio) : Percentage of deposits banks must invest in government securities.
+  · Open Market Operations (OMO) : RBI buys/sells government securities to inject/absorb liquidity.
+  · Bank Rate: Long-term lending rate by RBI to banks.
+· Credit control: Expansionary policy (low rates, more money) during recession; Contractionary policy (high rates, less money) during inflation.
+· Fiscal policy vs Monetary policy: Fiscal policy (government – taxation, spending) works alongside monetary policy (RBI – interest rates, money supply).
+
+---
+
+ 2: Balance of Payments (BOP)
+
+· Balance of payments: Systematic record of all economic transactions between residents of a country and the rest of the world during a specific period (usually one year).
+· BOP components (must balance overall):
+  · Current account: Records trade in goods and services, income (investment earnings, remittances), and current transfers.
+    · Trade balance = Exports - Imports (Surplus if exports > imports; Deficit if imports > exports)
+  · Capital account: Records capital transfers (debt forgiveness, migration of assets) and acquisition/disposal of non-produced assets.
+  · Financial account (often combined with capital account): Records foreign investment (FDI, FII), loans, banking capital, reserves.
+· Foreign exchange: BOP affects currency demand/supply – deficit puts pressure on currency depreciation.
+· Economic indicators: Current Account Deficit (CAD) is closely monitored. Persistent large deficit indicates economic vulnerability.
+
+---
+
+ 3: Unemployment
+
+· Unemployment: People who are willing, able, and actively seeking work but cannot find employment.
+· Types of unemployment:
+  · Frictional: Temporary between jobs (healthy, shows labor mobility)
+  · Structural: Mismatch between skills available and skills demanded (technology change, industry decline)
+  · Cyclical: Due to economic recession/downturn (demand-deficient)
+  · Seasonal: Occurs during certain seasons (agriculture, tourism)
+  · Disguised: More people employed than needed (zero marginal productivity – common in agriculture)
+  · Voluntary: Choosing not to work at prevailing wages
+· Causes: Lack of skills, slow economic growth, population growth, labor laws, automation, seasonal factors.
+· Consequences: Poverty, social unrest, lost output (GDP loss), skill degradation, mental health issues.
+· Solutions: Skill development programs, employment generation schemes (MGNREGA in India), encouraging entrepreneurship, labor reforms, economic growth promotion.
+· Labor market: Measured by unemployment rate (unemployed / labor force × 100).
+
+---
+
+ 4: International Trade and Its Benefits
+
+· International trade: Exchange of goods, services, and capital across international borders. Exports (selling abroad), Imports (buying from abroad).
+· Comparative advantage: Countries should produce goods where they have lower opportunity cost and trade for others – increases global output and efficiency.
+· Benefits of international trade:
+  · Access to wider variety of goods/services
+  · Lower prices due to competition and specialization
+  · Larger markets for producers (economies of scale)
+  · Technology and knowledge transfer
+  · Increased employment in export sectors
+  · Higher GDP and economic growth
+· Trade barriers (restrictions): Tariffs (taxes on imports), quotas (quantity limits), subsidies to local producers, non-tariff barriers (standards, regulations).
+· WTO (World Trade Organization) : International body that regulates trade rules, resolves disputes, promotes free trade through multilateral agreements.
+· Economic integration levels (increasing integration): Free Trade Area → Customs Union → Common Market → Economic Union → Political Union (e.g., EU).
+
+ADVAnced notes 
+
+ 1: Economic Liberalization and Its Impact
+
+· Economic liberalization: Reforms that reduce government control, open markets to private participation, and integrate with global economy.
+
+· Reforms (India 1991 as example): Deregulation, privatization of public sector, reduction in tariffs and trade barriers, tax reforms, allowing foreign direct investment (FDI).
+
+· Globalization: Increased cross-border flow of goods, services, capital, technology, and labor resulting from liberalization.
+
+· Economic growth (positive impacts): Higher GDP growth, increased productivity, more efficient resource allocation, rise of new industries (IT, telecom, services).
+
+· Foreign investment: FDI and FII inflows bring capital, technology, management expertise, and global market access.
+
+· Market opening: Domestic industries face competition, leading to better quality and lower prices for consumers.
+
+· Economic transformation (challenges): Job displacement in traditional sectors (agriculture, small-scale industry), increased income inequality, vulnerability to global financial crises.
+
+· Overall impact: Liberalized economies typically grow faster but require safety nets for affected populations.
+
+---
+
+2: Economic Inequality and Its Measures
+
+· Economic inequality: Unequal distribution of income, wealth, and opportunities among individuals or groups within an economy.
+
+· Gini coefficient: Most common measure – ranges from 0 (perfect equality) to 1 (perfect inequality). Higher Gini = greater inequality. Example: India ~0.35, South Africa ~0.63, Nordic countries ~0.25.
+
+· Income distribution: Share of total national income received by different population segments (often studied as top 10% vs bottom 10% or quintiles).
+
+· Poverty: Extreme form of inequality – lack of minimum income for basic needs. Measured by poverty line and poverty headcount ratio.
+
+· Social justice: Unequal societies face issues of fairness, social cohesion, political instability, and unequal access to education/healthcare.
+
+· Wealth gap: Often wider than income gap – includes assets (property, stocks, savings) passed across generations.
+
+· Economic policies to reduce inequality: Progressive taxation (higher tax on rich), social welfare programs (subsidies, cash transfers), minimum wage laws, public investment in education and healthcare, land reforms.
+
+---
+
+ 3: Sustainable Development
+
+· Sustainable development: Development that meets present needs without compromising the ability of future generations to meet their own needs.
+
+· Three pillars (must balance all):
+  · Economic growth: Prosperity, employment, innovation, infrastructure
+  
+· Environmental protection: Resource conservation, pollution control, biodiversity, climate action
+ 
+ · Social equity: Poverty reduction, health, education, gender equality, inclusive communities
+
+· Long-term planning: Short-term profits cannot come at cost of long-term environmental degradation or social unrest.
+
+· Green economy: Low-carbon, resource-efficient, socially inclusive economic model – renewable energy, circular economy (reduce-reuse-recycle), sustainable agriculture.
+
+· Key challenges: Climate change, resource depletion (water, fossil fuels, minerals), deforestation, pollution, loss of biodiversity.
+
+· UN Sustainable Development Goals (SDGs) : 17 global goals including no poverty, zero hunger, clean energy, responsible consumption, climate action.
+
+· Trade-offs: Industrial growth vs pollution; job creation vs environmental regulation – sustainable development seeks win-win solutions.
+
+---
+
+4: Behavioral Economics
+
+· Behavioral economics: Field combining economics and psychology to study how psychological factors influence decision making – challenges traditional assumption that humans are perfectly rational.
+· Traditional economics assumption: Rational actors with perfect information, stable preferences, maximizing self-interest.
+· Psychological factors: Emotions, social norms, fairness, habits, framing, mental shortcuts (heuristics).
+· Market anomalies: Situations where actual behavior deviates from rational predictions – stock market bubbles, overpricing, herding behavior.
+· Cognitive biases (systematic errors in thinking):
+  · Loss aversion: Fear of loss stronger than desire for gain (losing ₹100 hurts more than gaining ₹100 feels good)
+  · Anchoring: Relying too heavily on first piece of information
+  · Confirmation bias: Seeking evidence that confirms existing beliefs
+  · Present bias: Overvaluing immediate rewards over future benefits
+  · Overconfidence: Overestimating one's own abilities
+· Economic prediction: Behavioral economics improves predictions by incorporating realistic human behavior – used in public policy ("nudge" units), marketing, finance (understanding irrational market movements).
+· Applications: Designing better pension plans (opt-out vs opt-in), reducing energy consumption (social comparison feedback), improving health choices (default healthy options).

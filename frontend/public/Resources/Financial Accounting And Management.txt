@@ -1,0 +1,141 @@
+FINANCIAL MANAGEMENT 
+NOTES 
+
+ 1: Time Value of Money
+
+· Time value of money: A rupee today is worth more than tomorrow (can earn interest).
+· Present value (PV) : Today's worth of future money (discounting).
+· Future value (FV) : Tomorrow's worth of current money (compounding): FV = PV × (1 + r)^n.
+· Discounting: Converts future cash flows to present value.
+· Investment decisions: Accept projects with positive NPV.
+· Financial planning: Used in retirement planning, loans, investment choices.
+
+---
+
+2: Working Capital Management
+
+· Working capital: Current assets minus current liabilities.
+· Current assets: Cash, receivables, inventory.
+· Current liabilities: Payables, short-term debt.
+· Liquidity: Ability to pay short-term obligations. Ideal ratio ~1.2–2.0.
+· Cash flow: Poor management causes cash shortages despite profits.
+· Operational efficiency: Manage inventory, receivables (collect faster), payables (pay on time).
+· Short-term planning: Cash conversion cycle = DIO + DSO – DPO. Shorter = better.
+
+---
+
+ 3: Capital Budgeting
+
+· Capital budgeting: Evaluating long-term investment projects (machinery, expansion).
+· Investment appraisal: Techniques to check if returns exceed cost.
+· NPV: Sum of discounted future cash flows minus initial investment. Accept if NPV > 0.
+· IRR: Discount rate where NPV = 0. Accept if IRR > cost of capital.
+· Payback period: Time to recover initial investment. Shorter preferred.
+· Investment decisions: Long-term, irreversible, high impact.
+
+---
+
+4: Financial Markets and Institutions
+
+· Financial markets: Platforms for trading stocks, bonds, currencies.
+· Stock market: Trade shares (BSE, NSE) – primary (IPOs) and secondary markets.
+· Banks: Accept deposits, provide loans, regulated by RBI.
+· NBFCs: Non-banking financial companies – loans and investments, no demand deposits.
+· Mutual funds: Pool money into diversified portfolios – professional management.
+· Financial institutions: Insurance (LIC), pension funds, investment banks.
+· Capital formation: Channel savings from households to businesses for investment and growth.
+
+INTERMEDIATE NOTES 
+
+ 1: Risk and Return
+
+· Risk-return tradeoff: Higher potential returns come with higher risk. Safe investments (FDs, bonds) give low returns; risky investments (stocks, crypto) can give higher returns but also losses.
+· Investment risk: Uncertainty about actual returns vs expected returns. Includes market risk, credit risk, liquidity risk, inflation risk.
+· Return expectations: Expected return = risk-free rate + risk premium. Higher perceived risk requires higher risk premium to attract investors.
+· Portfolio management: Diversification across different assets reduces overall risk without sacrificing expected returns.
+· Investment strategies: Conservative (low risk, low return), moderate, aggressive (high risk, high return). Based on investor's risk tolerance and time horizon.
+· Risk assessment: Measured by standard deviation (volatility), beta (market sensitivity), Value at Risk (VaR).
+
+---
+
+ 2: Financial Statement Analysis
+
+· Financial statement analysis: Evaluating company's financial health and performance using its financial statements (balance sheet, income statement, cash flow statement).
+· Horizontal analysis: Compares financial data across multiple periods (year-over-year growth). Shows trends and growth rates.
+· Vertical analysis: Expresses each line item as percentage of a base figure (e.g., all expenses as % of revenue). Helps compare companies of different sizes.
+· Trend analysis: Identifies patterns over multiple periods to predict future performance.
+· Financial ratios: Key metrics for evaluation – liquidity ratios (current ratio), profitability ratios (ROE, margin), leverage ratios (debt-to-equity), efficiency ratios (inventory turnover).
+· Performance evaluation: Benchmarks against historical data, industry averages, or competitors to identify strengths/weaknesses.
+
+---
+
+3: Dividend Policy
+
+· Dividend policy: Company's strategy on whether to distribute profits to shareholders as dividends or retain them for reinvestment.
+· Dividend payout ratio: Percentage of net income paid as dividends (e.g., 40% payout = ₹0.40 dividend per ₹1 profit). Higher payout means less retained.
+· Retention ratio: Percentage of net income kept in business (plowback ratio). Retention ratio = 1 – Payout ratio.
+· Shareholder wealth: Dividends provide immediate cash; retained earnings fund growth which may increase share price. Both affect shareholder wealth.
+· Distribution decisions: Factors – company's growth stage (high-growth firms retain more), profitability, cash flow stability, tax considerations, shareholder preferences.
+· Reinvestment: Retained earnings used for expansion, R&D, debt repayment, or acquisitions. Trade-off: reinvestment vs paying cash to shareholders.
+· Theories: Irrelevance theory (dividend doesn't affect value) vs Bird-in-hand theory (dividends reduce uncertainty).
+
+---
+
+4: Corporate Finance and Its Objectives
+
+· Corporate finance: Area of finance dealing with financial decisions made by corporations – how to raise money, invest it, and return value to shareholders.
+· Financial decisions (three main areas):
+  · Investment decisions (capital budgeting): What projects/assets to invest in? (e.g., new factory, acquisition)
+  · Financing decisions (capital structure): How to raise money – debt (loans, bonds) vs equity (shares)?
+  · Dividend decisions: How much profit to distribute vs reinvest?
+· Capital structure: Mix of debt and equity financing. Optimal structure minimizes cost of capital while managing risk.
+· Financing decisions: Debt is cheaper (tax benefits) but increases bankruptcy risk; equity is expensive but flexible. Trade-off determines capital structure.
+· Investment decisions: Evaluate projects using NPV, IRR, payback period – invest only if expected return exceeds cost of capital.
+· Financial optimization: Primary objective – maximize shareholder wealth (share price). Secondary – liquidity management, risk management, stakeholder value.
+
+ADVANCE NOTES 
+
+1: Derivatives and Hedging
+
+· Derivatives: Financial instruments whose value is derived from an underlying asset (stock, commodity, currency, index). Main types: futures, options, swaps, forwards.
+· Futures: Contracts to buy/sell an asset at a predetermined price on a future date. Standardized and traded on exchanges.
+· Options: Give the right (but not obligation) to buy (call) or sell (put) an asset at a specific price before/on a expiry date.
+· Hedging: Using derivatives to reduce or eliminate risk from adverse price movements. Example: An airline buying oil futures to lock in fuel prices.
+· Risk management: Hedging protects against price volatility, currency fluctuations, interest rate changes, commodity price swings.
+· Speculation: Opposite of hedging – taking directional bets to profit from price movements. High risk, high return.
+· Financial instruments: Used by corporates (hedging), traders (speculation), arbitrageurs (risk-free profit from price differences).
+
+---
+
+2: Portfolio Theory and Risk Management
+
+· Portfolio theory (Modern Portfolio Theory – Harry Markowitz): Framework for building investment portfolios that maximize expected return for a given level of risk.
+· Diversification: Spreading investments across different assets (stocks, bonds, sectors, countries) to reduce overall portfolio risk. Non-correlated assets work best.
+· Efficient frontier: Curve showing optimal portfolios offering the highest expected return for each risk level. Rational investors choose portfolios on this frontier.
+· Beta (β): Measures stock's volatility relative to market. β=1 (moves with market), β>1 (more volatile), β<1 (less volatile).
+· Alpha (α): Excess return generated by a portfolio beyond expected return given its risk (beta). Positive alpha indicates skilled management.
+· Sharpe ratio: Measures risk-adjusted return = (Portfolio return – Risk-free rate) / Standard deviation. Higher ratio means better return per unit of risk.
+· Portfolio optimization: Process of selecting asset weights to maximize return for given risk or minimize risk for given return.
+
+---
+
+3: International Finance
+
+· International finance: Study of monetary interactions between countries – foreign exchange, global capital flows, multinational corporate finance.
+· Foreign exchange (Forex) : Market where currencies are traded (largest financial market globally). Exchange rates determine currency values.
+· Currency risk (exchange rate risk): Risk that currency fluctuations will negatively affect investment or business value. Example: Indian exporter earning USD faces rupee appreciation risk.
+· Interest rate parity (IRP): Theory that interest rate differential between two countries equals expected change in exchange rates. Prevents risk-free arbitrage.
+· International capital markets: Global markets for debt (Eurobonds), equity (cross-listings), and other securities. Allow companies to raise capital across borders.
+· Global finance concepts: Purchasing power parity (PPP), forward rates, currency swaps, cross-border M&A, sovereign risk, foreign direct investment (FDI).
+
+---
+
+4: Financial Modeling and Valuation
+
+· Financial modeling: Building mathematical representations of a company's financial performance (typically in Excel) to forecast future results and support decision-making.
+· Valuation techniques: Methods to determine a company's or asset's economic worth.
+· DCF (Discounted Cash Flow) : Most common method – projects future free cash flows and discounts them to present value using weighted average cost of capital (WACC). Intrinsic value approach.
+· Multiples (comparable analysis): Valuing a company relative to similar public companies or recent transactions. Common multiples: P/E, EV/EBITDA, P/B, EV/Sales.
+· M&A valuation: Valuing target companies for acquisition – includes DCF, comparable company analysis, precedent transactions, and LBO (leveraged buyout) models.
+· Financial analysis: Historical performance review, ratio analysis, scenario/sensitivity analysis, three-statement modeling (income, balance sheet, cash flow).
+· Investment banking: Core skill – used for IPOs, M&A advisory, debt/equity raising, restructuring, fairness opinions.

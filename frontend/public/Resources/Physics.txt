@@ -1,0 +1,435 @@
+PHYSICS 
+NOTEs
+
+Q1: Define molarity and calculate molarity of 5g NaCl in 500ml solution
+
+Definition of Molarity:
+
+· Molarity is the number of moles of solute dissolved in one liter of solution.
+· It is represented by the symbol M.
+· Formula: Molarity = (Moles of solute) / (Volume of solution in liters)
+
+Calculation steps for 5g NaCl in 500 mL solution:
+
+· Step 1 – Find molar mass of NaCl
+    Atomic mass of Na = 23 g/mol
+    Atomic mass of Cl = 35.5 g/mol
+    Molar mass of NaCl = 23 + 35.5 = 58.5 g/mol
+· Step 2 – Calculate number of moles
+    Moles = Given mass / Molar mass
+    Moles = 5 / 58.5
+    Moles ≈ 0.0855 mol
+· Step 3 – Convert volume to liters
+    500 mL = 500 / 1000 = 0.5 L
+· Step 4 – Apply molarity formula
+    Molarity = 0.0855 / 0.5
+    Molarity = 0.171 M (or mol/L)
+
+Key point to remember:
+Molarity is temperature-dependent because volume changes with temperature.
+
+---
+
+Q2: Explain the phenomenon of reflection and refraction
+
+Reflection:
+
+· Reflection is the bouncing back of light when it strikes a surface.
+· It follows the law: Angle of incidence = Angle of reflection.
+· The incident ray, reflected ray, and normal all lie in the same plane.
+· Examples: Seeing yourself in a mirror, reflection in still water.
+· Images formed can be real (concave mirror) or virtual (plane mirror).
+
+Refraction:
+
+· Refraction is the bending of light when it passes from one transparent medium to another.
+· Bending occurs because light changes speed in different media.
+· It follows Snell's law: n₁ sin θ₁ = n₂ sin θ₂, where n is refractive index.
+· When light enters a denser medium, it bends toward the normal.
+· When light enters a rarer medium, it bends away from the normal.
+· Examples: A straw appearing bent in water, a lens focusing light, a rainbow forming.
+
+Difference in one line:
+Reflection sends light back into the same medium; refraction sends light into a different medium with a change in direction.
+
+---
+
+Q3: State the laws of thermodynamics
+
+There are four laws of thermodynamics (zeroth, first, second, third):
+
+Zeroth Law of Thermodynamics:
+
+· If two systems (A and B) are each in thermal equilibrium with a third system (C), then A and B are in thermal equilibrium with each other.
+· This law is the basis for temperature measurement using thermometers.
+
+First Law of Thermodynamics:
+
+· Energy can neither be created nor destroyed – it can only change forms.
+· Mathematically: ΔU = Q – W
+    ΔU = change in internal energy
+    Q = heat added to the system
+    W = work done by the system
+· This is the law of conservation of energy applied to thermal systems.
+
+Second Law of Thermodynamics:
+
+· The entropy (disorder) of an isolated system always increases over time.
+· Heat cannot spontaneously flow from a colder body to a hotter body.
+· No heat engine can be 100% efficient (some heat is always wasted).
+· This law explains why perpetual motion machines are impossible.
+
+Third Law of Thermodynamics:
+
+· As temperature approaches absolute zero (0 Kelvin or -273.15°C), the entropy of a perfect crystal approaches zero.
+· It is impossible to reach absolute zero through any finite process.
+
+Quick memory aid:
+Zeroth = temperature measurement
+First = energy conservation
+Second = entropy increases, efficiency limits
+Third = absolute zero is unreachable
+
+---
+
+Q4: Draw ray diagrams for convex and concave mirrors
+
+Since I cannot draw images, here is a step-by-step description of how to draw them and what you will see.
+
+For a Concave Mirror (curved inward like a cave):
+
+Rules for drawing rays (any two rays are enough to locate the image):
+
+· Ray 1: A ray parallel to the principal axis passes through the focus (F) after reflection.
+· Ray 2: A ray passing through the focus (F) becomes parallel to the principal axis after reflection.
+· Ray 3: A ray passing through the center of curvature (C) reflects back along the same path.
+
+Image formation for different object positions:
+
+· Object beyond C: Image is between F and C, real, inverted, and smaller than the object.
+· Object at C: Image is at C, real, inverted, and same size as object.
+· Object between F and C: Image is beyond C, real, inverted, and enlarged.
+· Object at F: Image is formed at infinity (highly enlarged).
+· Object between P (pole) and F: Image is behind the mirror, virtual, upright, and enlarged (used as a shaving mirror).
+
+For a Convex Mirror (curved outward like the back of a spoon):
+
+Rules for drawing rays:
+
+· Ray 1: A ray parallel to the principal axis appears to come from the focus (F) behind the mirror after reflection.
+· Ray 2: A ray directed toward the center of curvature (C) reflects back along the same path.
+· Ray 3: A ray directed toward the focus (F) becomes parallel to the principal axis after reflection.
+
+Image formation:
+
+· For any object placed anywhere in front of a convex mirror, the image is always:
+  · Formed behind the mirror (between pole P and focus F)
+  · Virtual (cannot be captured on a screen)
+  · Upright (not inverted)
+  · Smaller (diminished) than the object
+
+Practical uses:
+
+· Concave mirror: Used in torches, headlights, solar furnaces, shaving mirrors.
+· Convex mirror: Used as rearview mirrors in vehicles because it gives a wider field of view.
+
+Drawing tip: Always draw the principal axis (horizontal line), the mirror (curved line), mark pole (P), focus (F), and center of curvature (C). Then draw any two rays from the top of the object and extend them (real rays with solid lines, virtual rays with dotted lines).
+
+---
+
+INTERMEDIATE NOTes
+---
+
+Q1: Derive the expressions for magnetic field due to current-carrying conductor
+
+Important note: The expression depends on the shape of the conductor. Below are the three most common cases.
+
+A. Magnetic field due to a straight current-carrying wire (infinite length)
+
+Using Ampere's Law:
+
+· Ampere's law states: ∮ B · dl = μ₀ × I(enc), where I(enc) is the current enclosed.
+· For an infinitely long straight wire, the magnetic field lines are concentric circles around the wire.
+· Choose an Amperian loop – a circle of radius r centered on the wire.
+· By symmetry, B is constant in magnitude and tangent to the loop at every point.
+· The line integral becomes: ∮ B · dl = B × (2πr)
+· Applying Ampere's law: B × (2πr) = μ₀ × I
+· Therefore, B = (μ₀ I) / (2πr)
+
+Direction: Given by the right-hand thumb rule – thumb along current, fingers curl in direction of B.
+
+B. Magnetic field at the center of a circular current-carrying loop
+
+· Consider a circular loop of radius R carrying current I.
+· Every small element (dl) of the loop is perpendicular to the radius vector from that element to the center.
+· Using Biot-Savart law: dB = (μ₀ / 4π) × (I dl sinθ / r²)
+· At the center, θ = 90° (sin90° = 1) and r = R for all elements.
+· So dB = (μ₀ / 4π) × (I dl / R²)
+· Integrate around the entire loop: ∮ dl = 2πR
+· Therefore, B = (μ₀ I) / (2R) at the center.
+
+C. Magnetic field on the axis of a circular loop
+
+· At a point on the axis at distance x from the center:
+· B = (μ₀ I R²) / [2 (R² + x²)^(3/2)]
+· Direction: along the axis, given by right-hand rule.
+
+Special cases:
+
+· At center (x = 0): B = μ₀ I / (2R)
+· Far away (x >> R): B ≈ (μ₀ I R²) / (2x³)
+
+Viva tip: For a solenoid (many loops), B inside = μ₀ n I, where n = number of turns per unit length.
+
+---
+
+Q2: Explain the concept of internal energy
+
+Definition:
+
+· Internal energy (U) is the total energy stored inside a system due to the motion and interactions of its particles.
+· It includes:
+  · Kinetic energy of molecules (translational, rotational, vibrational)
+  · Potential energy due to intermolecular forces
+  · Energy associated with chemical bonds and atomic nuclei (usually constant unless reactions occur)
+
+Key characteristics:
+
+· State function: Internal energy depends only on the current state (temperature, pressure, volume) – not on how the system reached that state.
+· Absolute value cannot be measured – only the change in internal energy (ΔU) is physically meaningful.
+· For an ideal gas, internal energy depends only on temperature (because intermolecular forces are zero).
+  · Monatomic gas: U = (3/2) nRT
+  · Diatomic gas: U = (5/2) nRT (at moderate temperatures)
+
+How internal energy changes:
+
+From the first law of thermodynamics: ΔU = Q – W
+
+· ΔU increases when:
+  · Heat (Q) is added to the system
+  · Work (W) is done on the system (negative W in formula)
+· ΔU decreases when:
+  · Heat is removed from the system
+  · The system does work on its surroundings
+
+Relation to heat capacity:
+
+· At constant volume: Q = n C_v ΔT, and since W = 0 (no volume change), ΔU = n C_v ΔT
+· Therefore, C_v = (1/n) (dU/dT) at constant volume
+
+Examples:
+
+· Heating water in a closed container → increases internal energy (temperature rises)
+· Expanding gas pushing a piston → decreases internal energy (gas cools)
+· Melting ice at constant temperature → increases internal energy (potential energy of molecules increases) even though temperature does not change
+
+Viva tip: Internal energy is different from enthalpy (H = U + PV). Enthalpy includes flow work; internal energy does not.
+
+---
+
+Q3: Explain the working of a transformer
+
+Definition:
+
+· A transformer is a static device that transfers electrical energy from one circuit to another through mutual induction, with a change in voltage and current.
+
+Basic construction:
+
+· Core: Soft iron laminated core (to reduce eddy currents)
+· Primary winding: Input coil connected to AC source
+· Secondary winding: Output coil connected to load
+· Both windings are electrically isolated but magnetically coupled through the core.
+
+Working principle (step-by-step):
+
+1. An alternating current (AC) flows through the primary winding.
+2. This AC produces an alternating magnetic flux in the iron core.
+3. The core channels nearly all the flux through the secondary winding (flux linkage).
+4. According to Faraday's law of electromagnetic induction, the changing flux induces an EMF in the secondary winding.
+5. The induced EMF is given by: E = -N (dΦ/dt)
+
+Voltage ratio:
+
+· For primary: E₁ = -N₁ (dΦ/dt)
+· For secondary: E₂ = -N₂ (dΦ/dt)
+· Taking the ratio: E₂ / E₁ = N₂ / N₁
+· In an ideal transformer (no losses): V₂ / V₁ = N₂ / N₁
+
+Current ratio:
+
+· Power input ≈ Power output (ideal case)
+· V₁ I₁ = V₂ I₂
+· Therefore, I₂ / I₁ = N₁ / N₂
+
+Types of transformers:
+
+· Step-up transformer: N₂ > N₁ → V₂ > V₁, I₂ < I₁
+  · Used in power transmission (to reduce losses)
+· Step-down transformer: N₂ < N₁ → V₂ < V₁, I₂ > I₁
+  · Used in battery chargers, doorbells
+
+Energy losses in real transformers:
+
+· Copper loss: I²R heating in windings
+· Iron loss: Hysteresis loss + eddy current loss in core
+· Flux leakage: Some flux does not link both coils
+· Magnetostriction: Humming sound due to core expansion/contraction
+
+Why AC and not DC?
+
+· Transformer cannot work on DC because DC produces constant flux (no change → no induced EMF).
+· With DC, primary coil would draw large current and burn out.
+
+Viva tip: In an ideal transformer, voltage changes but frequency remains the same. Power is conserved (ignoring losses).
+
+---
+
+Q4: Derive the formula for centripetal force
+
+Definition:
+
+· Centripetal force is the net force acting on an object moving in a circular path, directed toward the center of the circle.
+
+Derivation using velocity vector change:
+
+Consider an object moving with constant speed v in a circle of radius r.
+
+· At time t = 0: object at point A, velocity v₁ (tangential, direction along tangent)
+· At time t = Δt: object moves to point B, velocity v₂ (same magnitude v, different direction)
+
+The angle swept at the center: Δθ = (v Δt) / r (since arc length = r Δθ = v Δt)
+
+Change in velocity (Δv):
+
+· Δv = v₂ – v₁ (vector subtraction)
+· For small Δθ, the magnitude of Δv is approximately v × Δθ
+· Direction of Δv is toward the center (perpendicular to v)
+
+Acceleration:
+
+· Centripetal acceleration a_c = Δv / Δt = (v Δθ) / Δt = v (Δθ/Δt) = v × (v/r)
+· Therefore, a_c = v² / r
+
+Force (Newton's second law):
+
+· F_c = m × a_c
+· F_c = m v² / r
+
+Alternative forms using angular velocity (ω):
+
+· Since v = rω
+· Substitute: F_c = m (rω)² / r = m r ω²
+· Also ω = 2πf (where f = frequency) and T = 1/f = 2π/ω
+
+So centripetal force can be written as:
+
+· F_c = m v² / r
+· F_c = m r ω²
+· F_c = 4π² m r f²
+· F_c = 4π² m r / T²
+
+Important conceptual points:
+
+· Centripetal force is not a new type of force – it is the name given to the net force causing circular motion.
+· The source can be:
+  · Tension (ball on a string)
+  · Gravity (planet orbiting the sun)
+  · Friction (car turning on a road)
+  · Normal reaction (motorcycle riding inside a sphere of death)
+· Centrifugal force is a pseudo force – it appears to act outward only in the rotating frame of reference. In an inertial frame, no outward force exists.
+
+Common mistake to avoid:
+
+· Centripetal force is toward the center.
+· The object does not fly outward due to a force – it flies outward due to inertia (Newton's first law) when centripetal force is removed.
+
+ADAVANCE 
+
+
+Absolutely. Here are the short, point‑wise answers without any tables or boxes.
+
+---
+
+Q1: Derive Maxwell's equations in integral form
+
+Gauss’s law for electricity
+
+· Total electric flux through a closed surface = charge enclosed / ε₀
+· ∮ E · dA = Q_enc / ε₀
+· Derivation: For a point charge Q at center of a sphere, E = Q/(4πε₀r²). Flux = E × 4πr² = Q/ε₀. Works for any closed surface.
+
+Gauss’s law for magnetism
+
+· Total magnetic flux through any closed surface = 0
+· ∮ B · dA = 0
+· Reason: Magnetic field lines are continuous loops. No isolated magnetic monopoles exist.
+
+Faraday’s law
+
+· Induced EMF around a closed loop = – rate of change of magnetic flux
+· ∮ E · dl = – dΦ_B/dt, where Φ_B = ∫ B · dA
+· Derivation: Changing B produces induced EMF. EMF = ∮ E · dl = – dΦ_B/dt (from experiments).
+
+Ampere–Maxwell law
+
+· ∮ B · dl = μ₀ I_enc + μ₀ ε₀ dΦ_E/dt
+· Original Ampere’s law (∮ B·dl = μ₀ I) failed for capacitors because current is discontinuous between plates.
+· Maxwell added displacement current = ε₀ dΦ_E/dt.
+· Physical meaning: Changing electric field also produces magnetic field.
+
+---
+
+Q2: Describe the quantum numbers and their significance
+
+Principal quantum number (n)
+
+· Values: n = 1, 2, 3, ...
+· Determines: Energy level (shell), size of orbital, average distance from nucleus.
+· For H atom: E_n = –13.6 / n² eV.
+
+Azimuthal quantum number (l)
+
+· Values: l = 0, 1, 2, ... up to (n–1)
+· Determines: Shape of orbital (subshell), magnitude of angular momentum = √[l(l+1)] ħ.
+· l = 0 → s (spherical), l = 1 → p (dumbbell), l = 2 → d (cloverleaf), l = 3 → f.
+
+Magnetic quantum number (m_l)
+
+· Values: m_l = –l to +l (total 2l+1 values)
+· Determines: Orientation of orbital in space, z‑component of angular momentum = m_l ħ.
+· Example: l = 1 (p) → m_l = –1, 0, +1 → three orientations (px, py, pz).
+
+Spin quantum number (m_s)
+
+· Values: m_s = +½ or –½
+· Determines: Intrinsic spin direction of electron (up or down).
+· Significance: Pauli exclusion principle – no two electrons in an atom can have all four quantum numbers identical.
+
+---
+
+Q3: Explain the concept of nuclear fission and fusion
+
+Nuclear fission
+
+· Splitting a heavy nucleus into two lighter nuclei + neutrons + energy.
+· Example: n + U‑235 → Ba‑141 + Kr‑92 + 3n + 200 MeV energy.
+· Process: Neutron absorbed → nucleus becomes unstable → elongates → splits.
+· Energy source: Mass defect converted via E = Δm c².
+· Applications: Nuclear power plants (controlled chain reaction), atomic bombs (uncontrolled).
+
+Nuclear fusion
+
+· Combining two light nuclei to form a heavier nucleus + energy.
+· Example (in Sun): 4 H → He‑4 + 2 positrons + 2 neutrinos + 26.7 MeV.
+· Process: Extreme temperature (~10⁷ K in Sun, ~10⁸ K on Earth) overcomes Coulomb repulsion → strong nuclear force pulls nuclei together → mass defect releases energy.
+· Conditions: High temperature, high density, sufficient confinement time.
+· Applications: Hydrogen bombs (uncontrolled). Experimental reactors like tokamaks (not yet commercial).
+
+Key difference
+
+· Fission splits heavy nuclei; fusion combines light nuclei.
+· Fusion releases 4× more energy per gram than fission.
+· Fusion fuel (hydrogen isotopes) is abundant; fusion waste is short‑lived.
+· Fusion is harder to achieve on Earth because it requires 100 million °C and plasma confinement.
+
+-
