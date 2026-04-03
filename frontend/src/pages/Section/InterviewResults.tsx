@@ -1,7 +1,18 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/common/Button";
-import { ChevronLeft, Clock, CheckCircle, Award, Users, TrendingUp, PlayCircle, Timer } from "lucide-react";
+import { ChevronLeft, Clock, CheckCircle, Award, Users, TrendingUp, PlayCircle, Timer, MessageSquare, Brain, Zap } from "lucide-react";
+
+interface QuestionTranscript {
+  questionId: string;
+  question: string;
+  transcript: string;
+  role: string;
+  level: string;
+  mentioned: string[];
+  notMentioned: string[];
+  ai_analysis: string;
+}
 
 interface SectionData {
   role: string;
@@ -11,10 +22,9 @@ interface SectionData {
   timeSpent: string;
   completedAt: string;
   sectionCode: string;
-  sessionStartTime: string;
-  sessionEndTime: string;
-  totalAttendanceTime: string;
   averageTimePerQuestion: string;
+  averageWordsPerMinute: number;
+  questionTranscripts: QuestionTranscript[];
 }
 
 interface SectionDataResponse {
@@ -24,7 +34,10 @@ interface SectionDataResponse {
 export function InterviewResults() {
   const [sectionData, setSectionData] = useState<SectionData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSection, setSelectedSection] = useState<SectionData | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const currentSectionCode = searchParams.get('section');
 
   useEffect(() => {
     const fetchSectionData = async () => {
@@ -35,6 +48,14 @@ export function InterviewResults() {
         const data: SectionDataResponse = await response.json();
         console.log('Fetched data:', data);
         setSectionData(data.sections || []);
+        
+        // If current section code exists, find and set it as selected
+        if (currentSectionCode) {
+          const currentSection = data.sections?.find(section => section.sectionCode === currentSectionCode);
+          if (currentSection) {
+            setSelectedSection(currentSection);
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch section data:', error);
       } finally {
@@ -43,7 +64,7 @@ export function InterviewResults() {
     };
 
     fetchSectionData();
-  }, []);
+  }, [currentSectionCode]);
 
   const calculateCompletionRate = (answered: number, total: number) => {
     return Math.round((answered / total) * 100);
@@ -154,7 +175,7 @@ export function InterviewResults() {
                         <PlayCircle size={16} />
                         <span>Session Time</span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">{section.totalAttendanceTime}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">{section.timeSpent}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -175,6 +196,14 @@ export function InterviewResults() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
+                        <Zap size={16} />
+                        <span>Speaking Pace</span>
+                      </div>
+                      <span className="text-sm font-medium text-aiva-purple">{section.averageWordsPerMinute} WPM</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
                         <TrendingUp size={16} />
                         <span>Completion</span>
                       </div>
@@ -185,14 +214,25 @@ export function InterviewResults() {
                   </div>
 
                   <div className="mt-4 border-t border-gray-100 pt-4 dark:border-white/10">
-                    <p className="text-xs text-gray-500 dark:text-slate-400">
-                      Completed: {formatDate(section.completedAt)}
-                    </p>
-                    {section.sectionCode && (
-                      <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                        Section: {section.sectionCode}
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs text-gray-500 dark:text-slate-400">
+                        Completed: {formatDate(section.completedAt)}
                       </p>
-                    )}
+                      {section.sectionCode && (
+                        <p className="text-xs text-gray-500 dark:text-slate-400">
+                          Section: {section.sectionCode}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <Button
+                      size="sm"
+                      onClick={() => setSelectedSection(section)}
+                      className="w-full flex items-center justify-center gap-2"
+                    >
+                      <MessageSquare size={16} />
+                      View Details
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -200,6 +240,132 @@ export function InterviewResults() {
           )}
         </div>
       </div>
+
+      {/* Detailed Section Modal */}
+      {selectedSection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl dark:bg-slate-900">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 dark:bg-slate-900 dark:border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+                    {selectedSection.role} - {selectedSection.level}
+                  </h2>
+                  <p className="text-gray-600 dark:text-slate-400">
+                    Section Code: {selectedSection.sectionCode}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setSelectedSection(null)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200"
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Performance Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4 dark:bg-slate-800">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-slate-400 mb-1">
+                    <Users size={16} />
+                    <span className="text-sm">Progress</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+                    {selectedSection.questionsAnswered}/{selectedSection.totalQuestions}
+                  </p>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 dark:bg-slate-800">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-slate-400 mb-1">
+                    <Clock size={16} />
+                    <span className="text-sm">Time</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">
+                    {selectedSection.timeSpent}
+                  </p>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 dark:bg-slate-800">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-slate-400 mb-1">
+                    <Timer size={16} />
+                    <span className="text-sm">Avg/Q</span>
+                  </div>
+                  <p className="text-2xl font-bold text-aiva-purple">
+                    {selectedSection.averageTimePerQuestion}
+                  </p>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 dark:bg-slate-800">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-slate-400 mb-1">
+                    <Zap size={16} />
+                    <span className="text-sm">WPM</span>
+                  </div>
+                  <p className="text-2xl font-bold text-aiva-purple">
+                    {selectedSection.averageWordsPerMinute}
+                  </p>
+                </div>
+              </div>
+
+              {/* Question Transcripts */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 flex items-center gap-2">
+                  <MessageSquare size={20} />
+                  Question Responses & AI Feedback
+                </h3>
+                
+                {selectedSection.questionTranscripts.map((transcript, index) => (
+                  <div key={transcript.questionId} className="border border-gray-200 rounded-lg p-4 dark:border-white/10">
+                    <div className="mb-3">
+                      <h4 className="font-medium text-gray-900 dark:text-slate-100 mb-2">
+                        Question {index + 1}: {transcript.question}
+                      </h4>
+                      <div className="bg-blue-50 rounded-lg p-3 dark:bg-blue-900/20">
+                        <p className="text-sm text-gray-800 dark:text-slate-200">
+                          <strong>Your Response:</strong> {transcript.transcript}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {transcript.ai_analysis && (
+                      <div className="bg-green-50 rounded-lg p-3 dark:bg-green-900/20">
+                        <p className="text-sm text-gray-800 dark:text-slate-200">
+                          <strong className="flex items-center gap-2">
+                            <Brain size={16} />
+                            AI Coach Feedback:
+                          </strong>
+                          <br />
+                          {transcript.ai_analysis}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Keywords Analysis */}
+                    {(transcript.mentioned.length > 0 || transcript.notMentioned.length > 0) && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {transcript.mentioned.map((keyword, i) => (
+                          <span key={i} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full dark:bg-green-900/30 dark:text-green-300">
+                            ✓ {keyword}
+                          </span>
+                        ))}
+                        {transcript.notMentioned.map((keyword, i) => (
+                          <span key={i} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full dark:bg-red-900/30 dark:text-red-300">
+                            ✗ {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

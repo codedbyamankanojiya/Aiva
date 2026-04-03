@@ -5,8 +5,8 @@ import { useEffect, useRef } from "react";
 interface AIPanelProps {
   showAIPanel: boolean;
   isMobile: boolean;
-  loading: boolean;
-  currentQuestion: any;
+  loading?: boolean;
+  currentQuestion?: any;
   currentQuestionIndex: number;
   totalQuestions: number;
   isLastQuestion: boolean;
@@ -20,6 +20,7 @@ interface AIPanelProps {
   isSTTConnecting?: boolean;
   sttLatency?: number | null;
   aiAnalysis?: string;
+  wordsPerMinute?: number;
 }
 
 function AivaAvatar({
@@ -63,6 +64,7 @@ export function AIPanel({
   isSTTConnecting = false,
   sttLatency = null,
   aiAnalysis = "", // Add AI analysis prop
+  wordsPerMinute = 0,
 }: AIPanelProps) {
   // TTS functionality
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -209,6 +211,9 @@ export function AIPanel({
                   <div className="max-w-[80%] rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm dark:border-white/10 dark:bg-slate-800">
                     <p className="text-gray-900 text-sm font-medium mb-1">🤖 Aiva Coach</p>
                     <p className="text-xs text-gray-700 dark:text-slate-200">{aiAnalysis}</p>
+                    {wordsPerMinute > 0 && (
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">⚡ {wordsPerMinute} WPM</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -341,6 +346,9 @@ export function AIPanel({
                 <div className="max-w-[85%] rounded-2xl rounded-tl-none border border-gray-100 bg-white px-5 py-4 shadow-md dark:border-white/10 dark:bg-slate-800">
                   <p className="text-gray-900 text-sm font-semibold mb-1">🤖 Aiva Coach</p>
                   <p className="text-sm font-semibold leading-relaxed text-gray-900 dark:text-slate-100">{aiAnalysis}</p>
+                  {wordsPerMinute > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">⚡ {wordsPerMinute} WPM</p>
+                  )}
                 </div>
               </div>
             )}

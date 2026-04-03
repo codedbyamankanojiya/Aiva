@@ -5,15 +5,16 @@
       "level": "Beginner",
       "questionsAnswered": 2,
       "totalQuestions": 2,
-      "timeSpent": "",
-      "completedAt": "2026-04-03T14:31:15.376576",
-      "sectionCode": "EWW6UHY5",
-      "averageTimePerQuestion": "",
+      "timeSpent": "03:17",
+      "completedAt": "2026-04-03T15:54:03.865Z",
+      "sectionCode": "P87KW1GL",
+      "averageTimePerQuestion": "01:38",
+      "averageWordsPerMinute": 0,
       "questionTranscripts": [
         {
           "questionId": "se-1",
           "question": "Tell me about yourself and your experience in software development.",
-          "transcript": "I have experience in software development that is not critical enough to solve here.",
+          "transcript": "So hello. I'm Vaishna, and I have experience of in software engineering about five years. And I have managed to develop a problem solving skill throughout my ex experience in multiple job roles.",
           "role": "Software Engineer",
           "level": "Beginner",
           "mentioned": [
@@ -23,12 +24,12 @@
             "Professional introduction",
             "Career highlights"
           ],
-          "ai_analysis": "You mentioned your experience broadly, but a strong answer should start with a brief professional introduction and highlight key career achievements to engage the interviewer. Next time, begin with your current role and summarize a few specific, relevant accomplishments."
+          "ai_analysis": "You mentioned your years of experience and problem-solving skill, which is a good start. However, to make a stronger first impression, next time include a brief professional introduction and a specific career highlight or key achievement to showcase your impact."
         },
         {
           "questionId": "se-2",
           "question": "What programming languages are you most comfortable with and why?",
-          "transcript": "There are no programming language I'm comfortable with.",
+          "transcript": "There are many programming language I'm comfortable with, like, a front end, I use React plus Angular, and in the back end, I use FastAPI.",
           "role": "Software Engineer",
           "level": "Beginner",
           "mentioned": [
@@ -38,7 +39,112 @@
             "Technical preferences",
             "Reasoning skills"
           ],
-          "ai_analysis": "You mentioned your proficiency level, but saying you're not comfortable with any language doesn't highlight your reasoning or any technical preferences. Next time, focus on languages you have experience with, even if you're still learning, and explain why you chose to work with them or what you like about them."
+          "ai_analysis": "You mentioned your language proficiency, which is a good start. However, you didn’t explain your *technical preferences* or *reasoning* for choosing them, which would show deeper understanding. Next time, briefly explain *why* you prefer a language or framework (e.g., for productivity, performance, or ecosystem)."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "09:09",
+      "completedAt": "2026-04-03T16:21:52.382Z",
+      "sectionCode": "BRNPHD7Z",
+      "averageTimePerQuestion": "04:34",
+      "averageWordsPerMinute": 1152,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "So hello. I'm Vaishna, and I am a software engineering in a company that help five years of experience throughout the years I have worked in the company to develop a skill that I have managed to learn from the Udemy and more platform like shutter.com, and there are other other stuff that I have managed to do during this period of time. So let's see.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [
+            "Experience overview"
+          ],
+          "notMentioned": [
+            "Professional introduction",
+            "Career highlights"
+          ],
+          "ai_analysis": "You mentioned your years of experience, which is a good start. However, your answer lacked a clear professional introduction and specific career highlights or skills. Next time, briefly state your current role, summarize your key achievements or technologies you've worked with, and connect your experience to the role you're interviewing for."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "00:16",
+      "completedAt": "2026-04-03T16:32:29.984Z",
+      "sectionCode": "AWEPV9VW",
+      "averageTimePerQuestion": "00:16",
+      "averageWordsPerMinute": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "Hello. So I will introduce myself as a software development working in industry for five years. Almost and have managed to develop many skills. I'm doing the making the functional part, like, AI from management",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [
+            "Professional introduction",
+            "Experience overview",
+            "Career highlights"
+          ],
+          "ai_analysis": "You mentioned your role and years of experience, which is a good start. However, to make a stronger impression, next time include a brief professional introduction, a clearer overview of your experience, and a specific highlight or achievement to showcase your impact in software development."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "01:27",
+      "completedAt": "2026-04-03T16:36:45.876Z",
+      "sectionCode": "I4FDKAOC",
+      "averageTimePerQuestion": "00:43",
+      "averageWordsPerMinute": 1,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "Hello. Hello. Hello.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [
+            "Professional introduction",
+            "Experience overview",
+            "Career highlights"
+          ],
+          "ai_analysis": "You only gave a greeting, which doesn’t share any relevant experience. Next time, start with a brief professional introduction, summarize your years in software development, and mention one or two key career highlights to engage the interviewer."
+        }
+      ]
+    },
+    {
+      "role": "Behavioral Upskilling",
+      "level": "Beginner",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "",
+      "completedAt": "2026-04-04T00:21:31.990667",
+      "sectionCode": "BFWHEMPA",
+      "averageTimePerQuestion": "00:00",
+      "averageWordsPerMinute": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "bu-1",
+          "question": "How do you handle conflicts with colleagues?",
+          "transcript": "Hello? Yeah. We do not",
+          "role": "Behavioral Upskilling",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "You mentioned that conflicts don't occur, which shows a positive outlook, but it’s not a realistic or complete answer. Next time, briefly describe a practical step you would take, like listening first or seeking a collaborative solution, to demonstrate your conflict-resolution skills."
         }
       ]
     }
