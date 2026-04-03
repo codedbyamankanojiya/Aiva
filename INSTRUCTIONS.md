@@ -84,6 +84,9 @@ cd frontend
 # Install Node.js dependencies
 npm install
 
+# Note: Initial loading of Active Sessions will fetch ML models for the Vision System (~5-10MB).
+# Make sure you have a reliable internet connection for the first run.
+
 # Create environment file (if needed)
 cp .env.example .env.local
 ```
@@ -297,10 +300,11 @@ curl http://localhost:5173
 
 ### 3. Test Integration
 1. Open http://localhost:5173 in browser
-2. Navigate to Settings page
-3. Test theme toggle functionality
-4. Try starting a practice session
-5. Verify TTS is working (requires API key)
+2. Navigate to Settings page and test theme toggle functionality
+3. Check out the Resources page for the cinematic UI experience
+4. Try starting a practice session to initiate the Active Session view
+5. Grant camera/microphone permissions to enable the Vision HUD and AI Face Tracking
+6. Verify TTS is working (requires API key)
 
 ## 📱 Mobile Development
 

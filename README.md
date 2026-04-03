@@ -33,18 +33,20 @@ Unlike traditional recording tools, Aiva reconstructs this data into personalize
 - **Responsive Design** - Perfect on mobile, tablet, and desktop
 
 ### 🚀 Advanced Features
-- **Text-to-Speech** - Natural voice synthesis with ElevenLabs
-- **Camera & Audio Analysis** - Real-time performance tracking
-- **Progress Analytics** - Detailed performance metrics
-- **Achievement System** - Gamified learning experience
+- **Real-Time Vision System** - Local face tracking and emotion analysis using TensorFlow.js and face-api.
+- **Cinematic UI/UX** - Engaging, dark-mode prioritized interface with glassmorphism, Framer Motion animations, and Lenis smooth scrolling.
+- **Text-to-Speech** - Natural voice synthesis with ElevenLabs.
+- **Camera & Audio Analysis** - Real-time performance tracking via an advanced Vision HUD.
+- **Progress Analytics** - Detailed performance metrics.
 
 ## 🏗️ Architecture
 
 ### Frontend Stack
-```
+```text
 React 18 + TypeScript
 ├── UI Framework: Tailwind CSS
 ├── Animations: Framer Motion + Lenis
+├── ML/Vision: TensorFlow.js + face-api (@vladmandic/face-api)
 ├── State Management: React Context
 ├── Routing: React Router
 ├── HTTP Client: Fetch API
@@ -147,7 +149,8 @@ aiva/
 
 ### Key Features Navigation
 - **📊 Dashboard** - Overview of progress and achievements
-- **🎯 Practice** - Role selection and interview setup
+- **🎯 Practice** - Role selection, interview setup, and active sessions with Vision HUD
+- **📚 Resources** - Interactive, responsive resource hub with cinematic categories
 - **📈 Analytics** - Detailed performance metrics
 - **⚙️ Settings** - Theme, audio, and accessibility options
 - **👥 Community** - Connect with other learners

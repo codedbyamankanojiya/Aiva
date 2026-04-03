@@ -56,6 +56,10 @@
 - **ElevenLabs** - Text-to-speech API
 - **python-dotenv** - Environment management
 
+#### Machine Learning / Vision (Frontend-driven)
+- **TensorFlow.js (@tensorflow/tfjs-core)** - Local ML execution
+- **face-api (@vladmandic/face-api)** - Face detection and expressions
+
 ---
 
 ## 🎨 Frontend Documentation
@@ -67,13 +71,14 @@ frontend/src/
 │   ├── common/         # Shared components
 │   ├── auth/           # Authentication components
 │   ├── layout/         # Layout components
-│   └── effects/        # Visual effects
+│   ├── effects/        # Visual effects
+│   └── vision/         # Real-time face tracking and Vision HUD components
 ├── context/            # React context providers
 ├── pages/              # Page components
 │   ├── auth/           # Authentication pages
-│   ├── Section/        # Interview sections
-│   └── ...             # Other pages
-├── hooks/              # Custom React hooks
+│   ├── Section/        # Interview sections (e.g., ActiveSession)
+│   └── ...             # Other pages (Resources, Dashboard, etc.)
+├── hooks/              # Custom React hooks (e.g., useVisionSystem, useLenis)
 ├── utils/              # Utility functions
 ├── types/              # TypeScript type definitions
 ├── styles/             # Global styles
@@ -283,6 +288,19 @@ GET /api/roles
 ---
 
 ## 🧩 Component Library
+
+### Vision Components
+
+#### Vision HUD
+```typescript
+<VisionHUD
+  videoRef={videoRef}
+  isModelReady={isModelReady}
+  isTracking={isTracking}
+  faceData={faceData}
+/>
+```
+*Used in the ActiveSession view to render the camera feed alongside the FaceTrackingOverlay and live analysis metrics.*
 
 ### Core Components
 
