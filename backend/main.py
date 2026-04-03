@@ -50,6 +50,7 @@ class SectionData(BaseModel):
     sectionCode: str
     averageTimePerQuestion: str
     averageWordsPerMinute: int = 0
+    answerQuality: int = 0
     questionTranscripts: Optional[List[dict]] = []
 
 app = FastAPI(title="Aiva Interview API", version="1.0.0")
@@ -240,6 +241,7 @@ class SectionData(BaseModel):
     completedAt: str
     sectionCode: str
     averageTimePerQuestion: str
+    answerQuality: int = 0
 
 # Load data from JSON files
 def load_questions():
@@ -267,6 +269,82 @@ def load_roles():
         roles.append(role)
     
     return roles
+def recalculate_all_answer_qualities():
+    """Recalculate answer quality for all sections in SectionData.json"""
+    try:
+        data = load_section_data()
+        sections = data.get("sections", [])
+        updated_count = 0
+        
+        for section in sections:
+            transcripts = section.get("questionTranscripts", [])
+            
+            # Check if transcripts need keyword analysis
+            needs_analysis = False
+            for transcript in transcripts:
+                if "mentioned" not in transcript or "notMentioned" not in transcript:
+                    needs_analysis = True
+                    break
+            
+            if needs_analysis:
+                print(f"🔍 Processing section {section.get('sectionCode', 'Unknown')} for keyword analysis...")
+                
+                # Perform keyword analysis for each transcript
+                for transcript in transcripts:
+                    question_id = transcript.get("questionId", "")
+                    transcript_text = transcript.get("transcript", "")
+                    
+                    if question_id and transcript_text:
+                        keyword_analysis = analyze_keywords(question_id, transcript_text)
+                        transcript["mentioned"] = keyword_analysis["mentioned"]
+                        transcript["notMentioned"] = keyword_analysis["notMentioned"]
+                        print(f"  ✅ Analyzed question {question_id}: {len(keyword_analysis['mentioned'])} mentioned, {len(keyword_analysis['notMentioned'])} not mentioned")
+            
+            # Calculate answer quality for the section
+            if transcripts:
+                answer_quality = calculate_answer_quality(transcripts)
+                section["answerQuality"] = answer_quality
+                updated_count += 1
+                print(f"📊 Section {section.get('sectionCode', 'Unknown')} answer quality: {answer_quality}%")
+        
+        # Save updated data
+        with open('SectionData.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        print(f"✅ Updated answer quality for {updated_count} sections")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error recalculating answer qualities: {e}")
+        return False
+
+def calculate_answer_quality(transcripts: List[dict]) -> int:
+    """Calculate answer quality as percentage of key points mentioned"""
+    try:
+        if not transcripts:
+            return 0
+        
+        total_key_points = 0
+        mentioned_key_points = 0
+        
+        for transcript in transcripts:
+            mentioned = transcript.get("mentioned", [])
+            not_mentioned = transcript.get("notMentioned", [])
+            
+            total_key_points += len(mentioned) + len(not_mentioned)
+            mentioned_key_points += len(mentioned)
+        
+        if total_key_points == 0:
+            return 0
+        
+        quality_percentage = round((mentioned_key_points / total_key_points) * 100)
+        print(f"🔍 Answer Quality Calculation: {mentioned_key_points}/{total_key_points} = {quality_percentage}%")
+        return quality_percentage
+        
+    except Exception as e:
+        print(f"❌ Error calculating answer quality: {e}")
+        return 0
+
 def calculate_average_time_per_question(time_spent: str, questions_answered: int) -> str:
     """Calculate average time per question from total time spent"""
     try:
@@ -402,6 +480,12 @@ def save_section_data(section_data: dict):
             if "averageWordsPerMinute" in actual_section_data:
                 existing_section["averageWordsPerMinute"] = actual_section_data["averageWordsPerMinute"]
             
+            # Calculate and update answer quality
+            existing_transcripts = existing_section.get("questionTranscripts", [])
+            if existing_transcripts:
+                existing_section["answerQuality"] = calculate_answer_quality(existing_transcripts)
+                print(f"🔍 Updated answer quality: {existing_section['answerQuality']}%")
+            
             # Handle new transcripts if provided
             new_transcripts = actual_section_data.get("questionTranscripts", [])
             if new_transcripts:
@@ -426,6 +510,7 @@ def save_section_data(section_data: dict):
         else:
             print(f"🆕 Creating new section entry")
             # Add new section
+            actual_section_data["answerQuality"] = calculate_answer_quality(actual_section_data.get("questionTranscripts", []))
             data["sections"].append(actual_section_data)
         
         with open('SectionData.json', 'w', encoding='utf-8') as f:
@@ -473,21 +558,6 @@ async def get_questions(role_id: str, level: Optional[str] = None):
             filtered_questions = [
                 Question(**q) for q in role_questions["questions"]
             ]
-
-        compulsory_question = "Kindly introduce yourself"
-        compulsory_item = next(
-            (q for q in filtered_questions if (q.question or "").strip().lower() == compulsory_question.lower()),
-            None,
-        )
-        if compulsory_item is None:
-            compulsory_item = Question(
-                id="intro-1",
-                question=compulsory_question,
-                level=level or "all",
-                type="behavioral",
-            )
-        filtered_questions = [q for q in filtered_questions if q.id != compulsory_item.id]
-        filtered_questions.insert(0, compulsory_item)
         
         return QuestionsResponse(
             role=role_questions["title"],
@@ -516,6 +586,18 @@ async def save_section_data_endpoint(section_data: SectionData):
             raise HTTPException(status_code=500, detail="Failed to save section data")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error saving section data: {str(e)}")
+
+@app.post("/api/recalculate-answer-quality")
+async def recalculate_answer_quality_endpoint():
+    """Recalculate answer quality for all sections"""
+    try:
+        success = recalculate_all_answer_qualities()
+        if success:
+            return {"message": "Answer quality recalculated successfully for all sections"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to recalculate answer quality")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error recalculating answer quality: {str(e)}")
 
 @app.get("/api/section-data")
 async def get_section_data():
@@ -636,6 +718,10 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
             existing_section["questionsAnswered"] = len(existing_section["questionTranscripts"])
             existing_section["completedAt"] = datetime.now().isoformat()
             
+            # Recalculate answer quality after updating transcripts
+            existing_section["answerQuality"] = calculate_answer_quality(existing_section["questionTranscripts"])
+            print(f"🔍 Recalculated answer quality: {existing_section['answerQuality']}%")
+            
             # Save the entire data structure directly
             with open('SectionData.json', 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
@@ -655,17 +741,25 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
                 "sectionCode": transcript_data.sectionCode,
                 "averageTimePerQuestion": "00:00",  # Single question, no average yet
                 "averageWordsPerMinute": 0,  # Will be updated when session ends
-                "questionTranscripts": [{
-                    "questionId": transcript_data.questionId,
-                    "question": transcript_data.question,
-                    "transcript": transcript_data.transcript,
-                    "role": transcript_data.role,
-                    "level": transcript_data.level,
-                    "mentioned": transcript_data.mentioned,
-                    "notMentioned": transcript_data.notMentioned,
-                    "ai_analysis": ai_analysis_text
-                }]
+                "answerQuality": 0,  # Will be calculated after adding transcript
+                "questionTranscripts": []
             }
+            
+            # Add transcript first, then calculate quality
+            section_data_dict["questionTranscripts"] = [{
+                "questionId": transcript_data.questionId,
+                "question": transcript_data.question,
+                "transcript": transcript_data.transcript,
+                "role": transcript_data.role,
+                "level": transcript_data.level,
+                "mentioned": transcript_data.mentioned,
+                "notMentioned": transcript_data.notMentioned,
+                "ai_analysis": ai_analysis_text
+            }]
+            
+            # Calculate answer quality for the new section
+            section_data_dict["answerQuality"] = calculate_answer_quality(section_data_dict["questionTranscripts"])
+            print(f"🔍 New section answer quality: {section_data_dict['answerQuality']}%")
             
             # Add new section to data and save directly
             data["sections"].append(section_data_dict)
@@ -729,6 +823,7 @@ async def save_section_data_endpoint(request: dict):
             "sectionCode": section_code,
             "averageTimePerQuestion": calculate_average_time_per_question(time_spent, questions_answered),
             "averageWordsPerMinute": request.get("averageWordsPerMinute", 0),
+            "answerQuality": calculate_answer_quality(question_transcripts),
             "questionTranscripts": question_transcripts
         }
         

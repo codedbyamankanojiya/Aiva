@@ -41,7 +41,8 @@
           ],
           "ai_analysis": "You mentioned your language proficiency, which is a good start. However, you didn’t explain your *technical preferences* or *reasoning* for choosing them, which would show deeper understanding. Next time, briefly explain *why* you prefer a language or framework (e.g., for productivity, performance, or ecosystem)."
         }
-      ]
+      ],
+      "answerQuality": 33
     },
     {
       "role": "Software Engineer",
@@ -69,7 +70,8 @@
           ],
           "ai_analysis": "You mentioned your years of experience, which is a good start. However, your answer lacked a clear professional introduction and specific career highlights or skills. Next time, briefly state your current role, summarize your key achievements or technologies you've worked with, and connect your experience to the role you're interviewing for."
         }
-      ]
+      ],
+      "answerQuality": 33
     },
     {
       "role": "Software Engineer",
@@ -96,7 +98,8 @@
           ],
           "ai_analysis": "You mentioned your role and years of experience, which is a good start. However, to make a stronger impression, next time include a brief professional introduction, a clearer overview of your experience, and a specific highlight or achievement to showcase your impact in software development."
         }
-      ]
+      ],
+      "answerQuality": 0
     },
     {
       "role": "Software Engineer",
@@ -123,7 +126,8 @@
           ],
           "ai_analysis": "You only gave a greeting, which doesn’t share any relevant experience. Next time, start with a brief professional introduction, summarize your years in software development, and mention one or two key career highlights to engage the interviewer."
         }
-      ]
+      ],
+      "answerQuality": 0
     },
     {
       "role": "Behavioral Upskilling",
@@ -146,7 +150,8 @@
           "notMentioned": [],
           "ai_analysis": "You mentioned that conflicts don't occur, which shows a positive outlook, but it’s not a realistic or complete answer. Next time, briefly describe a practical step you would take, like listening first or seeking a collaborative solution, to demonstrate your conflict-resolution skills."
         }
-      ]
+      ],
+      "answerQuality": 0
     },
     {
       "role": "Software Engineer",
@@ -190,7 +195,8 @@
           ],
           "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
         }
-      ]
+      ],
+      "answerQuality": 12
     },
     {
       "role": "Software Engineer",
@@ -218,7 +224,8 @@
           ],
           "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
         }
-      ]
+      ],
+      "answerQuality": 0
     },
     {
       "role": "Software Engineer",
@@ -262,7 +269,8 @@
           ],
           "ai_analysis": "Your answer doesn't address the question about debugging, so it's not an effective response. Next time, be sure to describe a systematic approach—like isolating the problem, using debugging tools, or reviewing code—to show your problem-solving process."
         }
-      ]
+      ],
+      "answerQuality": 12
     },
     {
       "role": "Behavioral Upskilling",
@@ -294,6 +302,214 @@
           "mentioned": [],
           "notMentioned": [],
           "ai_analysis": "It seems there may have been a technical issue or miscommunication, as your current response is not clear or coherent. For a strong answer next time, focus on mentioning a specific skill you’re learning, how you’re learning it (courses, mentoring), and how it applies to your role."
+        }
+      ],
+      "answerQuality": 0
+    },
+    {
+      "role": "Presentation Skills",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "03:51",
+      "completedAt": "2026-04-04T02:05:23.492269",
+      "sectionCode": "NEXQW87O",
+      "averageTimePerQuestion": "03:51",
+      "averageWordsPerMinute": 1,
+      "questionTranscripts": [
+        {
+          "questionId": "ps-3",
+          "question": "How do you handle nervousness before public speaking?",
+          "transcript": "Hello? No.",
+          "role": "Presentation Skills",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Breathing exercises",
+            "Practice preparation",
+            "Positive visualization",
+            "Experience building",
+            "Stress management"
+          ],
+          "ai_analysis": "You didn’t mention any specific strategies in your answer, which leaves a hiring manager unsure of your actual approach. Next time, be sure to include practical techniques like breathing exercises, thorough preparation, and positive visualization to show you have a proactive plan."
+        }
+      ],
+      "answerQuality": 0
+    },
+    {
+      "role": "Behavioral Upskilling",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "05:29",
+      "completedAt": "2026-04-03T20:42:03.859Z",
+      "sectionCode": "RW99W8OR",
+      "averageTimePerQuestion": "02:44",
+      "averageWordsPerMinute": 2,
+      "questionTranscripts": [
+        {
+          "questionId": "bu-3",
+          "question": "How do you give and receive constructive feedback?",
+          "transcript": "Okay. Okay. So I can't convince you it and constructive feedback. Because I am deaf.",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "Thank you for sharing your perspective. While you’ve highlighted a unique and important communication consideration, a strong answer would also outline a clear method or framework for both giving feedback (like being specific and kind) and receiving it (like listening without defensiveness). Next time, try to combine your personal insight with those actionable steps."
+        },
+        {
+          "questionId": "bu-4",
+          "question": "Describe your approach to professional development.",
+          "transcript": "Hello, Okay. So I have no clue for this",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "It’s okay to be unsure, but an interviewer expects you to share your proactive efforts to learn and grow. Next time, mention things like seeking feedback, taking courses, setting goals, or learning from colleagues to show you’re committed to improving."
+        }
+      ],
+      "answerQuality": 0
+    },
+    {
+      "role": "Presentation Skills",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 3,
+      "timeSpent": "00:31",
+      "completedAt": "2026-04-03T21:08:45.163Z",
+      "sectionCode": "HDZ9420B",
+      "averageTimePerQuestion": "00:15",
+      "averageWordsPerMinute": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "intro-1",
+          "question": "Kindly introduce yourself",
+          "transcript": "How do you handle nervousness before public speaking?",
+          "timestamp": "2026-04-03T21:08:38.614Z",
+          "mentioned": [],
+          "notMentioned": []
+        }
+      ],
+      "answerQuality": 0
+    },
+    {
+      "role": "Behavioral Upskilling",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "01:23",
+      "completedAt": "2026-04-03T21:22:19.605Z",
+      "sectionCode": "BMGDMD3L",
+      "averageTimePerQuestion": "00:41",
+      "averageWordsPerMinute": 9,
+      "questionTranscripts": [
+        {
+          "questionId": "bu-3",
+          "question": "How do you give and receive constructive feedback?",
+          "transcript": "Okay. So I have any. That is not",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "While I appreciate you starting your response, it seems like you may have been cut off before you could share your thoughts. To give a strong answer next time, you should prepare to briefly explain a specific method for both giving feedback (e.g., being specific and kind) and receiving it (e.g., listening without defensiveness)."
+        },
+        {
+          "questionId": "bu-4",
+          "question": "Describe your approach to professional development.",
+          "transcript": "Okay. So there is no development in my system. Which I use in my",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "Thank you for starting your answer. Unfortunately, your response is incomplete and unclear, which prevents the interviewer from understanding your approach.\n\nFor a strong answer next time, clearly describe specific actions like seeking feedback, taking courses, or learning new skills, and explain how this development benefits your work."
+        }
+      ],
+      "answerQuality": 0
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "01:46",
+      "completedAt": "2026-04-03T21:38:16.285Z",
+      "sectionCode": "ISWZSGVB",
+      "averageTimePerQuestion": "00:53",
+      "averageWordsPerMinute": 8,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "Small introduction about myself. Introduction of myself is that I have worked in it's in very much experience in very much",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [
+            "Professional introduction",
+            "Experience overview"
+          ],
+          "notMentioned": [
+            "Career highlights"
+          ],
+          "ai_analysis": "You’ve started with a professional introduction and attempted an experience overview, which are good instincts. However, your answer is too vague and lacks concrete career highlights or specific skills, which are essential for making a strong first impression. Next time, focus on briefly summarizing your background, key projects, and what you bring to the role."
+        },
+        {
+          "questionId": "se-2",
+          "question": "What programming languages are you most comfortable with and why?",
+          "transcript": "Okay. So there are not any programming language.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [
+            "Language proficiency"
+          ],
+          "notMentioned": [
+            "Technical preferences",
+            "Reasoning skills"
+          ],
+          "ai_analysis": "You mentioned your proficiency, but saying \"there are not any programming language\" is not enough. Next time, specify languages you know and explain why you prefer them—this shows your technical preferences and reasoning skills."
+        }
+      ],
+      "answerQuality": 50
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Beginner",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "01:21",
+      "completedAt": "2026-04-03T21:45:19.621Z",
+      "sectionCode": "3R5A4BTT",
+      "averageTimePerQuestion": "00:40",
+      "averageWordsPerMinute": 13,
+      "answerQuality": 33,
+      "questionTranscripts": [
+        {
+          "questionId": "se-1",
+          "question": "Tell me about yourself and your experience in software development.",
+          "transcript": "Okay. So I will keep in this moment.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [],
+          "notMentioned": [
+            "Professional introduction",
+            "Experience overview",
+            "Career highlights"
+          ],
+          "ai_analysis": "You mentioned that you’ll keep it brief, but this is too brief to give the interviewer a sense of your background. Next time, be sure to include a professional introduction, an overview of your experience, and a career highlight or two to make a strong first impression."
+        },
+        {
+          "questionId": "se-2",
+          "question": "What programming languages are you most comfortable with and why?",
+          "transcript": "Through my technical differences and reason skills the reasoning skills and technical preferences.",
+          "role": "Software Engineer",
+          "level": "Beginner",
+          "mentioned": [
+            "Technical preferences",
+            "Reasoning skills"
+          ],
+          "notMentioned": [
+            "Language proficiency"
+          ],
+          "ai_analysis": "You mentioned your technical preferences and reasoning skills, which shows you're thinking about your strengths. However, you didn’t actually name any specific programming languages or explain your proficiency with them, which is the core of the question. Next time, directly state the languages you're comfortable with and give a brief reason for each, like a project or feature you enjoy."
         }
       ]
     }

@@ -24,6 +24,7 @@ interface SectionData {
   sectionCode: string;
   averageTimePerQuestion: string;
   averageWordsPerMinute: number;
+  answerQuality: number;
   questionTranscripts: QuestionTranscript[];
 }
 
@@ -47,11 +48,19 @@ export function InterviewResults() {
         console.log('Response status:', response.status);
         const data: SectionDataResponse = await response.json();
         console.log('Fetched data:', data);
-        setSectionData(data.sections || []);
+        
+        // Sort sections in ascending order by completion date
+        const sortedSections = (data.sections || []).sort((a, b) => {
+          const dateA = new Date(a.completedAt).getTime();
+          const dateB = new Date(b.completedAt).getTime();
+          return dateA - dateB; // Ascending order (oldest first)
+        });
+        
+        setSectionData(sortedSections);
         
         // If current section code exists, find and set it as selected
         if (currentSectionCode) {
-          const currentSection = data.sections?.find(section => section.sectionCode === currentSectionCode);
+          const currentSection = sortedSections.find(section => section.sectionCode === currentSectionCode);
           if (currentSection) {
             setSelectedSection(currentSection);
           }
@@ -172,10 +181,28 @@ export function InterviewResults() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
-                        <PlayCircle size={16} />
-                        <span>Session Time</span>
+                        <Brain size={16} />
+                        <span>Response Accuracy</span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">{section.timeSpent}</span>
+                      <span className={`text-sm font-medium ${
+                        section.answerQuality >= 70 ? 'text-green-600 dark:text-green-400' :
+                        section.answerQuality >= 40 ? 'text-yellow-600 dark:text-yellow-400' :
+                        'text-red-600 dark:text-red-400'
+                      }`}>
+                        {section.answerQuality || 0}%
+                      </span>
+                    </div>
+
+                    {/* Response Accuracy Progress Bar */}
+                    <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-slate-700">
+                      <div 
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          section.answerQuality >= 70 ? 'bg-green-500' :
+                          section.answerQuality >= 40 ? 'bg-yellow-500' :
+                          'bg-red-500'
+                        }`}
+                        style={{ width: `${section.answerQuality || 0}%` }}
+                      />
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -184,14 +211,6 @@ export function InterviewResults() {
                         <span>Avg per Question</span>
                       </div>
                       <span className="text-sm font-medium text-aiva-purple">{section.averageTimePerQuestion}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
-                        <Clock size={16} />
-                        <span>Timer</span>
-                      </div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">{section.timeSpent}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -308,6 +327,30 @@ export function InterviewResults() {
                   <p className="text-2xl font-bold text-aiva-purple">
                     {selectedSection.averageWordsPerMinute}
                   </p>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 dark:bg-slate-800">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-slate-400 mb-1">
+                    <Brain size={16} />
+                    <span className="text-sm">Response Accuracy</span>
+                  </div>
+                  <p className={`text-2xl font-bold mb-2 ${
+                    selectedSection.answerQuality >= 70 ? 'text-green-600 dark:text-green-400' :
+                    selectedSection.answerQuality >= 40 ? 'text-yellow-600 dark:text-yellow-400' :
+                    'text-red-600 dark:text-red-400'
+                  }`}>
+                    {selectedSection.answerQuality || 0}%
+                  </p>
+                  <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-slate-600">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        selectedSection.answerQuality >= 70 ? 'bg-green-500' :
+                        selectedSection.answerQuality >= 40 ? 'bg-yellow-500' :
+                        'bg-red-500'
+                      }`}
+                      style={{ width: `${selectedSection.answerQuality || 0}%` }}
+                    />
+                  </div>
                 </div>
               </div>
 
