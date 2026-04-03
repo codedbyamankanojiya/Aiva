@@ -192,34 +192,21 @@ export class SessionMetricsService {
     };
 
     // ── Backend POST ─────────────────────────
-    const backendUrl = options?.backendUrl || 'http://localhost:8000/api/vision-session';
-    try {
-      console.log(`[MetricsLogger] Sending session metrics to ${backendUrl}...`);
-      const response = await fetch(backendUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionData),
-      });
-      
-      if (response.ok) {
-        console.log('[MetricsLogger] Session metrics saved successfully to backend');
-      } else {
-        console.warn('[MetricsLogger] Failed to save session metrics:', await response.text());
-      }
-    } catch (err) {
-      console.warn('[MetricsLogger] Backend POST failed:', err);
-    }
-
+    // DISABLED: MediaPipe data should not be sent to backend to avoid large files
+    // Only send summary metrics when interview ends
+    console.log('[MetricsLogger] MediaPipe backend storage disabled - using local metrics only');
+    
     // ── Cleanup IndexedDB ─────────────────────────────
     if (this.db) {
       try {
         await idbClear(this.db);
         this.db.close();
-      } catch {
-        // Ignore
+      } catch (error) {
+        console.warn('[MetricsLogger] Failed to clear IndexedDB:', error);
       }
     }
 
+    // Reset in-memory data
     this.frames = [];
     this.frameCounter = 0;
 

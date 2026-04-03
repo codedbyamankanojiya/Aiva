@@ -433,7 +433,7 @@ export function Session() {
     setAiAnalysis('');
   }, [currentQuestionIndex]);
 
-  // Silence detection useEffect
+  // FIXED Silence detection useEffect - 5 second same length detection
   useEffect(() => {
     // Clear existing timer
     if (silenceTimerRef.current) {
@@ -447,14 +447,26 @@ export function Session() {
       setHasSpoken(true);
     }
     
-    // Check for silence conditions
+    // FIXED LOGIC: Better silence detection
     const isSilenceCondition = 
-      (hasSpoken && currentLength === 0) || // Empty transcript after speaking
-      (hasSpoken && currentLength === lastTranscriptLength && currentLength > 0); // Same length for 5 seconds
+      hasSpoken && (
+        // Condition 1: Empty transcript after speaking
+        currentLength === 0 ||
+        // Condition 2: Same length for 5 seconds (with content)
+        (currentLength === lastTranscriptLength && currentLength > 0)
+      );
     
     if (isSilenceCondition) {
-      // Set timer for 5 seconds
+      console.log('🔍 SILENCE CONDITION MET:', {
+        currentLength,
+        lastTranscriptLength,
+        hasSpoken,
+        condition: currentLength === 0 ? 'empty' : 'same length'
+      });
+      
+      // 5 seconds timer for silence detection
       silenceTimerRef.current = window.setTimeout(() => {
+        console.log('🔍 SILENCE DETECTED AFTER 5 SECONDS');
         handleSilenceDetected();
       }, 5000);
     } else {
@@ -503,13 +515,19 @@ export function Session() {
       sectionCode: sectionCode,
       transcripts: finalTranscripts,
       sessionId: sessionId,
-      // Add questionTranscripts field for merging
-      questionTranscripts: finalTranscripts.map((transcript, index) => ({
-        questionId: state.questions[index]?.id || `q-${index}`,
-        question: state.questions[index]?.question || "Question not available",
-        transcript: transcript,
-        timestamp: new Date().toISOString()
-      }))
+      // Add questionTranscripts field - only save actual questions asked
+      questionTranscripts: finalTranscripts.map((transcript, index) => {
+        // Only include transcripts for questions that were actually asked
+        if (index < state.questions.length) {
+          return {
+            questionId: state.questions[index]?.id || `se-${index + 1}`,
+            question: state.questions[index]?.question || "Question not available",
+            transcript: transcript,
+            timestamp: new Date().toISOString()
+          };
+        }
+        return null; // Skip invalid question entries
+      }).filter(Boolean) // Remove null entries
     };
     
     // Save to localStorage for compatibility
@@ -542,6 +560,148 @@ export function Session() {
   const stopTracks = (stream: MediaStream | null) => {
     if (!stream) return;
     stream.getTracks().forEach((t) => t.stop());
+  };
+
+  const startSTT = async () => {
+    if (sttSocketRef.current) {
+      console.warn("STT already started");
+      return;
+    }
+
+    setIsSTTConnecting(true);
+    setSttError("");
+    setSttLatency(null);
+    
+    // Reset silence detection state
+    setHasSpoken(false);
+    setLastTranscriptLength(0);
+
+    try {
+      console.log('Starting STT connection...');
+      
+      // OPTIMIZED: Parallel initialization to reduce delay
+      const [socket, audioContext, stream] = await Promise.all([
+        // Parallel WebSocket connection
+        new Promise<WebSocket>((resolve, reject) => {
+          const wsUrl = "ws://localhost:8000/ws/stt";
+          const socket = new WebSocket(wsUrl);
+          socket.binaryType = "arraybuffer";
+          sttSocketRef.current = socket;
+
+          const timeout = setTimeout(() => {
+            reject(new Error("STT socket timeout"));
+          }, 3000); // Reduced timeout
+
+          socket.onopen = () => {
+            clearTimeout(timeout);
+            console.log('✅ WebSocket connected');
+            resolve(socket);
+          };
+          socket.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error("STT socket error"));
+          };
+        }),
+        
+        // Parallel AudioContext setup
+        new Promise<AudioContext>((resolve) => {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+            sampleRate: 16000,
+            latencyHint: 'interactive'
+          });
+          sttAudioContextRef.current = audioContext;
+          console.log('✅ AudioContext created');
+          resolve(audioContext);
+        }),
+        
+        // Parallel microphone access
+        navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            sampleRate: 16000,
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }, 
+          video: false 
+        }).then(stream => {
+          sttStreamRef.current = stream;
+          console.log('✅ Microphone access granted');
+          return stream;
+        })
+      ]);
+
+      // Setup WebSocket handlers
+      socket.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(String(event.data));
+          if (msg?.type === "error") {
+            setSttError(msg.message || "STT service error");
+            stopSTT();
+            return;
+          }
+          if (msg?.type === "transcript") {
+            // Calculate latency if we have a timestamp
+            if (msg.metadata?.start_time) {
+              const latency = Date.now() - msg.metadata.start_time;
+              setSttLatency(latency);
+            }
+            
+            if (msg.is_final) {
+              setFinalTranscripts((prev) => [...prev, msg.transcript]);
+              setLiveTranscript("");
+            } else {
+              setLiveTranscript(msg.transcript);
+            }
+          }
+        } catch {
+        }
+      };
+
+      socket.onerror = () => {
+        setSttError("STT connection failed");
+        stopSTT();
+      };
+
+      socket.onclose = (event) => {
+        sttSocketRef.current = null;
+        if (!event.wasClean && sttError === "") {
+          setSttError("STT connection lost");
+        }
+      };
+
+      // Load AudioWorklet processor
+      await audioContext.audioWorklet.addModule('/audio-processor.js');
+
+      // Create audio source and worklet node
+      const source = audioContext.createMediaStreamSource(stream);
+      const workletNode = new AudioWorkletNode(audioContext, 'audio-processor', {
+        processorOptions: {
+          sampleRate: 16000
+        }
+      });
+      sttWorkletNodeRef.current = workletNode;
+
+      // Connect audio pipeline
+      source.connect(workletNode);
+      workletNode.connect(audioContext.destination);
+
+      // Handle PCM data from AudioWorklet
+      workletNode.port.onmessage = (event) => {
+        if (socket.readyState === WebSocket.OPEN && !isMuted) {
+          const pcmBuffer = event.data;
+          socket.send(pcmBuffer);
+        }
+      };
+
+      setIsSTTConnecting(false);
+      console.log('✅ AudioWorklet STT initialized successfully');
+      
+    } catch (error) {
+      console.error("STT setup failed:", error);
+      setSttError("Failed to start speech recognition");
+      // Note: stopSTT will be defined below
+    }
   };
 
   const stopSTT = () => {
@@ -587,131 +747,6 @@ export function Session() {
     // Reset silence detection state
     setHasSpoken(false);
     setLastTranscriptLength(0);
-  };
-
-  const startSTT = async () => {
-    // Prevent multiple simultaneous connections
-    if (sttSocketRef.current || sttAudioContextRef.current) {
-      console.log('STT already running, skipping...');
-      return;
-    }
-
-    setIsSTTConnecting(true);
-    setSttError("");
-    setSttLatency(null);
-
-    try {
-      console.log('Starting STT connection...');
-      // Step 1: Connect WebSocket
-      const wsUrl = "ws://localhost:8000/ws/stt";
-      const socket = new WebSocket(wsUrl);
-      socket.binaryType = "arraybuffer";
-      sttSocketRef.current = socket;
-
-      socket.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(String(event.data));
-          if (msg?.type === "error") {
-            setSttError(msg.message || "STT service error");
-            stopSTT();
-            return;
-          }
-          if (msg?.type === "transcript") {
-            // Calculate latency if we have a timestamp
-            if (msg.metadata?.start_time) {
-              const latency = Date.now() - msg.metadata.start_time;
-              setSttLatency(latency);
-            }
-            
-            if (msg.is_final) {
-              setFinalTranscripts((prev) => [...prev, msg.transcript]);
-              setLiveTranscript("");
-            } else {
-              setLiveTranscript(msg.transcript);
-            }
-          }
-        } catch {
-        }
-      };
-
-      socket.onerror = () => {
-        setSttError("STT connection failed");
-        stopSTT();
-      };
-
-      socket.onclose = (event) => {
-        sttSocketRef.current = null;
-        if (!event.wasClean && sttError === "") {
-          setSttError("STT connection lost");
-        }
-      };
-
-      await new Promise<void>((resolve, reject) => {
-        const timeout = window.setTimeout(() => {
-          reject(new Error("STT socket timeout"));
-        }, 5000);
-        socket.onopen = () => {
-          window.clearTimeout(timeout);
-          resolve();
-        };
-        socket.onerror = () => {
-          window.clearTimeout(timeout);
-          reject(new Error("STT socket error"));
-        };
-      });
-
-      // Step 2: Setup AudioWorklet
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
-        sampleRate: 16000,
-        latencyHint: 'interactive'
-      });
-      sttAudioContextRef.current = audioContext;
-
-      // Load AudioWorklet processor
-      await audioContext.audioWorklet.addModule('/audio-processor.js');
-
-      // Get microphone stream
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          sampleRate: 16000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }, 
-        video: false 
-      });
-      sttStreamRef.current = stream;
-
-      // Create audio source and worklet node
-      const source = audioContext.createMediaStreamSource(stream);
-      const workletNode = new AudioWorkletNode(audioContext, 'audio-processor', {
-        processorOptions: {
-          sampleRate: 16000
-        }
-      });
-      sttWorkletNodeRef.current = workletNode;
-
-      // Connect audio pipeline
-      source.connect(workletNode);
-      workletNode.connect(audioContext.destination);
-
-      // Handle PCM data from AudioWorklet
-      workletNode.port.onmessage = (event) => {
-        if (socket.readyState === WebSocket.OPEN && !isMuted) {
-          const pcmBuffer = event.data;
-          socket.send(pcmBuffer);
-        }
-      };
-
-      setIsSTTConnecting(false);
-      console.log('✅ AudioWorklet STT initialized successfully');
-      
-    } catch (error) {
-      console.error("STT setup failed:", error);
-      setSttError("Failed to start speech recognition");
-      stopSTT();
-    }
   };
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { Button } from "@/components/common/Button";
 import { ChevronRight } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface AIPanelProps {
   showAIPanel: boolean;
@@ -40,6 +41,78 @@ export function AIPanel({
   sttLatency = null,
   aiAnalysis = "", // Add AI analysis prop
 }: AIPanelProps) {
+  // TTS functionality
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const isSpeakingRef = useRef(false);
+
+  // TTS function
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Create new speech utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9; // Slightly slower for clarity
+      utterance.pitch = 1.0; // Natural pitch
+      utterance.volume = 0.8; // Moderate volume
+      
+      // Get available voices and prefer English
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(voice => 
+        voice.lang.includes('en') || voice.lang.includes('US') || voice.lang.includes('UK')
+      );
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
+      
+      utterance.onstart = () => {
+        isSpeakingRef.current = true;
+        console.log('🔊 TTS started speaking AI response');
+      };
+      
+      utterance.onend = () => {
+        isSpeakingRef.current = false;
+        console.log('🔊 TTS finished speaking AI response');
+      };
+      
+      utterance.onerror = (event) => {
+        isSpeakingRef.current = false;
+        console.error('🔊 TTS error:', event);
+      };
+      
+      speechRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn('🔊 Speech synthesis not supported in this browser');
+    }
+  };
+
+  // Load voices and trigger TTS when aiAnalysis changes
+  useEffect(() => {
+    // Load voices (needed for some browsers)
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
+
+  useEffect(() => {
+    // Trigger TTS when AI analysis is available
+    if (aiAnalysis && aiAnalysis.trim()) {
+      // Small delay to ensure UI is ready
+      setTimeout(() => {
+        speakText(aiAnalysis);
+      }, 500);
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [aiAnalysis]);
+
   if (!showAIPanel) return null;
 
   if (isMobile) {
@@ -252,13 +325,12 @@ export function AIPanel({
 
             {/* AI Coach Response - Display below user response */}
             {aiAnalysis && (
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-xs font-semibold shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-aiva-purple to-aiva-indigo flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-purple-100">
                   AI
                 </div>
-                <div className="bg-white rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-gray-200">
-                  <p className="text-gray-900 text-sm font-medium mb-1">🤖 Aiva Coach</p>
-                  <p className="text-gray-700 text-xs">{aiAnalysis}</p>
+                <div className="bg-white rounded-2xl rounded-tl-none px-5 py-4 max-w-[85%] shadow-md border border-gray-100">
+                  <p className="text-gray-900 text-sm font-semibold leading-relaxed">{aiAnalysis}</p>
                 </div>
               </div>
             )}

@@ -6,60 +6,39 @@
       "questionsAnswered": 2,
       "totalQuestions": 2,
       "timeSpent": "",
-      "completedAt": "2026-04-02T09:23:53.446Z",
-      "sectionCode": "T09YHGPT",
+      "completedAt": "2026-04-03T14:31:15.376576",
+      "sectionCode": "EWW6UHY5",
       "averageTimePerQuestion": "",
       "questionTranscripts": [
         {
           "questionId": "se-1",
           "question": "Tell me about yourself and your experience in software development.",
-          "transcript": "Introduction about myself. In my work, experience overview, in my field of view, I can say that it is not a full thing to do.",
-          "timestamp": "2026-04-02T09:23:53.446Z",
+          "transcript": "I have experience in software development that is not critical enough to solve here.",
+          "role": "Software Engineer",
+          "level": "Beginner",
           "mentioned": [
             "Experience overview"
           ],
           "notMentioned": [
             "Professional introduction",
             "Career highlights"
-          ]
+          ],
+          "ai_analysis": "You mentioned your experience broadly, but a strong answer should start with a brief professional introduction and highlight key career achievements to engage the interviewer. Next time, begin with your current role and summarize a few specific, relevant accomplishments."
         },
         {
           "questionId": "se-2",
           "question": "What programming languages are you most comfortable with and why?",
-          "transcript": "You know, preferences, I use the reasoning skills so I can do my work properly.",
-          "timestamp": "2026-04-02T09:24:46.796Z",
+          "transcript": "There are no programming language I'm comfortable with.",
+          "role": "Software Engineer",
+          "level": "Beginner",
           "mentioned": [
-            "Reasoning skills"
+            "Language proficiency"
           ],
           "notMentioned": [
-            "Language proficiency",
-            "Technical preferences"
-          ]
-        }
-      ]
-    },
-    {
-      "role": "Web Developer",
-      "level": "Intermediate",
-      "questionsAnswered": 1,
-      "totalQuestions": 2,
-      "timeSpent": "",
-      "completedAt": "2026-04-03T05:38:20.321Z",
-      "sectionCode": "NZDMOTDN",
-      "averageTimePerQuestion": "",
-      "questionTranscripts": [
-        {
-          "questionId": "wd-3",
-          "question": "Explain the box model in CSS and how it works.",
-          "transcript": "Okay. So Hello?",
-          "timestamp": "2026-04-03T05:38:20.321Z",
-          "mentioned": [],
-          "notMentioned": [
-            "CSS box model",
-            "Layout properties",
-            "Positioning",
-            "Margin and padding"
-          ]
+            "Technical preferences",
+            "Reasoning skills"
+          ],
+          "ai_analysis": "You mentioned your proficiency level, but saying you're not comfortable with any language doesn't highlight your reasoning or any technical preferences. Next time, focus on languages you have experience with, even if you're still learning, and explain why you chose to work with them or what you like about them."
         }
       ]
     }
