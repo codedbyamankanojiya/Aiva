@@ -407,13 +407,22 @@ def save_section_data(section_data: dict):
             if new_transcripts:
                 # Append new transcripts that don't already exist
                 existing_ids = {t.get("questionId") for t in existing_transcripts}
+                print(f"🔍 DEBUG: Existing question IDs: {existing_ids}")
+                print(f"🔍 DEBUG: New transcripts to add: {[t.get('questionId') for t in new_transcripts]}")
+                
                 for new_transcript in new_transcripts:
-                    if new_transcript.get("questionId") not in existing_ids:
+                    new_question_id = new_transcript.get("questionId")
+                    if new_question_id not in existing_ids:
+                        print(f"🔍 DEBUG: Adding new transcript for question {new_question_id}")
                         existing_transcripts.append(new_transcript)
+                        existing_ids.add(new_question_id)
+                    else:
+                        print(f"🔍 DEBUG: Skipping duplicate transcript for question {new_question_id}")
                 
                 # Update the transcripts array
                 existing_section["questionTranscripts"] = existing_transcripts
                 existing_section["questionsAnswered"] = len(existing_transcripts)
+                print(f"🔍 DEBUG: Updated questionsAnswered to: {len(existing_transcripts)}")
         else:
             print(f"🆕 Creating new section entry")
             # Add new section
@@ -577,34 +586,62 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
         
         if existing_section:
             print(f"📝 Found existing section, updating...")
+            print(f"📝 Current transcripts count: {len(existing_section.get('questionTranscripts', []))}")
+            
             # Update existing section with new transcript
             if "questionTranscripts" not in existing_section:
                 existing_section["questionTranscripts"] = []
             
-            # Create clean transcript object without redundant fields
-            clean_transcript = {
-                "questionId": transcript_data.questionId,
-                "question": transcript_data.question,
-                "transcript": transcript_data.transcript,
-                "role": transcript_data.role,
-                "level": transcript_data.level,
-                "mentioned": transcript_data.mentioned,
-                "notMentioned": transcript_data.notMentioned,
-                "ai_analysis": ai_analysis_text
-            }
+            # Check if this question already exists
+            existing_question_ids = {t.get("questionId") for t in existing_section["questionTranscripts"]}
+            print(f"🔍 DEBUG: Existing question IDs in section: {existing_question_ids}")
+            print(f"🔍 DEBUG: Attempting to add question ID: {transcript_data.questionId}")
             
-            print(f"📝 Adding transcript with AI analysis for question {transcript_data.questionId}")
-            print(f"🤖 AI Analysis included: {ai_analysis_text[:100]}...")
-            
-            existing_section["questionTranscripts"].append(clean_transcript)
+            if transcript_data.questionId in existing_question_ids:
+                print(f"⚠️ Question {transcript_data.questionId} already exists in section {section_code}")
+                # Update existing transcript instead of adding duplicate
+                for i, existing_transcript in enumerate(existing_section["questionTranscripts"]):
+                    if existing_transcript.get("questionId") == transcript_data.questionId:
+                        print(f"🔄 Updating existing transcript at index {i}")
+                        existing_section["questionTranscripts"][i] = {
+                            "questionId": transcript_data.questionId,
+                            "question": transcript_data.question,
+                            "transcript": transcript_data.transcript,
+                            "role": transcript_data.role,
+                            "level": transcript_data.level,
+                            "mentioned": transcript_data.mentioned,
+                            "notMentioned": transcript_data.notMentioned,
+                            "ai_analysis": ai_analysis_text
+                        }
+                        break
+            else:
+                print(f"➕ Adding new transcript for question {transcript_data.questionId}")
+                
+                # Create clean transcript object without redundant fields
+                clean_transcript = {
+                    "questionId": transcript_data.questionId,
+                    "question": transcript_data.question,
+                    "transcript": transcript_data.transcript,
+                    "role": transcript_data.role,
+                    "level": transcript_data.level,
+                    "mentioned": transcript_data.mentioned,
+                    "notMentioned": transcript_data.notMentioned,
+                    "ai_analysis": ai_analysis_text
+                }
+                
+                print(f"📝 Adding transcript with AI analysis for question {transcript_data.questionId}")
+                print(f"🤖 AI Analysis included: {ai_analysis_text[:100]}...")
+                
+                existing_section["questionTranscripts"].append(clean_transcript)
             existing_section["questionsAnswered"] = len(existing_section["questionTranscripts"])
             existing_section["completedAt"] = datetime.now().isoformat()
             
-            success = save_section_data(data)
-            if success:
-                print(f"✅ Successfully saved transcript with AI analysis for question {transcript_data.questionId}")
-            else:
-                print(f"❌ Failed to save transcript data")
+            # Save the entire data structure directly
+            with open('SectionData.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ Successfully saved transcript with AI analysis for question {transcript_data.questionId}")
+            return True
         else:
             print(f"🆕 Creating new section entry")
             # Create new section
@@ -630,7 +667,13 @@ async def save_question_transcript(transcript_data: QuestionTranscript):
                 }]
             }
             
-            success = save_section_data(section_data_dict)
+            # Add new section to data and save directly
+            data["sections"].append(section_data_dict)
+            with open('SectionData.json', 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ Successfully created new section and saved transcript for question {transcript_data.questionId}")
+            return True
         
         return {"success": True, "ai_analysis": ai_analysis_text, "sectionUpdated": True}
         
