@@ -1611,7 +1611,220 @@ Days Inventory Outstanding (DIO)
 - Days Payable Outstanding (DPO)
 = Cash Conversion Cycle (CCC)
 
-GOAL: Minimize CCC (faster cash regeneration)`
+GOAL: Minimize CCC (faster cash regeneration)`,
+
+      "economics": `📈 ECONOMICS CHEAT SHEET v2.0
+
+═══════════════════════════════════════════════════════
+
+📊 DEMAND & SUPPLY
+
+═══════════════════════════════════════════════════════
+
+DEMAND:
+• Law of Demand: Price ↑, Quantity Demanded ↓ (inverse)
+• Factors affecting demand: Income, tastes, price of related goods,
+  expectations, number of buyers
+
+SUPPLY:
+• Law of Supply: Price ↑, Quantity Supplied ↑ (direct)
+• Factors affecting supply: Costs, technology, expectations,
+  number of sellers
+
+───────────────────────────────────────────────────────
+
+MARKET EQUILIBRIUM:
+• Equilibrium: Quantity Demanded = Quantity Supplied
+• Surplus (excess supply): Price tends to fall
+• Shortage (excess demand): Price tends to rise
+
+ELASTICITY:
+• Price Elasticity of Demand (PED):
+  PED = % Change in Quantity / % Change in Price
+• |PED| > 1: Elastic (luxury goods)
+• |PED| < 1: Inelastic (necessities)
+• |PED| = 1: Unit elastic
+
+═══════════════════════════════════════════════════════
+
+💰 GDP & NATIONAL INCOME
+
+═══════════════════════════════════════════════════════
+
+GDP (Gross Domestic Product):
+Total monetary value of all final goods & services produced
+within a country's borders in a given period.
+
+EXPENDITURE APPROACH:
+GDP = C + I + G + (X - M)
+• C = Consumer Spending
+• I = Investment
+• G = Government Spending
+• X = Exports, M = Imports
+
+───────────────────────────────────────────────────────
+
+OTHER NATIONAL INCOME CONCEPTS:
+
+GNP (Gross National Product):
+GDP + Net Factor Income from Abroad
+
+NNP (Net National Product):
+GNP - Depreciation
+
+NDP (Net Domestic Product):
+GDP - Depreciation
+
+PER CAPITA INCOME:
+National Income / Population
+
+REAL vs NOMINAL GDP:
+• Nominal: Measured at current prices
+• Real: Inflation-adjusted (base year prices)
+• GDP Deflator = (Nominal / Real) × 100
+
+═══════════════════════════════════════════════════════
+
+🏭 TYPES OF ECONOMIC SYSTEMS
+
+═══════════════════════════════════════════════════════
+
+1. CAPITALISM (Market Economy):
+✓ Private ownership of means of production
+✓ Profit motive drives production
+✓ Prices determined by supply & demand
+✓ Minimal government intervention
+✗ Can lead to inequality
+✗ Market failures possible
+
+2. SOCIALISM (Planned Economy):
+✓ Government ownership of major resources
+✓ Central planning for allocation
+✓ More equitable distribution
+✗ May lack innovation incentives
+✗ Inefficient resource allocation
+
+3. MIXED ECONOMY:
+✓ Private sector + Government regulation
+✓ Social welfare programs
+✓ Public goods provision
+→ Most common today (India, France, Canada)
+
+BASIC ECONOMIC QUESTIONS:
+• What to produce?
+• How to produce?
+• For whom to produce?
+
+═══════════════════════════════════════════════════════
+
+📉 INFLATION & MONETARY POLICY
+
+═══════════════════════════════════════════════════════
+
+INFLATION:
+Sustained increase in general price level over time.
+
+TYPES OF INFLATION:
+1. Demand-Pull Inflation:
+   → Aggregate demand > Aggregate supply
+   → "Too much money chasing too few goods"
+
+2. Cost-Push Inflation:
+   → Rising production costs
+   → Higher wages, raw materials, supply disruptions
+
+3. Built-in Inflation:
+   → Expectations of future inflation
+   → Wage-price spiral
+
+───────────────────────────────────────────────────────
+
+MEASURING INFLATION:
+• CPI (Consumer Price Index): Basket of consumer goods
+• WPI (Wholesale Price Index): Wholesale prices
+• GDP Deflator: Overall price changes
+
+CONTROLLING INFLATION:
+MONETARY POLICY (Central Bank):
+• Raise interest rates
+• Increase reserve requirements
+• Sell government securities (OMO)
+• Tighten credit
+
+FISCAL POLICY (Government):
+• Reduce government spending
+• Increase taxes
+
+═══════════════════════════════════════════════════════
+
+🏦 MONETARY POLICY TOOLS
+
+═══════════════════════════════════════════════════════
+
+QUANTITATIVE TOOLS:
+• Repo Rate: Rate at which RBI lends to banks
+• Reverse Repo Rate: Rate at which RBI borrows
+• Cash Reserve Ratio (CRR): % deposits banks must keep
+• Statutory Liquidity Ratio (SLR): % assets in liquid form
+
+QUALITATIVE TOOLS:
+• Moral Suasion: Requests to banks
+• Selective Credit Control
+• Fair Practice Code
+•窗口指导 (Window Guidance)
+
+KEY RATES (India):
+• Repo Rate: ~6.5% (as of recent)
+• CRR: ~4.5%
+• SLR: ~18%
+
+═══════════════════════════════════════════════════════
+
+📊 MACROECONOMIC INDICATORS
+
+═══════════════════════════════════════════════════════
+
+UNEMPLOYMENT:
+• Unemployment Rate = Unemployed / Labor Force × 100
+• Types: Frictional, Structural, Cyclical, Seasonal
+• Natural Rate of Unemployment: ~4-6%
+
+POVERTY:
+• Absolute Poverty: Cannot meet basic needs
+• Relative Poverty: Lower than average living standards
+• Poverty Line: Income threshold for basic needs
+
+INEQUALITY:
+• Gini Coefficient: 0 (perfect equality) to 1 (perfect inequality)
+• Lorenz Curve: Visual representation of income distribution
+
+HDI (Human Development Index):
+• Health (life expectancy)
+• Education (literacy, school enrollment)
+• Standard of living (income per capita)
+
+═══════════════════════════════════════════════════════
+
+🌐 INTERNATIONAL TRADE
+
+═══════════════════════════════════════════════════════
+
+TRADE CONCEPTS:
+• Absolute Advantage: Lower cost of production
+• Comparative Advantage: Lower opportunity cost
+• Terms of Trade: Export price / Import price
+
+PROTECTIONISM vs FREE TRADE:
+• Tariffs: Taxes on imports
+• Quotas: Quantity limits on imports
+• Subsidies: Government support to domestic producers
+• Free Trade: No restrictions (benefits consumers)
+
+BALANCE OF PAYMENTS:
+Current Account + Capital Account = Overall Balance
+
+• Current Account: Trade in goods, services, income
+• Capital Account: Capital transfers, investments`
     };
 
     return cheatSheets[categoryId] || "📝 Cheat sheet coming soon for this subject! Aiva is working on it.";
@@ -1619,16 +1832,1228 @@ GOAL: Minimize CCC (faster cash regeneration)`
 
   const generatePracticeAssessment = (categoryId: string) => {
     const assessments: Record<string, string> = {
-      "ethical-hacking": "🔒 ETHICAL HACKING PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the first step in incident response?\n   a) Eradication\n   b) Detection ✓\n   c) Recovery\n   d) Containment\n\n2. Which tool is best for network scanning?\n   a) Wireshark\n   b) Nmap ✓\n   c) Metasploit\n   d) Burp Suite",
-      "human-resources": "👥 HUMAN RESOURCES PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the primary purpose of onboarding?\n   a) Salary negotiation\n   b) Cultural integration and role clarity ✓\n   c) Performance evaluation\n   d) Compliance training\n\n2. Which metric measures employee retention?\n   a) Time to hire\n   b) Turnover rate ✓\n   c) Cost per hire\n   d) Engagement score",
-      "dsa": "💻 DSA PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the time complexity of binary search?\n   a) O(n)\n   b) O(log n) ✓\n   c) O(n log n)\n   d) O(n²)\n\n2. Which data structure uses LIFO principle?\n   a) Queue\n   b) Stack ✓\n   c) Array\n   d) Linked List",
-      "physics": "⚛️ PHYSICS PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. Which law states energy cannot be created or destroyed?\n   a) Zeroth Law\n   b) First Law ✓\n   c) Second Law\n   d) Third Law\n\n2. What happens to entropy in an isolated system?\n   a) Always decreases\n   b) Remains constant\n   c) Always increases ✓\n   d) Fluctuates randomly",
-      "chemistry": "🧪 CHEMISTRY PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the pH of 0.001M HCl solution?\n   a) 1\n   b) 2\n   c) 3 ✓\n   d) 4\n\n2. Which is a strong acid?\n   a) CH₃COOH\n   b) HCl ✓\n   c) NH₄OH\n   d) H₂CO₃",
-      "dbms": "🗃️ DATABASE MANAGEMENT PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. Which normal form eliminates partial dependencies?\n   a) 1NF\n   b) 2NF ✓\n   c) 3NF\n   d) BCNF\n\n2. What does SQL stand for?\n   a) Structured Query Language ✓\n   b) Simple Query Language\n   c) Standard Query Logic\n   d) System Query Language",
-      "financial-accounting": "💰 FINANCIAL ACCOUNTING PRACTICE ASSESSMENT\n\n📝 MULTIPLE CHOICE QUESTIONS\n1. What's the formula for Present Value?\n   a) FV × (1 + r)ⁿ\n   b) FV ÷ (1 + r)ⁿ ✓\n   c) FV + r × n\n   d) FV - r × n\n\n2. Current Ratio of 1.5 indicates:\n   a) Liquidity issues\n   b) Good liquidity ✓\n   c) Excessive liquidity\n   d) Insufficient data"
+      "ethical-hacking": `🔒 ETHICAL HACKING PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. What is the FIRST step in the incident response framework?
+   a) Containment
+   b) Detection & Identification ✓
+   c) Eradication
+   d) Recovery
+
+2. Which Nmap command performs a stealth scan using SYN flags?
+   a) nmap -sT
+   b) nmap -sS ✓
+   c) nmap -sU
+   d) nmap -sF
+
+3. What type of attack exploits the trust relationship between
+   two systems?
+   a) SQL Injection
+   b) Cross-Site Scripting
+   c) Man-in-the-Middle (MITM) ✓
+   d) Brute Force
+
+4. Which protocol does FTP use for data transfer?
+   a) TCP Port 21
+   b) TCP Port 20 ✓
+   c) UDP Port 21
+   d) UDP Port 20
+
+5. What is the main purpose of a DMZ in network security?
+   a) Store sensitive data
+   b) Isolate internal networks from public traffic ✓
+   c) Speed up network performance
+   d) Host email servers
+
+═══════════════════════════════════════════════════════
+SECTION 2: TRUE OR FALSE
+═══════════════════════════════════════════════════════
+
+1. T / F: A vulnerability scan can exploit weaknesses it finds.
+
+2. T / F: Social engineering attacks target human psychology,
+   not technical vulnerabilities. ✓
+
+3. T / F: SIEM systems collect and analyze security events
+   from multiple sources. ✓
+
+4. T / F: A zero-day vulnerability has a patch available.
+
+5. T / F: Network segmentation reduces the blast radius of
+   a security breach. ✓
+
+═══════════════════════════════════════════════════════
+SECTION 3: MATCH THE ATTACK TYPE
+═══════════════════════════════════════════════════════
+
+Column A                    Column B
+─────────────────────────────────────────────
+1. Phishing              A. Exploits web app input fields
+2. SQL Injection         B. Deceptive emails to steal data
+3. DDoS                  C. Overwhelming systems with traffic
+4. MITM                  D. Intercepting communications
+5. XSS                   E. Injecting malicious scripts
+
+ANSWERS: 1-B, 2-A, 3-C, 4-D, 5-E
+
+═══════════════════════════════════════════════════════
+SECTION 4: SCENARIO-BASED QUESTIONS
+═══════════════════════════════════════════════════════
+
+SCENARIO 1:
+An employee reports they cannot access their email. Investigation
+shows their credentials were used to send 500 spam emails at 3 AM.
+
+Questions:
+a) What is the immediate first step?
+b) What evidence should be preserved?
+c) Which team should be notified?
+d) How would you prevent future compromise?
+
+SCENARIO 2:
+A web server is returning slow response times. Traffic analysis
+shows 10,000 requests per second from thousands of different IPs.
+
+a) What type of attack is this?
+b) What defensive measures would you implement?
+c) How would you identify the source IPs vs. botnet nodes?
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ): ___/25 points
+Section 2 (T/F):  ___/10 points
+Section 3 (Match): ___/10 points
+Section 4 (Case):  ___/25 points
+
+TOTAL:            ___/70 points
+
+Grade Thresholds:
+• 60-70: Expert Security Analyst
+• 45-59: Security Practitioner
+• 30-44: Security Foundations
+• Below 30: Needs Review`,
+
+      "human-resources": `👥 HUMAN RESOURCES PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. What is the primary purpose of the onboarding process?
+   a) Negotiate salary
+   b) Cultural integration & role clarity ✓
+   c) Performance evaluation
+   d) Assign mentors only
+
+2. Which metric BEST measures employee retention?
+   a) Time to Hire
+   b) Turnover Rate ✓
+   c) Cost per Hire
+   d) Engagement Score
+
+3. In the employee lifecycle, what comes AFTER recruitment?
+   a) Training
+   b) Onboarding ✓
+   c) Performance Review
+   d) Offboarding
+
+4. What does the acronym SMART stand for in goal setting?
+   a) Simple, Meaningful, Achievable, Realistic, Timely
+   b) Specific, Measurable, Achievable, Relevant, Time-bound ✓
+   c) Strategic, Milestone-based, Aligned, Result-driven, Tracked
+   d) Structured, Monitored, Assessed, Reviewed, Timed
+
+5. Which law requires employers to track employee hours for
+   overtime pay?
+   a) ADA
+   b) FMLA
+   c) FLSA ✓
+   d) OSHA
+
+═══════════════════════════════════════════════════════
+SECTION 2: CALCULATIONS
+═══════════════════════════════════════════════════════
+
+SCENARIO: ABC Corp has 150 employees. 12 employees left
+during the past year. 3 additional employees left mid-year
+but were replaced.
+
+Calculate:
+a) Turnover Rate = (Employees Left ÷ Average Headcount) × 100
+b) If total recruitment costs were $48,000, what is Cost Per Hire?
+c) If the average time to fill a position is 30 days, and there
+   were 8 open positions, calculate total vacancy days.
+
+ANSWERS:
+a) Turnover Rate = (12 ÷ 150) × 100 = 8%
+b) Cost Per Hire = $48,000 ÷ 8 hires = $6,000
+c) Total Vacancy Days = 30 days × 8 positions = 240 days
+
+═══════════════════════════════════════════════════════
+SECTION 3: SCENARIO ANALYSIS
+═══════════════════════════════════════════════════════
+
+SCENARIO 1:
+An employee has been underperforming for 3 months. Their
+manager has not provided any feedback yet.
+
+Questions:
+a) What is the first step the HR partner should take?
+b) Which feedback framework would you recommend?
+c) What documentation is needed?
+d) If performance doesn't improve, what are the options?
+
+SCENARIO 2:
+Two employees have filed complaints about workplace harassment.
+Both accused the same team lead.
+
+Questions:
+a) What immediate action should HR take?
+b) Who should be involved in the investigation?
+c) How should confidentiality be maintained?
+d) What are the potential outcomes?
+
+═══════════════════════════════════════════════════════
+SECTION 4: MATCH THE HR TERM
+═══════════════════════════════════════════════════════
+
+Column A                    Column B
+─────────────────────────────────────────────────────
+1. Attrition              A. Formal complaint process
+2. Redeployment           B. Moving employees to new roles
+3. PIP                    C. Unexpected departure
+4. Grievance              D. Performance improvement plan
+5. Reskilling             E. Training for new skills
+
+ANSWERS: 1-C, 2-B, 3-D, 4-A, 5-E
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):      ___/25 points
+Section 2 (Calculations): ___/25 points
+Section 3 (Scenarios): ___/25 points
+Section 4 (Matching):  ___/10 points
+
+TOTAL:               ___/85 points
+
+Grade Thresholds:
+• 75-85: Expert HR Business Partner
+• 60-74: Senior HR Practitioner
+• 45-59: HR Foundations
+• Below 45: Needs Review`,
+
+      "dsa": `💻 DATA STRUCTURES & ALGORITHMS PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. What is the time complexity of accessing an element in an
+   array by index?
+   a) O(n)
+   b) O(log n)
+   c) O(1) ✓
+   d) O(n²)
+
+2. Which data structure uses the LIFO (Last In First Out) principle?
+   a) Queue
+   b) Stack ✓
+   c) Array
+   d) Linked List
+
+3. What is the worst-case time complexity of QuickSort?
+   a) O(n log n)
+   b) O(n²) ✓
+   c) O(n)
+   d) O(log n)
+
+4. In a Binary Search Tree, what is the time complexity of
+   searching for an element (average case)?
+   a) O(1)
+   b) O(n)
+   c) O(log n) ✓
+   d) O(n log n)
+
+5. Which sorting algorithm is NOT stable?
+   a) Merge Sort
+   b) Quick Sort ✓
+   c) Insertion Sort
+   d) Bubble Sort
+
+6. What data structure is used in BFS (Breadth-First Search)?
+   a) Stack
+   b) Queue ✓
+   c) Array
+   d) Heap
+
+7. Which of the following has O(log n) time complexity?
+   a) Linear Search
+   b) Binary Search ✓
+   c) Bubble Sort
+   d) Selection Sort
+
+8. What is the space complexity of Merge Sort?
+   a) O(1)
+   b) O(log n)
+   c) O(n) ✓
+   d) O(n²)
+
+═══════════════════════════════════════════════════════
+SECTION 2: TRACE THE ALGORITHM
+═══════════════════════════════════════════════════════
+
+Question 1: Binary Search Trace
+Array: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
+Target: 23
+
+Step through binary search and find:
+a) First mid index and value
+b) Which half do we search next?
+c) Final index of target
+
+ANSWER:
+a) mid = 4 (0-indexed), value = 16
+b) Right half (23 > 16)
+c) Index 5
+
+───────────────────────────────────────────────────────
+
+Question 2: Bubble Sort Trace
+Array: [64, 34, 25, 12, 22, 11, 90]
+
+Show the array after:
+a) Pass 1
+b) Pass 2
+c) Is the array sorted after Pass 2?
+
+ANSWER:
+a) [34, 25, 12, 22, 11, 64, 90]
+b) [25, 12, 22, 11, 34, 64, 90]
+c) No - two more passes needed
+
+═══════════════════════════════════════════════════════
+SECTION 3: CODING CONCEPTS (Mental)
+═══════════════════════════════════════════════════════
+
+Question 1: Identify the Pattern
+What algorithm pattern is this?
+
+function findPair(nums, target):
+    seen = {}
+    for num in nums:
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], num]
+        seen[num] = num
+    return []
+
+Answer: Two Sum Pattern (Hash Map)
+
+───────────────────────────────────────────────────────
+
+Question 2: Recurrence Relation
+What is the time complexity of this recursive function?
+
+function fib(n):
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)
+
+a) O(n)
+b) O(n²)
+c) O(2ⁿ) ✓
+d) O(n!)
+
+How would you optimize it?
+
+Answer: Use memoization or dynamic programming → O(n)
+
+═══════════════════════════════════════════════════════
+SECTION 4: COMPLEXITY ANALYSIS
+═══════════════════════════════════════════════════════
+
+Question 1: For each code snippet, give time & space complexity:
+
+a) for i in range(n):
+       for j in range(n):
+           print(i, j)
+   Answer: Time O(n²), Space O(1)
+
+b) i = n
+   while i > 0:
+       i = i // 2
+   Answer: Time O(log n), Space O(1)
+
+c) def recurse(n):
+       if n <= 0: return
+       print(n)
+       recurse(n-1)
+   Answer: Time O(n), Space O(n) [call stack]
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):      ___/40 points (5 pts each)
+Section 2 (Trace):    ___/20 points
+Section 3 (Concepts):  ___/15 points
+Section 4 (Analysis): ___/15 points
+
+TOTAL:               ___/90 points
+
+Grade Thresholds:
+• 80-90: Expert Software Engineer
+• 65-79: Senior Developer
+• 50-64: Mid-Level Developer
+• 35-49: Junior Developer
+• Below 35: Needs Foundation Review`,
+
+      "physics": `⚛️ PHYSICS PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. Which law states that energy cannot be created or destroyed?
+   a) Zeroth Law
+   b) First Law of Thermodynamics ✓
+   c) Second Law
+   d) Third Law
+
+2. What happens to entropy in an isolated system?
+   a) Always decreases
+   b) Remains constant
+   c) Always increases ✓
+   d) Fluctuates randomly
+
+3. What is the SI unit of force?
+   a) Joule
+   b) Newton ✓
+   c) Watt
+   d) Pascal
+
+4. In the equation F = ma, what does 'm' represent?
+   a) Momentum
+   b) Mass ✓
+   c) Velocity
+   d) Acceleration
+
+5. Which color of light has the longest wavelength?
+   a) Blue
+   b) Green
+   c) Yellow
+   d) Red ✓
+
+6. What is the specific heat capacity of water (approx)?
+   a) 1 J/kg·K
+   b) 4.18 J/kg·K ✓
+   c) 10 J/kg·K
+   d) 100 J/kg·K
+
+7. What type of lens is used to correct myopia (nearsightedness)?
+   a) Convex
+   b) Concave ✓
+   c) Plano
+   d) Cylindrical
+
+8. What is the speed of light in vacuum (approx)?
+   a) 3 × 10⁶ m/s
+   b) 3 × 10⁷ m/s
+   c) 3 × 10⁸ m/s ✓
+   d) 3 × 10⁹ m/s
+
+═══════════════════════════════════════════════════════
+SECTION 2: CALCULATIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Kinematics
+A car accelerates from rest at 2 m/s². Calculate:
+a) Velocity after 10 seconds
+b) Distance traveled in 10 seconds
+
+Given: u = 0, a = 2 m/s², t = 10 s
+
+Answers:
+a) v = u + at = 0 + (2)(10) = 20 m/s
+b) s = ut + ½at² = 0 + ½(2)(100) = 100 m
+
+───────────────────────────────────────────────────────
+
+Question 2: Heat Transfer
+How much heat is needed to raise 500g of water from 20°C to 70°C?
+(Specific heat of water = 4.18 J/g·K)
+
+Given: m = 500g, c = 4.18 J/g·K, ΔT = 50°C
+
+Answer:
+Q = mcΔT = (500)(4.18)(50) = 104,500 J = 104.5 kJ
+
+───────────────────────────────────────────────────────
+
+Question 3: Ohm's Law
+A circuit has 12V battery and 4Ω resistor. Calculate:
+a) Current flowing
+b) Power dissipated
+
+Answers:
+a) I = V/R = 12/4 = 3A
+b) P = IV = (3)(12) = 36W
+
+═══════════════════════════════════════════════════════
+SECTION 3: CONCEPTUAL QUESTIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Explain with example
+"Why does a metal spoon feel colder than a wooden spoon
+at the same temperature?"
+
+Answer: Thermal conductivity difference. Metal conducts heat
+faster from your hand, making it feel colder despite being
+at the same temperature.
+
+───────────────────────────────────────────────────────
+
+Question 2: Laws of Thermodynamics
+For each scenario, identify which law applies:
+
+a) Heat flows from hot coffee to cold milk when mixed
+   → Second Law (heat flows spontaneously hot→cold)
+
+b) A perpetual motion machine is impossible
+   → First Law (energy conservation)
+
+c) Absolute zero cannot be reached
+   → Third Law
+
+d) Your body warms up cold hands
+   → First Law (energy transfer)
+
+═══════════════════════════════════════════════════════
+SECTION 4: WAVES & OPTICS
+═══════════════════════════════════════════════════════
+
+Question 1: Refraction Problem
+Light travels from air (n=1) into water (n=1.33) at 45°.
+Calculate the angle of refraction.
+
+Using Snell's Law: n₁ sin(θ₁) = n₂ sin(θ₂)
+(1)(sin 45°) = (1.33)(sin θ₂)
+sin θ₂ = 0.707 / 1.33 = 0.532
+θ₂ = 32.1°
+
+───────────────────────────────────────────────────────
+
+Question 2: Wave Equation
+A wave has frequency 256 Hz and wavelength 1.29 m.
+What is the wave speed?
+
+Answer: v = fλ = (256)(1.29) = 330.24 m/s
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):      ___/40 points (5 pts each)
+Section 2 (Calculations): ___/30 points (10 pts each)
+Section 3 (Conceptual): ___/20 points
+Section 4 (Waves/Optics): ___/20 points
+
+TOTAL:               ___/110 points
+
+Grade Thresholds:
+• 95-110: Expert Physicist
+• 80-94: Advanced Physics
+• 60-79: Intermediate Physics
+• 40-59: Introductory Physics
+• Below 40: Foundation Review Needed`,
+
+      "chemistry": `🧪 CHEMISTRY PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. What is the pH of a 0.001 M HCl solution?
+   a) 1
+   b) 2
+   c) 3 ✓
+   d) 4
+
+2. Which of the following is a STRONG acid?
+   a) CH₃COOH (acetic acid)
+   b) HCl ✓
+   c) NH₄OH (ammonium hydroxide)
+   d) H₂CO₃ (carbonic acid)
+
+3. What is the oxidation number of oxygen in most compounds?
+   a) +1
+   b) -1
+   c) -2 ✓
+   d) 0
+
+4. How many moles are in 36 grams of water (H₂O)?
+   Molar mass of H₂O = 18 g/mol
+   a) 1 mol ✓
+   b) 2 mol
+   c) 0.5 mol
+   d) 18 mol
+
+5. Which gas law states P₁V₁ = P₂V₂ at constant temperature?
+   a) Charles's Law
+   b) Boyle's Law ✓
+   c) Avogadro's Law
+   d) Gay-Lussac's Law
+
+6. In a redox reaction, what happens at the anode?
+   a) Reduction
+   b) Oxidation ✓
+   c) No change
+   d) Formation of metal deposits
+
+7. What type of bond forms between Na and Cl in NaCl?
+   a) Covalent
+   b) Ionic ✓
+   c) Metallic
+   d) Hydrogen
+
+8. What is the electron configuration of Neon (atomic #10)?
+   a) 1s² 2s² 2p⁶
+   b) 1s² 2s² 2p⁶ ✓
+   c) 1s² 2s² 2p⁴
+   d) 1s² 2s² 2p⁶ 3s²
+
+═══════════════════════════════════════════════════════
+SECTION 2: pH & CALCULATIONS
+═══════════════════════════════════════════════════════
+
+Question 1: pH Calculations
+
+a) If [H⁺] = 1 × 10⁻⁴ M, calculate pH
+   Answer: pH = -log(10⁻⁴) = 4
+
+b) If pH = 9.3, calculate [H⁺]
+   Answer: [H⁺] = 10⁻⁹·³ = 5.01 × 10⁻¹⁰ M
+
+c) Is this solution acidic or basic?
+   Answer: Basic (pH > 7)
+
+───────────────────────────────────────────────────────
+
+Question 2: Molarity Calculation
+
+Calculate the molarity of a solution made by dissolving
+5.85 g of NaCl in 500 mL of water.
+(Molar mass of NaCl = 58.5 g/mol)
+
+Steps:
+1. Calculate moles: 5.85 g ÷ 58.5 g/mol = 0.1 mol
+2. Convert volume: 500 mL = 0.5 L
+3. Calculate molarity: 0.1 mol ÷ 0.5 L = 0.2 M
+
+Answer: 0.2 M
+
+═══════════════════════════════════════════════════════
+SECTION 3: BALANCING & REACTIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Balance the equation
+___ Fe + ___ O₂ → ___ Fe₂O₃
+
+Answer: 4 Fe + 3 O₂ → 2 Fe₂O₃
+
+───────────────────────────────────────────────────────
+
+Question 2: Identify the reaction type
+
+a) 2H₂ + O₂ → 2H₂O
+   Answer: Combination (synthesis)
+
+b) 2KMnO₄ → K₂MnO₄ + MnO₂ + O₂
+   Answer: Decomposition
+
+c) Zn + CuSO₄ → ZnSO₄ + Cu
+   Answer: Single displacement
+
+d) HCl + NaOH → NaCl + H₂O
+   Answer: Double displacement (neutralization)
+
+═══════════════════════════════════════════════════════
+SECTION 4: ORGANIC CHEMISTRY
+═══════════════════════════════════════════════════════
+
+Question 1: Functional Groups
+
+Identify the functional group in each compound:
+
+a) CH₃-CH₂-OH (ethanol)
+   Answer: Alcohol (-OH)
+
+b) CH₃-CO-CH₃ (acetone)
+   Answer: Ketone (C=O)
+
+c) CH₃-CHO (acetaldehyde)
+   Answer: Aldehyde (-CHO)
+
+d) CH₃-COOH (acetic acid)
+   Answer: Carboxylic acid (-COOH)
+
+───────────────────────────────────────────────────────
+
+Question 2: Naming
+
+What is the IUPAC name of:
+CH₃-CH₂-CH₂-CH₃ (a 4-carbon straight chain alkane)
+
+Answer: Butane
+
+CH₃-CH=CH-CH₃ (a 4-carbon alkene with double bond)
+
+Answer: But-2-ene (or 2-butene)
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):          ___/40 points (5 pts each)
+Section 2 (Calculations): ___/30 points
+Section 3 (Reactions):    ___/20 points
+Section 4 (Organic):      ___/20 points
+
+TOTAL:                   ___/110 points
+
+Grade Thresholds:
+• 95-110: Expert Chemist
+• 80-94: Advanced Chemistry
+• 60-79: Intermediate Chemistry
+• 40-59: Introductory Chemistry
+• Below 40: Foundation Review Needed`,
+
+      "dbms": `🗃️ DATABASE MANAGEMENT PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. Which normal form eliminates partial dependencies?
+   a) 1NF
+   b) 2NF ✓
+   c) 3NF
+   d) BCNF
+
+2. What does SQL stand for?
+   a) Simple Query Language
+   b) Structured Query Language ✓
+   c) Standard Query Logic
+   d) System Query Language
+
+3. Which JOIN returns only matching rows from both tables?
+   a) LEFT JOIN
+   b) RIGHT JOIN
+   c) INNER JOIN ✓
+   d) FULL OUTER JOIN
+
+4. What is the primary purpose of an index in a database?
+   a) Store data
+   b) Speed up queries ✓
+   c) Enforce relationships
+   d) Delete records
+
+5. In a transaction, what does ACID property ensure?
+   a) Data size
+   b) Query speed
+   c) Data integrity ✓
+   d) User permissions
+
+6. Which command is used to remove all rows from a table
+   while keeping the structure?
+   a) DELETE
+   b) DROP
+   c) TRUNCATE ✓
+   d) REMOVE
+
+7. What type of key references a primary key in another table?
+   a) Primary Key
+   b) Candidate Key
+   c) Foreign Key ✓
+   d) Alternate Key
+
+8. Which isolation level prevents dirty reads?
+   a) READ UNCOMMITTED
+   b) READ COMMITTED ✓
+   c) REPEATABLE READ
+   d) SERIALIZABLE
+
+═══════════════════════════════════════════════════════
+SECTION 2: SQL QUERY WRITING
+═══════════════════════════════════════════════════════
+
+Given Tables:
+
+EMPLOYEES
+┌────┬────────┬────────┬────────────┐
+│ ID │ Name   │ Dept   │ Salary    │
+├────┼────────┼────────┼────────────┤
+│ 1  │ Alice  │ IT     │ 75,000    │
+│ 2  │ Bob    │ HR     │ 65,000    │
+│ 3  │ Carol  │ IT     │ 80,000    │
+│ 4  │ Dave   │ Sales  │ 60,000    │
+└────┴────────┴────────┴────────────┘
+
+DEPARTMENTS
+┌──────┬──────────┐
+│ Dept │ Manager  │
+├──────┼──────────┤
+│ IT   │ Carol    │
+│ HR   │ Bob      │
+│ Sales│ Dave     │
+└──────┴──────────┘
+
+Write SQL for:
+
+1. Find all employees in IT department with salary > 70,000
+   SELECT * FROM employees
+   WHERE Dept = 'IT' AND Salary > 70000;
+   Answer: Alice, Carol
+
+2. Find total salary by department
+   SELECT Dept, SUM(Salary) as Total
+   FROM employees
+   GROUP BY Dept;
+
+3. Find employees earning above average
+   SELECT * FROM employees
+   WHERE Salary > (SELECT AVG(Salary) FROM employees);
+   Answer: Carol (80,000)
+
+═══════════════════════════════════════════════════════
+SECTION 3: NORMALIZATION
+═══════════════════════════════════════════════════════
+
+Question 1: Identify the Problem
+
+Table: ORDERS
+┌──────┬──────────┬────────────┬────────────┐
+│Order#│ Customer │ Product    │ CustomerAddr│
+├──────┼──────────┼────────────┼────────────┤
+│ 101  │ John     │ Laptop     │ 123 Main   │
+│ 102  │ Mary     │ Mouse      │ 456 Oak    │
+│ 103  │ John     │ Keyboard   │ 123 Main   │
+└──────┴──────────┴────────────┴────────────┘
+
+Problems:
+a) Data redundancy (John's address repeated)
+b) Update anomaly (if John moves, must update multiple rows)
+c) Insert anomaly (can't add customer without order)
+d) Delete anomaly (deleting order deletes customer)
+
+───────────────────────────────────────────────────────
+
+Question 2: Normalize to 3NF
+
+The unnormalized table has:
+• Order# (primary key)
+• Customer Name
+• Customer Address
+• Product Name
+• Product Price
+• Order Quantity
+
+Which normal form is violated?
+• 1NF: ✓ (atomic values needed - OK)
+• 2NF: ✗ (partial dependency - Customer Name depends on
+        Customer Address which doesn't depend on Order#)
+• 3NF: ✗ (transitive dependency possible)
+
+Proposed 3NF decomposition:
+ORDERS (Order#, CustomerID FK, ProductID FK, Quantity)
+CUSTOMERS (CustomerID PK, Name, Address)
+PRODUCTS (ProductID PK, Name, Price)
+
+═══════════════════════════════════════════════════════
+SECTION 4: TRANSACTION SCENARIOS
+═══════════════════════════════════════════════════════
+
+Scenario: Bank Transfer
+Account A: $1000 → Account B: $500
+
+Question 1: What can go wrong without transaction management?
+a) If debit succeeds but credit fails, A loses $500
+b) If both succeed but system crashes mid-write, unknown state
+c) If concurrent transfers happen, balance might be incorrect
+
+───────────────────────────────────────────────────────
+
+Question 2: How would you ensure ACID properties?
+
+BEGIN TRANSACTION;
+  UPDATE accounts SET balance = balance - 500 WHERE id = 'A';
+  UPDATE accounts SET balance = balance + 500 WHERE id = 'B';
+  IF error THEN ROLLBACK;
+  ELSE COMMIT;
+END TRANSACTION;
+
+Atomicity: All or nothing (rollback on error)
+Consistency: Check constraints, triggers enforced
+Isolation: Lock rows during transaction
+Durability: Commit writes to disk before returning
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):          ___/40 points (5 pts each)
+Section 2 (SQL Queries):   ___/30 points (10 pts each)
+Section 3 (Normalization): ___/20 points
+Section 4 (Transactions): ___/20 points
+
+TOTAL:                   ___/110 points
+
+Grade Thresholds:
+• 95-110: Expert Database Administrator
+• 80-94: Senior Database Developer
+• 60-79: Mid-Level Database Developer
+• 40-59: Junior Database Developer
+• Below 40: Foundation Review Needed`,
+
+      "financial-accounting": `💰 FINANCIAL ACCOUNTING PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. What is the formula for Present Value?
+   a) FV × (1 + r)ⁿ
+   b) FV ÷ (1 + r)ⁿ ✓
+   c) FV + r × n
+   d) FV - r × n
+
+2. A Current Ratio of 1.5 indicates:
+   a) Liquidity issues
+   b) Good liquidity ✓
+   c) Excessive liquidity
+   d) Insolvency
+
+3. Which financial statement shows a company's performance
+   over a period of time?
+   a) Balance Sheet
+   b) Income Statement ✓
+   c) Cash Flow Statement
+   d) Statement of Equity
+
+4. In double-entry bookkeeping, what increases with a Debit?
+   a) Liabilities
+   b) Revenue
+   c) Expenses ✓
+   d) Equity
+
+5. What does ROE stand for?
+   a) Return on Equity ✓
+   b) Rate of Earnings
+   c) Revenue over Expenses
+   d) Return on Exchange
+
+6. Which accounting principle states that expenses should be
+   matched to revenues they help generate?
+   a) Revenue Recognition
+   b) Matching Principle ✓
+   c) Cost Principle
+   d) Materiality
+
+7. What is the accounting equation?
+   a) Assets = Liabilities - Equity
+   b) Assets = Liabilities + Equity ✓
+   c) Assets + Liabilities = Equity
+   d) Assets - Liabilities = Equity
+
+8. If a company has $100,000 in current assets and $50,000
+   in current liabilities, what is the working capital?
+   a) $50,000 ✓
+   b) $150,000
+   c) $2
+   d) $0
+
+═══════════════════════════════════════════════════════
+SECTION 2: CALCULATIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Time Value of Money
+
+If you invest $5,000 at 8% annual interest, compounded annually,
+what will be the Future Value after 3 years?
+
+Formula: FV = PV × (1 + r)ⁿ
+FV = 5,000 × (1.08)³
+FV = 5,000 × 1.2597
+FV = $6,298.56
+
+───────────────────────────────────────────────────────
+
+Question 2: Ratio Analysis
+
+Given:
+Current Assets: $200,000
+Current Liabilities: $125,000
+Inventory: $50,000
+Net Income: $80,000
+Total Assets: $500,000
+Total Equity: $300,000
+
+Calculate:
+a) Current Ratio = 200,000 / 125,000 = 1.6
+b) Quick Ratio = (200,000 - 50,000) / 125,000 = 1.2
+c) ROA = 80,000 / 500,000 = 16%
+d) ROE = 80,000 / 300,000 = 26.67%
+
+───────────────────────────────────────────────────────
+
+Question 3: Depreciation (Straight-Line)
+
+A machine costs $50,000 with a salvage value of $5,000
+and useful life of 5 years.
+
+Calculate annual depreciation:
+Depreciation = (Cost - Salvage) / Useful Life
+Depreciation = (50,000 - 5,000) / 5
+Depreciation = $9,000 per year
+
+═══════════════════════════════════════════════════════
+SECTION 3: JOURNAL ENTRIES
+═══════════════════════════════════════════════════════
+
+Record the following transactions using debits and credits:
+
+1. Purchased equipment for $20,000 cash
+
+   Debit: Equipment $20,000
+   Credit: Cash $20,000
+
+2. Collected $5,000 from customers on account
+
+   Debit: Cash $5,000
+   Credit: Accounts Receivable $5,000
+
+3. Paid rent expense of $2,000
+
+   Debit: Rent Expense $2,000
+   Credit: Cash $2,000
+
+4. Recorded revenue of $10,000, received $7,000 in cash,
+   $3,000 on account
+
+   Debit: Cash $7,000
+   Debit: Accounts Receivable $3,000
+   Credit: Service Revenue $10,000
+
+═══════════════════════════════════════════════════════
+SECTION 4: FINANCIAL STATEMENT ANALYSIS
+═══════════════════════════════════════════════════════
+
+Given Income Statement:
+Revenue: $500,000
+Cost of Goods Sold: $300,000
+Operating Expenses: $100,000
+Interest Expense: $20,000
+Tax Rate: 25%
+
+Calculate:
+a) Gross Profit = Revenue - COGS = $200,000
+b) Operating Income (EBIT) = GP - Operating Exp = $100,000
+c) Net Income before Tax = EBIT - Interest = $80,000
+d) Tax Expense = $80,000 × 0.25 = $20,000
+e) Net Income = $80,000 - $20,000 = $60,000
+
+Margin Analysis:
+f) Gross Margin = 200,000 / 500,000 = 40%
+g) Net Profit Margin = 60,000 / 500,000 = 12%
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):          ___/40 points (5 pts each)
+Section 2 (Calculations):  ___/30 points (10 pts each)
+Section 3 (Journal Entries):___/20 points (5 pts each)
+Section 4 (Statements):    ___/20 points
+
+TOTAL:                    ___/110 points
+
+Grade Thresholds:
+• 95-110: Expert Financial Analyst
+• 80-94: Senior Accountant
+• 60-79: Intermediate Accountant
+• 40-59: Basic Accounting Knowledge
+• Below 40: Foundation Review Needed`,
+
+      "economics": `📈 ECONOMICS PRACTICE ASSESSMENT v2.0
+
+═══════════════════════════════════════════════════════
+SECTION 1: MULTIPLE CHOICE QUESTIONS
+═══════════════════════════════════════════════════════
+
+1. According to the Law of Demand, when price increases:
+   a) Quantity demanded increases
+   b) Quantity demanded decreases ✓
+   c) Demand increases
+   d) Supply decreases
+
+2. Market equilibrium occurs when:
+   a) Supply exceeds demand
+   b) Demand exceeds supply
+   c) Quantity demanded equals quantity supplied ✓
+   d) Price is at its highest
+
+3. GDP calculated using C + I + G + (X-M) represents which method?
+   a) Income approach
+   b) Production approach
+   c) Expenditure approach ✓
+   d) Value-added approach
+
+4. Inflation caused by "too much money chasing too few goods" is:
+   a) Cost-push inflation
+   b) Demand-pull inflation ✓
+   c) Stagflation
+   d) Hyperinflation
+
+5. Which type of unemployment occurs due to technological changes?
+   a) Frictional unemployment
+   b) Seasonal unemployment
+   c) Structural unemployment ✓
+   d) Cyclical unemployment
+
+6. The Cash Reserve Ratio (CRR) is a tool of:
+   a) Fiscal policy
+   b) Monetary policy ✓
+   c) Trade policy
+   d) Income policy
+
+7. Gini Coefficient measures:
+   a) Economic growth
+   b) Inflation
+   c) Income inequality ✓
+   d) Unemployment
+
+8. A country has Absolute Advantage when:
+   a) It can produce a good at lower opportunity cost
+   b) It can produce a good using fewer resources ✓
+   c) It has more natural resources
+   d) It has better technology
+
+═══════════════════════════════════════════════════════
+SECTION 2: CALCULATIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Price Elasticity of Demand
+If price increases from $10 to $12, and quantity demanded
+decreases from 100 to 80 units, calculate PED.
+
+Formula: PED = (% Change in Qd) / (% Change in P)
+
+% Change in Qd = (80-100)/100 × 100 = -20%
+% Change in P = (12-10)/10 × 100 = 20%
+
+PED = -20% / 20% = -1
+
+Interpretation: Unit elastic (|PED| = 1)
+
+───────────────────────────────────────────────────────
+
+Question 2: GDP Calculation
+Given: C = $500B, I = $150B, G = $200B, X = $100B, M = $80B
+Calculate GDP using expenditure approach.
+
+GDP = C + I + G + (X - M)
+GDP = 500 + 150 + 200 + (100 - 80)
+GDP = 500 + 150 + 200 + 20
+GDP = $870 billion
+
+───────────────────────────────────────────────────────
+
+Question 3: Inflation Rate
+If nominal GDP = $1,200B and real GDP = $1,000B,
+calculate the inflation rate (GDP deflator).
+
+GDP Deflator = (Nominal GDP / Real GDP) × 100
+GDP Deflator = (1200 / 1000) × 100 = 120
+
+Inflation Rate = (120 - 100) = 20%
+
+═══════════════════════════════════════════════════════
+SECTION 3: MATCHING
+═══════════════════════════════════════════════════════
+
+Column A                    Column B
+─────────────────────────────────────────────────────
+1. CPI                   A. Government borrowing
+2. Repo Rate             B. Price of one currency in another
+3. Deflation             C. General price level decrease
+4. Exchange Rate         D. Consumer goods basket cost
+5. Budget Deficit        E. Rate RBI lends to banks
+
+ANSWERS: 1-D, 2-E, 3-C, 4-B, 5-A
+
+═══════════════════════════════════════════════════════
+SECTION 4: CONCEPTUAL QUESTIONS
+═══════════════════════════════════════════════════════
+
+Question 1: Fiscal vs Monetary Policy
+Explain the difference between fiscal and monetary policy.
+What are their respective tools?
+
+Answer:
+FISCAL POLICY (Government):
+• Direct control over spending and taxation
+• Tools: Government expenditure, taxes, deficits
+• Implemented by government
+
+MONETARY POLICY (Central Bank):
+• Control over money supply and interest rates
+• Tools: Repo rate, CRR, SLR, OMO
+• Implemented by central bank (RBI)
+
+───────────────────────────────────────────────────────
+
+Question 2: Inflation Effects
+Who are the winners and losers during inflation?
+
+WINNERS (受益者):
+• Borrowers (repaying debt with cheaper money)
+• Asset owners (property, stocks appreciate)
+• Debtors
+
+LOSERS (受害者):
+• Fixed-income earners (pensioners, salaried)
+• Savers (real value of savings decreases)
+• Lenders (receiving repaid debt with less value)
+• Creditors
+
+═══════════════════════════════════════════════════════
+SCORING GUIDE
+═══════════════════════════════════════════════════════
+
+Section 1 (MCQ):          ___/40 points (5 pts each)
+Section 2 (Calculations):  ___/30 points (10 pts each)
+Section 3 (Matching):      ___/10 points (2 pts each)
+Section 4 (Conceptual):    ___/20 points (10 pts each)
+
+TOTAL:                    ___/100 points
+
+Grade Thresholds:
+• 85-100: Expert Economist
+• 70-84: Advanced Economics
+• 55-69: Intermediate Economics
+• 40-54: Introductory Economics
+• Below 40: Foundation Review Needed`
     };
-    
-    return assessments[categoryId] || "Practice assessment not available for this subject.";
+
+    return assessments[categoryId] || "📝 Practice assessment coming soon for this subject!";
   };
 
   const allMaterials = useMemo(() => [
@@ -1648,11 +3073,11 @@ GOAL: Minimize CCC (faster cash regeneration)`
       description: "Condensed quick-reference with formulas and key concepts.",
       icon: <Zap size={20} />
     },
-    { 
-      id: "practice-assessment", 
-      title: "Practice Assessment", 
-      type: "video", 
-      duration: "08:20", 
+    {
+      id: "practice-assessment",
+      title: "Practice Assessment",
+      type: "quiz",
+      questions: "10 Questions",
       description: "Interactive MCQs and problems to test your knowledge.",
       icon: <FileText size={20} />
     }
@@ -1814,11 +3239,21 @@ GOAL: Minimize CCC (faster cash regeneration)`
                     }}
                     className="w-full text-left group relative"
                   >
-                    {/* Coming Soon Ribbon - High-precision diagonal design */}
+                    {/* Professional Coming Soon Ribbon */}
                     {cat.status === "coming-soon" && (
-                      <div className="absolute top-0 right-0 z-20 pointer-events-none overflow-hidden w-28 h-28">
-                        <div className="bg-gradient-to-r from-rose-500 via-rose-600 to-rose-500 text-white text-[9px] font-black uppercase tracking-tighter py-1.5 w-[160px] text-center rotate-45 translate-x-10 translate-y-4 shadow-xl border-y border-white/20">
-                          Upcoming
+                      <div className="absolute -top-1 -right-1 z-20">
+                        <div className="relative">
+                          {/* Ribbon body */}
+                          <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white text-[9px] font-bold uppercase tracking-wider px-4 py-1.5 shadow-lg shadow-orange-500/30">
+                            {/* Animated pulse dot */}
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                            </span>
+                            Coming Soon
+                          </div>
+                          {/* Ribbon tail */}
+                          <div className="absolute -bottom-2 left-0 w-0 h-0 border-l-[10px] border-l-amber-500 border-b-[8px] border-b-transparent"></div>
                         </div>
                       </div>
                     )}
