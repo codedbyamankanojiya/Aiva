@@ -71,7 +71,7 @@ export function Analytics() {
       className="space-y-5"
     >
       {/* ── Header row ─────────────────────────────────────── */}
-      <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3">
+      <motion.div variants={fadeUp} className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
         <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-aiva-purple/15 text-aiva-purple border border-aiva-purple/25">
           Progress Report
         </span>
@@ -121,7 +121,7 @@ export function Analytics() {
             <h3 className="text-base font-semibold text-gray-700 mb-3">
               Session insights
             </h3>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <InsightPill label="Avg pause" value="0.78s" sub="Clear thinking" />
               <InsightPill
                 label="speaking speed"
@@ -244,7 +244,7 @@ export function Analytics() {
 
         {/* Stats grid */}
         <motion.div variants={fadeUp} className="lg:col-span-6">
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 h-full">
+          <div className="grid grid-cols-2 gap-4 h-full">
             <GlassCard variant="blue" className="flex flex-col items-center justify-center text-center">
               <p className="text-xs text-gray-500 mb-1">Average Score</p>
               <p className="text-4xl font-extrabold text-gray-800">84%</p>
