@@ -147,6 +147,155 @@
           "ai_analysis": "You mentioned that conflicts don't occur, which shows a positive outlook, but it’s not a realistic or complete answer. Next time, briefly describe a practical step you would take, like listening first or seeking a collaborative solution, to demonstrate your conflict-resolution skills."
         }
       ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "02:02",
+      "completedAt": "2026-04-03T20:13:24.078Z",
+      "sectionCode": "G651C848",
+      "averageTimePerQuestion": "01:01",
+      "averageWordsPerMinute": 2,
+      "questionTranscripts": [
+        {
+          "questionId": "se-3",
+          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
+          "transcript": "Okay. So I have I have not worked on any complicated project.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [
+            "Project management"
+          ],
+          "notMentioned": [
+            "Problem-solving",
+            "Technical challenges",
+            "Solutions implemented"
+          ],
+          "ai_analysis": "AI analysis temporarily unavailable. You mentioned some good points, but consider adding the missing elements to make your answer more complete."
+        },
+        {
+          "questionId": "se-4",
+          "question": "How do you approach debugging complex issues in your code?",
+          "transcript": "I don't. Know.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Debugging methodology",
+            "Systematic approach",
+            "Tools and techniques",
+            "Code review process"
+          ],
+          "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Intermediate",
+      "questionsAnswered": 1,
+      "totalQuestions": 2,
+      "timeSpent": "00:34",
+      "completedAt": "2026-04-03T20:14:08.501Z",
+      "sectionCode": "8AADJPFU",
+      "averageTimePerQuestion": "00:34",
+      "averageWordsPerMinute": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "se-3",
+          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
+          "transcript": "There is no challenge in which I have worked on.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Problem-solving",
+            "Project management",
+            "Technical challenges",
+            "Solutions implemented"
+          ],
+          "ai_analysis": "AI analysis temporarily unavailable. Your answer didn't cover the expected key points. Next time, try to address the main aspects of the question more directly."
+        }
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "01:20",
+      "completedAt": "2026-04-03T20:15:38.630Z",
+      "sectionCode": "EF0TERVC",
+      "averageTimePerQuestion": "00:40",
+      "averageWordsPerMinute": 7,
+      "questionTranscripts": [
+        {
+          "questionId": "se-3",
+          "question": "Describe a challenging project you worked on and how you overcame obstacles.",
+          "transcript": "Okay. So I am not working on any complicated project.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [
+            "Project management"
+          ],
+          "notMentioned": [
+            "Problem-solving",
+            "Technical challenges",
+            "Solutions implemented"
+          ],
+          "ai_analysis": "You mentioned project management, which is a good start, but to give a compelling answer, you need to describe a specific problem, the technical or collaborative challenges you faced, and the solutions you implemented. Next time, focus on walking through a clear example that showcases your problem-solving process."
+        },
+        {
+          "questionId": "se-4",
+          "question": "How do you approach debugging complex issues in your code?",
+          "transcript": "I do not solve any competitive issues.",
+          "role": "Software Engineer",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [
+            "Debugging methodology",
+            "Systematic approach",
+            "Tools and techniques",
+            "Code review process"
+          ],
+          "ai_analysis": "Your answer doesn't address the question about debugging, so it's not an effective response. Next time, be sure to describe a systematic approach—like isolating the problem, using debugging tools, or reviewing code—to show your problem-solving process."
+        }
+      ]
+    },
+    {
+      "role": "Behavioral Upskilling",
+      "level": "Intermediate",
+      "questionsAnswered": 2,
+      "totalQuestions": 2,
+      "timeSpent": "",
+      "completedAt": "2026-04-04T01:46:48.810864",
+      "sectionCode": "3IG2469C",
+      "averageTimePerQuestion": "00:00",
+      "averageWordsPerMinute": 0,
+      "questionTranscripts": [
+        {
+          "questionId": "bu-3",
+          "question": "How do you give and receive constructive feedback?",
+          "transcript": "I do not receive any feedback.",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "Unfortunately, your answer does not address the question, as it states you don't receive feedback at all. For a strong response, you should describe a specific method for both giving feedback (e.g., being specific, timely, and respectful) and receiving it (e.g., listening actively and asking clarifying questions)."
+        },
+        {
+          "questionId": "bu-4",
+          "question": "Describe your approach to professional development.",
+          "transcript": "Want to I do not want develop that. Hello? Run to development.",
+          "role": "Behavioral Upskilling",
+          "level": "Intermediate",
+          "mentioned": [],
+          "notMentioned": [],
+          "ai_analysis": "It seems there may have been a technical issue or miscommunication, as your current response is not clear or coherent. For a strong answer next time, focus on mentioning a specific skill you’re learning, how you’re learning it (courses, mentoring), and how it applies to your role."
+        }
+      ]
     }
   ]
 }
